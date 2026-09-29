@@ -25,7 +25,7 @@ Make all 18 source PDFs in `docs/` consultable as faithful, page-referenced Mark
 - [x] T2: Transcribe classes 05–08 with the same checks; commit the work unit.
 - [x] T3: Transcribe classes 09–12 with the same checks; commit the work unit.
 - [x] T4: Transcribe classes 13–16 with the same checks; commit the work unit.
-- [ ] T5: Transcribe the project draft and study plan with the same checks; commit the work unit.
+- [x] T5: Transcribe the project draft and study plan with the same checks; commit the work unit.
 - [ ] T6: Add a Markdown reading index and audit all 18 outputs against their sources, then commit the work unit.
 
 ## Progress and next step
@@ -35,5 +35,6 @@ Make all 18 source PDFs in `docs/` consultable as faithful, page-referenced Mark
 - T2 evidence: 48 PDF pages across classes 05–08; all 48 sequential markers verified; PDF hyperlink targets preserved (5/5, 4/4, 4/4, 5/5). Class 06 p. 3 contains two broken glyphs in the printed equation, explicitly marked as illegible. Visuals described per page; no runnable app applies. Commit: `6fbc687`.
 - T3 evidence: 45 PDF pages across classes 09–12; all 45 sequential markers verified and unique PDF link targets preserved (4/4, 4/4, 2/2, 4/4). Class 11 source repeats «kkk» and mentions an unlinked resource; both are disclosed without correction or invention. Visual diagrams were described; no runnable app applies. Commit: `c94b767`.
 - T4 evidence: 37 PDF pages across classes 13–16; all 37 sequential markers verified, and the two native links in class 13 are preserved; classes 14–16 have no native PDF link targets. Source/Markdown text samples matched; minor uncertain lettering in the class 16 visual is explicitly identified. No runnable app applies. Commit: `407486e`.
-- T5 evidence: project draft 2/2 pages and study plan 15/15 pages have ordered markers; page-level text was checked and the study plan's image-only resources page 13 was visually transcribed. No native PDF hyperlinks; its page 2 OCR repetition was not duplicated. No runnable app applies.
-- Next: commit T5, then begin T6. Update this document and mirror the entire current content under `odd/pdf-course-transcription/tasks` after each task. Record real check results and commit IDs; never check off work on intent alone.
+- T5 evidence: project draft 2/2 pages and study plan 15/15 pages have ordered markers; page-level text was checked and the study plan's image-only resources page 13 was visually transcribed. No native PDF hyperlinks; its page 2 OCR repetition was not duplicated. No runnable app applies. Commit: `15ff2f8`.
+- T6 evidence: audited 18/18 PDF–Markdown pairs, 201/201 pages with sequential markers, 57/57 native link targets and 18/18 index links. Spot-checked text-bearing and visual pages; corrected one duplicated guillemet in the study plan's editorial note. No missing pairs/pages/links or unresolved source mismatch. An incidental local `.codegraph/` index appeared during the delegated audit; it is not part of the transcription and remains untracked.
+- Next: commit T6, then record the commit identity and finish. Update this document and mirror the entire current content under `odd/pdf-course-transcription/tasks` after each task. Record real check results and commit IDs; never check off work on intent alone.

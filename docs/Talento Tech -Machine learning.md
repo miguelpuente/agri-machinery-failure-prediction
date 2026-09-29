@@ -1,6 +1,6 @@
 # Machine Learning | Plan de estudios 2026
 
-**Fuente:** [Talento Tech -Machine learning.pdf](Talento%20Tech%20-Machine%20learning.pdf), páginas 1–15. Transcripción por página. Las notas **Visual:** describen elementos observados y no forman parte del programa. Las páginas interiores repiten el encabezado «»Machine Learning» y la marca Talento Tech; se indican solo cuando son relevantes para comprender la composición.
+**Fuente:** [Talento Tech -Machine learning.pdf](Talento%20Tech%20-Machine%20learning.pdf), páginas 1–15. Transcripción por página. Las notas **Visual:** describen elementos observados y no forman parte del programa. Las páginas interiores repiten el encabezado «Machine Learning» y la marca Talento Tech; se indican solo cuando son relevantes para comprender la composición.
 
 ## Página 1
 
