@@ -22,7 +22,7 @@ Make all 18 source PDFs in `docs/` consultable as faithful, page-referenced Mark
 ## Tasks
 
 - [x] T1: Transcribe classes 01–04 with page references and meaningful visual descriptions; verify page coverage and text samples, then commit the work unit.
-- [ ] T2: Transcribe classes 05–08 with the same checks; commit the work unit.
+- [x] T2: Transcribe classes 05–08 with the same checks; commit the work unit.
 - [ ] T3: Transcribe classes 09–12 with the same checks; commit the work unit.
 - [ ] T4: Transcribe classes 13–16 with the same checks; commit the work unit.
 - [ ] T5: Transcribe the project draft and study plan with the same checks; commit the work unit.
@@ -32,5 +32,6 @@ Make all 18 source PDFs in `docs/` consultable as faithful, page-referenced Mark
 
 - Git initialized locally on `feature/pdf-transcriptions`. Source PDFs are untracked; add only intended files to each commit.
 - T1 evidence: 54 PDF pages across classes 01–04; all 54 sequential page markers verified. Spot checks of source text/code and native PDF links passed per file (8/8, 6/6, 4/4, 5/5). Captions describe meaningful visuals; decorative headers and images are disclosed. No runnable app or TDD runner applies. Commit: `0008f15`.
-- T2 evidence: 48 PDF pages across classes 05–08; all 48 sequential markers verified; PDF hyperlink targets preserved (5/5, 4/4, 4/4, 5/5). Class 06 p. 3 contains two broken glyphs in the printed equation, explicitly marked as illegible. Visuals described per page; no runnable app applies.
-- Next: commit T2, then begin T3. Update this document and mirror the entire current content under `odd/pdf-course-transcription/tasks` after each task. Record real check results and commit IDs; never check off work on intent alone.
+- T2 evidence: 48 PDF pages across classes 05–08; all 48 sequential markers verified; PDF hyperlink targets preserved (5/5, 4/4, 4/4, 5/5). Class 06 p. 3 contains two broken glyphs in the printed equation, explicitly marked as illegible. Visuals described per page; no runnable app applies. Commit: `6fbc687`.
+- T3 evidence: 45 PDF pages across classes 09–12; all 45 sequential markers verified and unique PDF link targets preserved (4/4, 4/4, 2/2, 4/4). Class 11 source repeats «kkk» and mentions an unlinked resource; both are disclosed without correction or invention. Visual diagrams were described; no runnable app applies.
+- Next: commit T3, then begin T4. Update this document and mirror the entire current content under `odd/pdf-course-transcription/tasks` after each task. Record real check results and commit IDs; never check off work on intent alone.
