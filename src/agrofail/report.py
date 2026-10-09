@@ -1,21 +1,31 @@
-"""Generate the delivery notebook from the Python pipeline."""
+"""Generate both deliveries with ``uv run python -m agrofail.report``.
 
+Use ``--pre`` or ``--final`` to regenerate only the corresponding artifact.
+"""
+
+import argparse
 import base64
+from dataclasses import asdict
 from pathlib import Path
 from pprint import pformat
 
 import nbformat
 import polars as pl
+from matplotlib.figure import Figure
 
 from agrofail import config, eda
 from agrofail.clean import clean, detect_outliers, drop_duplicates
+from agrofail.compare import choose_model, compare_models
 from agrofail.features import apply_encode_and_scale, fit_encode_and_scale
 from agrofail.load import load_dataset, validate_schema
+from agrofail.metrics import ModelMetrics, evaluate_model
+from agrofail.models import train_models
 from agrofail.select import select_features, selection_rationale
 from agrofail.split import split
 
 _DATASET_PAGE = "https://archive.ics.uci.edu/dataset/601/ai4i+2020+predictive+maintenance+dataset"
 _DEFAULT_OUTPUT = config.PROJECT_ROOT / "notebooks" / "preentrega.ipynb"
+_FINAL_OUTPUT = config.PROJECT_ROOT / "notebooks" / "entrega-final.ipynb"
 
 
 def _text_output(value: object) -> nbformat.NotebookNode:
@@ -56,6 +66,20 @@ def build_notebook(df: pl.DataFrame | None = None, output_path: Path = _DEFAULT_
     Python steps; outputs are captured directly, not through a notebook executor.
     Dataset/stratification errors propagate rather than producing partial results.
     """
+    return _build_notebook(df, output_path, final=False)
+
+
+def build_final_notebook(df: pl.DataFrame | None = None, output_path: Path = _FINAL_OUTPUT) -> Path:
+    """Generate all six preparation sections plus evaluated baseline conclusions.
+
+    Reuse the preparation pipeline, fitting only on training rows. Select a
+    provisional model on the held-out split; this split is no longer an unbiased
+    final audit of the selected model. No tuning or operational validation occurs.
+    """
+    return _build_notebook(df, output_path, final=True)
+
+
+def _build_notebook(df: pl.DataFrame | None, output_path: Path, *, final: bool) -> Path:
     raw = load_dataset() if df is None else df
     validate_schema(raw)
     summary = eda.summarise(raw)
@@ -236,7 +260,11 @@ def build_notebook(df: pl.DataFrame | None = None, output_path: Path = _DEFAULT_
         f"y semilla {config.RANDOM_STATE}. Las proporciones se conservan sujetas al "
         "redondeo de filas. La separación previa al ajuste protege la evaluación; "
         "ambas particiones comparten el esquema aprendido en entrenamiento. "
-        "En esta Pre-Entrega no se entrena ningún modelo.",
+        + (
+            "Los modelos se entrenan a continuación."
+            if final
+            else "En esta Pre-Entrega no se entrena ningún modelo."
+        ),
         "for name, frame in [('train', train), ('test', test)]:\n"
         "    counts = eda.summarise(frame)['class_balance']\n"
         "    pprint({name: {'shape': frame.shape, 'class_counts': counts,\n"
@@ -244,6 +272,8 @@ def build_notebook(df: pl.DataFrame | None = None, output_path: Path = _DEFAULT_
         "                                         for label, count in counts.items()}}})",
         [_text_output({"train": _balance(train), "test": _balance(test)})],
     )
+    if final:
+        cells.extend(_modeling_cells(train, test, figure_dir))
     section(
         "## Anexo: fuente y referencias\n\n"
         f"Fuente: [AI4I 2020 en UCI]({_DATASET_PAGE}).\n\n"
@@ -267,9 +297,198 @@ def build_notebook(df: pl.DataFrame | None = None, output_path: Path = _DEFAULT_
     return output_path
 
 
+def plot_model_metrics(results: list[ModelMetrics], figure_dir: Path) -> list[Path]:
+    """Save labeled confusion matrices and a combined probability-based ROC plot."""
+    figure_dir.mkdir(parents=True, exist_ok=True)
+    paths = []
+    for index, result in enumerate(results):
+        figure = Figure(figsize=(4, 4))
+        axis = figure.subplots()
+        counts = [[result.tn, result.fp], [result.fn, result.tp]]
+        axis.imshow(counts, cmap="Blues")
+        for row in range(2):
+            for column in range(2):
+                axis.text(column, row, str(counts[row][column]), ha="center", va="center")
+        axis.set(
+            xticks=[0, 1],
+            yticks=[0, 1],
+            xlabel="Predicción",
+            ylabel="Valor real",
+            title=result.name,
+        )
+        figure.tight_layout()
+        path = figure_dir / f"confusion-{index}.png"
+        figure.savefig(path)
+        paths.append(path)
+    figure = Figure(figsize=(6, 4))
+    axis = figure.subplots()
+    for result in results:
+        axis.plot(result.fpr, result.tpr, label=f"{result.name} (AUC={result.roc_auc:.4f})")
+    axis.plot([0, 1], [0, 1], "--", color="gray", label="Azar")
+    axis.set(
+        xlabel="Tasa de falsos positivos",
+        ylabel="Tasa de verdaderos positivos",
+        title="Curvas ROC",
+        xlim=(0, 1),
+        ylim=(0, 1),
+    )
+    axis.legend()
+    figure.tight_layout()
+    path = figure_dir / "roc-models.png"
+    figure.savefig(path)
+    return [*paths, path]
+
+
+def _modeling_cells(
+    train: pl.DataFrame, test: pl.DataFrame, figure_dir: Path
+) -> list[nbformat.NotebookNode]:
+    target = config.TARGET_COLUMN
+    models = train_models(train.drop(target), train[target])
+    results = [evaluate_model(model, test.drop(target), test[target]) for model in models]
+    table = compare_models(results)
+    comparison = pl.DataFrame([{"rank": i, **asdict(row)} for i, row in enumerate(table.rows, 1)])
+    choice = choose_model(table)
+    best = table.rows[0]
+    interpretations = {
+        "Logistic Regression": "sus coeficientes permiten inspeccionar asociaciones lineales, "
+        "no causalidad",
+        "Decision Tree": "su profundidad máxima de 4 facilita inspeccionar reglas breves",
+        "Random Forest": "su conjunto de árboles es menos transparente que un árbol simple "
+        "o un modelo lineal",
+    }
+    cells = []
+
+    def section(markdown: str, source: str, outputs: list[nbformat.NotebookNode]) -> None:
+        cells.extend(
+            [
+                nbformat.v4.new_markdown_cell(markdown),
+                nbformat.v4.new_code_cell(
+                    source, execution_count=7 + len(cells) // 2, outputs=outputs
+                ),
+            ]
+        )
+
+    section(
+        "## 7. Modelos entrenados\n\n"
+        "Se ajustan tres líneas base sin optimización: regresión logística (máximo 1000 "
+        "iteraciones), Random Forest (100 árboles) y árbol de decisión (profundidad 4). "
+        "No se ponderan las clases. Todos usan la misma partición y los mismos sensores "
+        "y categorías, sin identificadores ni modos de falla. La regresión incluye "
+        "StandardScaler ajustado solo con entrenamiento; los árboles no requieren escala. "
+        "La escala externa ya aprendida se conserva para reproducir la preparación. "
+        "La semilla fija permite reproducibilidad, no demuestra estabilidad.",
+        "from agrofail.models import train_models\n\n"
+        "target = config.TARGET_COLUMN\n"
+        "models = train_models(train.drop(target), train[target])\n"
+        "pprint({model.name: str(model.estimator) for model in models})",
+        [_text_output({model.name: str(model.estimator) for model in models})],
+    )
+    section(
+        "## 8. Evaluación: métricas, matrices de confusión y curvas ROC\n\n"
+        "La clase positiva (1) es la falla. Las matrices tienen valores reales en filas "
+        "y predicciones en columnas, en orden [0, 1]. Se muestran verdaderos negativos "
+        "(tn), falsos positivos (fp), falsos negativos (fn) y verdaderos positivos (tp). "
+        "Accuracy mide aciertos globales; precisión, la proporción de alarmas correctas; "
+        "recall, la proporción de fallas detectadas; F1 combina precisión y recall. "
+        "Las curvas ROC y su área usan probabilidades, no predicciones binarias; las "
+        "matrices usan la decisión predeterminada de cada estimador.",
+        "from agrofail.metrics import evaluate_model\n"
+        "from agrofail.report import plot_model_metrics\n\n"
+        "results = [evaluate_model(model, test.drop(target), test[target]) for model in models]\n"
+        "pprint([{k: v for k, v in vars(result).items() if k not in ('fpr', 'tpr')}\n"
+        "        for result in results])\n"
+        "for path in plot_model_metrics(results, figure_dir):\n"
+        "    display(Image(filename=str(path)))",
+        [
+            _text_output(
+                [
+                    {k: v for k, v in vars(result).items() if k not in ("fpr", "tpr")}
+                    for result in results
+                ]
+            ),
+            *map(_image_output, plot_model_metrics(results, figure_dir)),
+        ],
+    )
+    section(
+        "## 9. Comparación de modelos\n\n"
+        "Se ordenan por F1 descendente, luego ROC-AUC y accuracy descendentes; los "
+        "empates exactos se resuelven por nombre ascendente. F1 tiene prioridad ante "
+        "el desbalance porque combina detección de fallas y fiabilidad de alarmas. "
+        "Accuracy por sí sola favorece a la clase mayoritaria; ROC-AUC complementa "
+        "la discriminación pero no establece un costo operativo ni un umbral óptimo. "
+        "La tabla HTML incluye todas las filas y columnas.",
+        "from dataclasses import asdict\n"
+        "\nfrom agrofail.compare import choose_model, compare_models\n\n"
+        "table = compare_models(results)\n"
+        "comparison = pl.DataFrame([{'rank': i, **asdict(row)}\n"
+        "                           for i, row in enumerate(table.rows, 1)])\n"
+        "with pl.Config(tbl_rows=-1, tbl_cols=-1):\n    display(comparison)",
+        [_text_output(comparison)],
+    )
+    section(
+        "## 10. Elección justificada y reflexión técnica\n\n"
+        f"Se propone **{choice.name}** como línea base provisional, no como sistema listo "
+        "para producción.\n\n"
+        f"- **Rendimiento:** F1={best.f1:.4f}, ROC-AUC={best.roc_auc:.4f}, "
+        f"accuracy={best.accuracy:.4f}, precisión={best.precision:.4f} y recall={best.recall:.4f}; "
+        "ocupa el primer puesto bajo la regla explícita.\n"
+        f"- **Tipos de error:** {best.fn} falsos negativos y {best.fp} falsos positivos. "
+        "Una falla omitida puede causar una parada inesperada; una falsa alarma puede "
+        "generar inspección innecesaria. No se dispone de costos medidos: F1 es un "
+        "compromiso inicial, no una demostración de menor costo.\n"
+        "- **Estabilidad:** no se ha medido en múltiples particiones, temporadas o "
+        "establecimientos; una sola semilla no demuestra robustez.\n"
+        f"- **Interpretabilidad:** {interpretations[choice.name]}. Esta limitación "
+        "debe considerarse al explicar alarmas al equipo de mantenimiento.\n"
+        "- **Adecuación al dominio:** sensores y desgaste son relevantes para el "
+        "mantenimiento, pero los datos sintéticos industriales no validan uso agrícola.\n\n"
+        "La comparación usa test para elegir entre modelos: por ello deja de ser una "
+        "auditoría final independiente del elegido. Se necesita validación posterior "
+        "con datos nuevos. No se ajustaron hiperparámetros ni umbrales en esta entrega.",
+        "choice = choose_model(table)\npprint(asdict(choice))",
+        [_text_output(asdict(choice))],
+    )
+    positives = int(test[target].sum())
+    section(
+        "## 11. Hallazgos y recomendaciones\n\n"
+        f"La evaluación incluye {test.height} registros y {positives} fallas "
+        f"({positives / test.height:.2%}). El baseline elegido detecta {best.tp} fallas "
+        f"y omite {best.fn}; genera {best.fp} falsas alarmas. Estos conteos permiten "
+        "discutir el mantenimiento más directamente que accuracy aislada.\n\n"
+        "Se recomienda recopilar registros reales de maquinaria agrícola con fechas, "
+        "equipos, condiciones de operación y fallas verificadas; validar por tiempo y "
+        "por equipo para evitar fugas y comprobar estabilidad. Antes de desplegar, "
+        "cuantificar costos de inspección y parada, acordar una sensibilidad mínima "
+        "y evaluar umbrales en validación independiente. Supervisar desbalance, "
+        "calibración y deriva de sensores; mantener revisión humana de las alertas. "
+        "La síntesis didáctica es viable, pero no prueba eficacia en campo ni causalidad. "
+        "Los próximos experimentos no se presentan como resultados ya obtenidos.",
+        "pprint({'evaluated_rows': test.height, 'failures': int(test[target].sum()),\n"
+        "        'selected_model': choice.name})",
+        [
+            _text_output(
+                {
+                    "evaluated_rows": test.height,
+                    "failures": positives,
+                    "selected_model": choice.name,
+                }
+            )
+        ],
+    )
+    return cells
+
+
 def main() -> None:
-    """Regenerate the course delivery notebook from the local official CSV."""
-    print(build_notebook())
+    """Generate both notebooks by default; --pre/--final restrict regeneration."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--pre", action="store_true", help="Generate only preentrega.ipynb")
+    mode.add_argument("--final", action="store_true", help="Generate only entrega-final.ipynb")
+    args = parser.parse_args()
+    if not args.final:
+        print(build_notebook())
+    if not args.pre:
+        print(build_final_notebook())
 
 
 if __name__ == "__main__":

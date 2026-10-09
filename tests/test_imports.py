@@ -18,6 +18,8 @@ import pytest
         ("agrofail.report", "build_notebook"),
         ("agrofail.models", "train_models"),
         ("agrofail.metrics", "evaluate_model"),
+        ("agrofail.compare", "compare_models"),
+        ("agrofail.report", "build_final_notebook"),
     ],
 )
 def test_public_modules_import(module_name: str, callable_name: str | None) -> None:
