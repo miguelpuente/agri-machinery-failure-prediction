@@ -24,7 +24,7 @@ Build the course Pre-Entrega as a modern Python project: an executable pipeline 
 
 - [x] T1: Create the private GitHub repository and push the class documentation; verify remote and default branch.
 - [x] T2: Scaffold the uv project (`pyproject.toml`, `src/agrofail` stubs, smoke tests, README, dataset download script) with pytest and ruff green.
-- [ ] T3: Real dataset acquisition and `load.py` with schema validation (consigna section 1).
+- [x] T3: Real dataset acquisition and `load.py` with schema validation (consigna section 1).
 - [ ] T4: `eda.py` — distributions, missing values, correlations, basic visualisations (section 2).
 - [ ] T5: `clean.py` — nulls, duplicates, outliers (section 3).
 - [ ] T6: `features.py` — categorical encoding, numeric scaling, feature creation/removal (section 4).
@@ -51,7 +51,9 @@ Build the course Pre-Entrega as a modern Python project: an executable pipeline 
 - Native review outcome for the scaffold slice (17 committed paths + 2 intended untracked `.gitkeep`, 426 changed lines): consent `granted`; one selected lens `review-reliability`; result `approved`; acknowledged and authority burned on lineage `review-afee37843e522c5f` (target `sha256:2541c4bb6377c09a606f864ff05862a1e038f51b5962e79f2f8d93a7c62e7f60`, consumed revision `sha256:50dbed532c3afb0c08c467ad8965a55f5bc0b635b194492b4aa7f1a75b3f7bf6`). Reviewed boundary advances past `c9b53b7`.
 - Advisory (non-blocking) reliability findings carried as later work in T11: `R3-interrupted-download-cache` (scripts/download_dataset.py:25 — write to a temporary sibling and atomically replace the destination, plus a failure-injection test) and `R3-downloader-behavior-unproved` (scripts/download_dataset.py:15-33 — unit tests with a mocked ZIP response asserting saved bytes, row count and cache reuse).
 - `uv.lock` stays untracked (`7ac399e`): generated file, and its 1,516 lines exceed the native lens context budget; `uv sync` regenerates it locally. Pin dependency bounds in `pyproject.toml` later if tighter reproducibility is needed.
+- T3 done: `e6427be` implements `load_dataset` (polars, BOM-safe) and `validate_schema` with the exact 14-column check from `config`, naming missing and unexpected columns; `tests/test_load.py` covers synthetic round-trips, BOM CSVs, reordered columns, schema mismatches and the real dataset; `tests/test_imports.py` no longer asserts the loader stub. Observed: RED `10 failed` (stub/AttributeError) then GREEN `10 passed`; full suite `uv run pytest -q` -> `29 passed`; `uv run ruff check .` clean; `uv run ruff format --check src tests` clean. Route: delegated direct (one bounded writer).
+- Delivery: PR #1 (scaffold slice) opened as child of the chain (`feat/agri-failure-prediction-01-scaffold` -> `feat/agri-failure-prediction`, label `type:feature`). The tracker PR to `main` stays unopened while the tracker branch has no diff from `main`; it opens when the first child integrates. Issue-first linkage skipped: issue publication stops at the repo's issue-form gate (no YAML Issue Forms; `status:approved` is protected).
 
 ## Next step
 
-T3 — real dataset acquisition and `load.py` with schema validation (consigna section 1).
+T4 — `eda.py`: distributions, missing values, correlations and basic visualisations (consigna section 2).
