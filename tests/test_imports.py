@@ -33,7 +33,6 @@ def test_package_version() -> None:
 @pytest.mark.parametrize(
     ("module_name", "callable_name", "task_id"),
     [
-        ("load", "load_dataset", "T3"),
         ("eda", "summarise", "T4"),
         ("clean", "clean", "T5"),
         ("features", "encode_and_scale", "T6"),
@@ -44,9 +43,7 @@ def test_package_version() -> None:
 )
 def test_pipeline_stubs_remain_explicit(module_name: str, callable_name: str, task_id: str) -> None:
     function = getattr(importlib.import_module(f"agrofail.{module_name}"), callable_name)
-    if module_name == "load":
-        args = (Path("unused.csv"),)
-    elif module_name == "report":
+    if module_name == "report":
         args = (pl.DataFrame(), Path("unused.ipynb"))
     else:
         args = (pl.DataFrame(),)
