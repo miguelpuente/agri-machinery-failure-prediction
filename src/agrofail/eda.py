@@ -80,7 +80,7 @@ def correlation_matrix(df: pl.DataFrame) -> pl.DataFrame:
     return result
 
 
-def plot_distributions(df: pl.DataFrame, output_dir: Path) -> list[Path]:
+def plot_distributions(df: pl.DataFrame, output_dir: Path, *, language: str = "en") -> list[Path]:
     """Save one PNG histogram per present sensor and return paths in sensor order.
 
     Create output_dir if necessary. Filenames use lowercase sensor names with
@@ -95,7 +95,11 @@ def plot_distributions(df: pl.DataFrame, output_dir: Path) -> list[Path]:
         FigureCanvasAgg(figure)
         axes = figure.subplots()
         axes.hist(_sensor_values(df, name).drop_nulls().to_numpy(), bins=20)
-        axes.set(title=f"Distribution of {name}", xlabel=name, ylabel="Count")
+        axes.set(
+            title=f"Distribución de {name}" if language == "es" else f"Distribution of {name}",
+            xlabel=name,
+            ylabel="Frecuencia" if language == "es" else "Count",
+        )
         slug = re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_")
         path = output_dir / f"{slug}_histogram.png"
         figure.savefig(path)
@@ -103,7 +107,7 @@ def plot_distributions(df: pl.DataFrame, output_dir: Path) -> list[Path]:
     return paths
 
 
-def plot_correlation_heatmap(df: pl.DataFrame, output_dir: Path) -> Path:
+def plot_correlation_heatmap(df: pl.DataFrame, output_dir: Path, *, language: str = "en") -> Path:
     """Save correlation_heatmap.png using Agg and return its path.
 
     Both axes show sensor names, with a fixed Pearson scale from -1 to 1.
@@ -121,8 +125,16 @@ def plot_correlation_heatmap(df: pl.DataFrame, output_dir: Path) -> Path:
     image = axes.imshow(matrix.select(names).to_numpy(), vmin=-1, vmax=1, cmap="coolwarm")
     axes.set_xticks(range(len(names)), names, rotation=45, ha="right")
     axes.set_yticks(range(len(names)), names)
-    axes.set_title("Sensor Pearson correlations")
-    figure.colorbar(image, ax=axes, label="Pearson correlation")
+    axes.set_title(
+        "Correlaciones de Pearson entre sensores"
+        if language == "es"
+        else "Sensor Pearson correlations"
+    )
+    figure.colorbar(
+        image,
+        ax=axes,
+        label="Correlación de Pearson" if language == "es" else "Pearson correlation",
+    )
     path = output_dir / "correlation_heatmap.png"
     figure.savefig(path)
     return path

@@ -57,6 +57,94 @@ def _balance(df: pl.DataFrame) -> dict[str, object]:
     }
 
 
+def selection_presentation(rationale) -> tuple[pl.DataFrame, dict[str, object]]:
+    """Present the domain policy in Spanish without altering internal reasons or statistics."""
+    sensor_reasons = dict(
+        zip(
+            config.NUMERIC_COLUMNS,
+            (
+                "Las condiciones térmicas ambientales afectan la refrigeración y "
+                "la temperatura operativa.",
+                "La temperatura del proceso describe el calor operativo, distinto del ambiente.",
+                "La velocidad de rotación describe el régimen operativo de la máquina.",
+                "El torque mide la carga y el esfuerzo mecánico.",
+                "El desgaste de la herramienta mide la degradación acumulada.",
+            ),
+            strict=True,
+        )
+    )
+    rows = []
+    for column in rationale.kept:
+        if column == config.TARGET_COLUMN:
+            reason = "Objetivo conservado como etiqueta, no como predictor."
+        elif column in sensor_reasons:
+            reason = sensor_reasons[column]
+        elif column.startswith("Type_"):
+            reason = "Indicador de Type codificado sin imponer un orden a la calidad del producto."
+        else:
+            reason = "Type representa la calidad del producto; se codifica solo con entrenamiento."
+        rows.append({"column": column, "decision": "conservada", "reason": reason})
+    for column in rationale.dropped:
+        if column in config.ID_COLUMNS:
+            reason = "Identificador excluido: la identidad del registro no es un predictor físico."
+        elif column in config.FAILURE_MODE_COLUMNS:
+            reason = "Fuga de información excluida: el modo de falla revela el resultado objetivo."
+        else:
+            reason = "Variable no configurada o derivada excluida: falta evidencia de relevancia."
+        rows.append({"column": column, "decision": "excluida", "reason": reason})
+    return pl.DataFrame(rows), {
+        "variances": rationale.variances,
+        "correlations": rationale.correlations,
+        "notes": (
+            "La correlación entre sensores señala posible redundancia, no eliminación automática; "
+            "temperaturas ambiente/proceso y velocidad/torque describen condiciones distintas.",
+            "La varianza nula se reporta en esta muestra, no como regla global; evaluar cualquier "
+            "eliminación por varianza solo con entrenamiento.",
+            "Se conservan todos los indicadores de Type; su dependencia one-hot es explícita y "
+            "no se necesita elegir una categoría de referencia antes de seleccionar un modelo.",
+            "No se conservan variables derivadas sin evidencia de relevancia; aquí no se entrena "
+            "ningún modelo.",
+        ),
+    }
+
+
+def choice_presentation(table, selected) -> dict[str, object]:
+    """Explain the ranked tuned choice in Spanish using measured metrics and CV results."""
+    choice = choose_model(table)
+    best = table.rows[0]
+    interpretation = {
+        "Logistic Regression": "Los coeficientes lineales permiten inspección, "
+        "no inferencia causal.",
+        "Random Forest": "El conjunto es menos interpretable directamente que un árbol simple "
+        "o un modelo lineal.",
+    }.get(choice.name, "La interpretabilidad requiere inspeccionar el modelo.")
+    if choice.name == "Decision Tree":
+        interpretation = (
+            "El árbol ajustado tiene profundidad máxima "
+            f"{selected.best_params['classifier__max_depth']}; "
+            "inspeccionar sus reglas antes de afirmar simplicidad."
+        )
+    return {
+        "name": choice.name,
+        "rationale": {
+            "performance": "Primer puesto por F1, ROC-AUC y accuracy descendentes, "
+            "y nombre ascendente; "
+            f"F1={best.f1:.4f}, ROC-AUC={best.roc_auc:.4f}, accuracy={best.accuracy:.4f}.",
+            "error_types": f"Falsos negativos={best.fn}; falsos positivos={best.fp}. "
+            "Las fallas omitidas pueden causar paradas imprevistas; las falsas alarmas, "
+            "inspecciones innecesarias. No se midieron costos operativos; "
+            "F1 es un compromiso provisional.",
+            "stability": f"F1 medio de CV en entrenamiento={selected.cv_mean:.4f}, "
+            f"desviación estándar={selected.cv_std:.4f}; selección sobre estos mismos pliegues, "
+            "no una auditoría independiente ni validación del dominio.",
+            "interpretability": interpretation,
+            "domain_fit": "El mantenimiento basado en sensores es relevante para maquinaria "
+            "agrícola, pero estos datos sintéticos industriales requieren validación con "
+            "registros agrícolas reales. La elección es provisional y no autoriza despliegue.",
+        },
+    }
+
+
 def build_notebook(df: pl.DataFrame | None = None, output_path: Path = _DEFAULT_OUTPUT) -> Path:
     """Generate a populated v4 delivery notebook from one in-process pipeline run.
 
@@ -104,13 +192,7 @@ def _build_notebook(df: pl.DataFrame | None, output_path: Path, *, final: bool) 
     train_encoded = apply_encode_and_scale(train_selected, transformer)
     test_encoded = apply_encode_and_scale(test_selected, transformer)
     rationale = selection_rationale(train_raw)
-    decisions = pl.DataFrame(
-        [
-            {"column": name, "decision": decision, "reason": reason}
-            for decision, reasons in [("kept", rationale.kept), ("dropped", rationale.dropped)]
-            for name, reason in reasons.items()
-        ]
-    )
+    decisions, diagnostics = selection_presentation(rationale)
     train, test = train_encoded, test_encoded
     provenance = {
         "source_page": _DATASET_PAGE,
@@ -120,8 +202,8 @@ def _build_notebook(df: pl.DataFrame | None, output_path: Path, *, final: bool) 
     }
     output_path.parent.mkdir(parents=True, exist_ok=True)
     figure_dir = output_path.parent / "figures"
-    figures = eda.plot_distributions(raw, figure_dir)
-    figures.append(eda.plot_correlation_heatmap(raw, figure_dir))
+    figures = eda.plot_distributions(raw, figure_dir, language="es")
+    figures.append(eda.plot_correlation_heatmap(raw, figure_dir, language="es"))
     cells: list[nbformat.NotebookNode] = []
 
     def section(markdown: str, source: str, outputs: list[nbformat.NotebookNode]) -> None:
@@ -145,7 +227,9 @@ def _build_notebook(df: pl.DataFrame | None, output_path: Path, *, final: bool) 
         f"Descarga oficial: {config.DATASET_URL}.\n\n"
         f"Licencia: {config.DATASET_LICENSE}. Cita: {config.DATASET_CITATION}.\n\n"
         "Notebook generado desde Python; los resultados ya están incorporados. "
-        "Para volver a ejecutar las celdas, usar el entorno del proyecto desde su raíz.",
+        "Para volver a ejecutar las celdas, instalar el runtime con `uv sync --extra notebook` "
+        "(IPython e ipykernel), seleccionar `.venv/bin/python` como kernel y usar la raíz "
+        "del repositorio como directorio de trabajo, no `notebooks/`.",
         "from pathlib import Path\nfrom pprint import pprint\n"
         "\nimport polars as pl\n\nfrom agrofail import config, eda\n"
         "from agrofail.load import load_dataset\n\n"
@@ -162,8 +246,8 @@ def _build_notebook(df: pl.DataFrame | None, output_path: Path, *, final: bool) 
         "from IPython.display import Image, display\n\n"
         "pprint(eda.summarise(raw))\nprint(eda.correlation_matrix(raw))\n"
         "figure_dir = Path('notebooks/figures')\n"
-        "figures = eda.plot_distributions(raw, figure_dir)\n"
-        "figures.append(eda.plot_correlation_heatmap(raw, figure_dir))\n"
+        "figures = eda.plot_distributions(raw, figure_dir, language='es')\n"
+        "figures.append(eda.plot_correlation_heatmap(raw, figure_dir, language='es'))\n"
         "for path in figures:\n    display(Image(filename=str(path)))",
         [_text_output(summary), _text_output(correlations), *map(_image_output, figures)],
     )
@@ -210,8 +294,10 @@ def _build_notebook(df: pl.DataFrame | None, output_path: Path, *, final: bool) 
         "pprint({'sensor_means': transformer.scaler.mean_.tolist(),\n"
         "        'sensor_scales': transformer.scaler.scale_.tolist(),\n"
         "        'categories': transformer.encoder.categories_[0].tolist(),\n"
-        "        'removed_columns': [c for c in train_raw.columns\n"
-        "                            if c not in transformer.output_columns]})",
+        "        'excluded_columns': [c for c in train_raw.columns\n"
+        "                             if c not in train_selected.columns],\n"
+        "        'encoded_columns': {'Type': [c for c in transformer.output_columns\n"
+        "                                     if c.startswith('Type_')]}})",
         [
             _text_output(train_raw.head()),
             _text_output(train_encoded.head()),
@@ -221,9 +307,12 @@ def _build_notebook(df: pl.DataFrame | None, output_path: Path, *, final: bool) 
                     "sensor_means": transformer.scaler.mean_.tolist(),
                     "sensor_scales": transformer.scaler.scale_.tolist(),
                     "categories": transformer.encoder.categories_[0].tolist(),
-                    "removed_columns": [
-                        c for c in train_raw.columns if c not in transformer.output_columns
+                    "excluded_columns": [
+                        c for c in train_raw.columns if c not in train_selected.columns
                     ],
+                    "encoded_columns": {
+                        "Type": [c for c in transformer.output_columns if c.startswith("Type_")]
+                    },
                 }
             ),
         ],
@@ -235,25 +324,17 @@ def _build_notebook(df: pl.DataFrame | None, output_path: Path, *, final: bool) 
         "El objetivo se conserva como etiqueta, nunca como predictor. La varianza y "
         "correlación en entrenamiento son diagnósticos, no reglas automáticas de "
         "eliminación. No se inventan variables derivadas ni importancias de modelos.",
+        "from agrofail.report import selection_presentation\n"
         "from agrofail.select import selection_rationale\n\n"
         "rationale = selection_rationale(train_raw)\n"
-        "decisions = pl.DataFrame([{'column': name, 'decision': decision, 'reason': reason}\n"
-        "    for decision, reasons in [('kept', rationale.kept), ('dropped', rationale.dropped)]\n"
-        "    for name, reason in reasons.items()])\n"
+        "decisions, diagnostics = selection_presentation(rationale)\n"
         "with pl.Config(tbl_rows=-1, tbl_cols=-1, fmt_str_lengths=200):\n"
         "    display(decisions)\n"
-        "pprint({'variances': rationale.variances, 'correlations': rationale.correlations,\n"
-        "        'notes': rationale.notes})\n"
+        "pprint(diagnostics)\n"
         "train, test = train_encoded, test_encoded",
         [
             _text_output(decisions),
-            _text_output(
-                {
-                    "variances": rationale.variances,
-                    "correlations": rationale.correlations,
-                    "notes": rationale.notes,
-                }
-            ),
+            _text_output(diagnostics),
         ],
     )
     section(
@@ -299,44 +380,57 @@ def _build_notebook(df: pl.DataFrame | None, output_path: Path, *, final: bool) 
     return output_path
 
 
-def plot_model_metrics(results: list[ModelMetrics], figure_dir: Path) -> list[Path]:
+def plot_model_metrics(
+    results: list[ModelMetrics], figure_dir: Path, *, evaluation: str = "baseline"
+) -> list[Path]:
     """Save labeled confusion matrices and a combined probability-based ROC plot."""
     figure_dir.mkdir(parents=True, exist_ok=True)
     paths = []
+    label = "línea base" if evaluation == "baseline" else "ajustado"
     for index, result in enumerate(results):
         figure = Figure(figsize=(4, 4))
         axis = figure.subplots()
         counts = [[result.tn, result.fp], [result.fn, result.tp]]
-        axis.imshow(counts, cmap="Blues")
+        image = axis.imshow(counts, cmap="Blues")
         for row in range(2):
             for column in range(2):
-                axis.text(column, row, str(counts[row][column]), ha="center", va="center")
+                count = counts[row][column]
+                axis.text(
+                    column,
+                    row,
+                    str(count),
+                    ha="center",
+                    va="center",
+                    color="white" if image.norm(count) > 0.5 else "black",
+                )
         axis.set(
             xticks=[0, 1],
             yticks=[0, 1],
             xlabel="Predicción",
             ylabel="Valor real",
-            title=result.name,
+            title=f"{result.name} ({label})",
         )
         figure.tight_layout()
-        path = figure_dir / f"confusion-{index}.png"
+        path = figure_dir / f"{evaluation}-confusion-{index}.png"
         figure.savefig(path)
         paths.append(path)
     figure = Figure(figsize=(6, 4))
     axis = figure.subplots()
     for result in results:
-        axis.plot(result.fpr, result.tpr, label=f"{result.name} (AUC={result.roc_auc:.4f})")
+        axis.plot(
+            result.fpr, result.tpr, label=f"{result.name} ({label}, AUC={result.roc_auc:.4f})"
+        )
     axis.plot([0, 1], [0, 1], "--", color="gray", label="Azar")
     axis.set(
         xlabel="Tasa de falsos positivos",
         ylabel="Tasa de verdaderos positivos",
-        title="Curvas ROC",
+        title=f"Curvas ROC ({label})",
         xlim=(0, 1),
         ylim=(0, 1),
     )
     axis.legend()
     figure.tight_layout()
-    path = figure_dir / "roc-models.png"
+    path = figure_dir / f"{evaluation}-roc-models.png"
     figure.savefig(path)
     return [*paths, path]
 
@@ -398,7 +492,7 @@ def _modeling_cells(
         [_text_output({model.name: str(model.estimator) for model in models})],
     )
     section(
-        "## 8. Evaluación: métricas, matrices de confusión y curvas ROC\n\n"
+        "## 8. Evaluación de líneas base: métricas, matrices de confusión y curvas ROC\n\n"
         "La clase positiva (1) es la falla. Las matrices tienen valores reales en filas "
         "y predicciones en columnas, en orden [0, 1]. Se muestran verdaderos negativos "
         "(tn), falsos positivos (fp), falsos negativos (fn) y verdaderos positivos (tp). "
@@ -411,7 +505,7 @@ def _modeling_cells(
         "results = [evaluate_model(model, test.drop(target), test[target]) for model in models]\n"
         "pprint([{k: v for k, v in vars(result).items() if k not in ('fpr', 'tpr')}\n"
         "        for result in results])\n"
-        "for path in plot_model_metrics(results, figure_dir):\n"
+        "for path in plot_model_metrics(results, figure_dir, evaluation='baseline'):\n"
         "    display(Image(filename=str(path)))",
         [
             _text_output(
@@ -496,17 +590,8 @@ def _modeling_cells(
     choice = choose_model(table)
     best = table.rows[0]
     selected = next(model for model in tuned if model.name == choice.name)
-    choice_data = asdict(choice)
-    choice_data["rationale"]["stability"] = (
-        f"Training CV F1 mean={selected.cv_mean:.4f}, std={selected.cv_std:.4f}; "
-        "selected on these folds, not an independent audit or domain validation."
-    )
+    choice_data = choice_presentation(table, selected)
     tree = next(model for model in tuned if model.name == "Decision Tree")
-    if choice.name == "Decision Tree":
-        choice_data["rationale"]["interpretability"] = (
-            f"The tuned tree has maximum depth {tree.best_params['classifier__max_depth']}; "
-            "inspect its rules before claiming simplicity."
-        )
     interpretations["Decision Tree"] = (
         f"su profundidad máxima ajustada de {tree.best_params['classifier__max_depth']} "
         "permite inspeccionar reglas, con complejidad mayor si aumenta la profundidad"
@@ -515,8 +600,8 @@ def _modeling_cells(
         "## 9.2. Comparación ajustada en prueba\n\n"
         "Se evalúan los pipelines ajustados con el mismo test y la misma regla F1, "
         "ROC-AUC y accuracy. No se garantiza mejora frente a las líneas base. "
-        f"La elección pasa de **{baseline_choice.name}** a **{choice.name}** "
-        "(puede conservar la misma familia). La elección final se basa en esta tabla.",
+        f"La elección pasa de **{baseline_choice.name}** a **{choice.name}**. "
+        "La elección final se basa en esta tabla.",
         "tuned_results = [evaluate_model(model, tuning_test, test[target]) for model in tuned]\n"
         "table = compare_models(tuned_results)\n"
         "comparison = pl.DataFrame([{'rank': i, **asdict(row)}\n"
@@ -544,20 +629,27 @@ def _modeling_cells(
         "mantenimiento, pero los datos sintéticos industriales no validan uso agrícola.\n\n"
         "La comparación usa test para elegir entre modelos: por ello deja de ser una "
         "auditoría final independiente del elegido. Se necesita validación posterior "
-        "con datos nuevos. Se ajustaron hiperparámetros en entrenamiento, no umbrales.",
+        "con datos nuevos. Se ajustaron hiperparámetros en entrenamiento, no umbrales. "
+        "Las figuras siguientes corresponden al modelo ajustado elegido, no a la línea base.",
+        "from agrofail.report import choice_presentation\n\n"
         "choice = choose_model(table)\n"
         "selected = next(m for m in tuned if m.name == choice.name)\n"
-        "choice_data = asdict(choice)\n"
-        "choice_data['rationale']['stability'] = (\n"
-        "    f'Training CV F1 mean={selected.cv_mean:.4f}, std={selected.cv_std:.4f}; '\n"
-        "    'selected on these folds, not an independent audit or domain validation.')\n"
-        "if choice.name == 'Decision Tree':\n"
-        "    choice_data['rationale']['interpretability'] = (\n"
-        '        f"The tuned tree has maximum depth '
-        "{selected.best_params['classifier__max_depth']}; \"\n"
-        "        'inspect its rules before claiming simplicity.')\n"
-        "pprint(choice_data)",
-        [_text_output(choice_data)],
+        "choice_data = choice_presentation(table, selected)\n"
+        "pprint(choice_data)\n"
+        "selected_result = next(r for r in tuned_results if r.name == choice.name)\n"
+        "for path in plot_model_metrics([selected_result], figure_dir, evaluation='tuned'):\n"
+        "    display(Image(filename=str(path)))",
+        [
+            _text_output(choice_data),
+            *map(
+                _image_output,
+                plot_model_metrics(
+                    [next(r for r in tuned_results if r.name == choice.name)],
+                    figure_dir,
+                    evaluation="tuned",
+                ),
+            ),
+        ],
     )
     positives = int(test[target].sum())
     section(

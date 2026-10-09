@@ -37,6 +37,12 @@ entrega correspondiente. Las imágenes también quedan embebidas en los notebook
 que pueden leerse sin ejecutar sus celdas. Cada notebook es un artefacto generado, no un
 archivo de trabajo: los cambios se realizan en los módulos Python y se regenera.
 
+Para ejecutar las celdas, instalar el runtime opcional con `uv sync --extra notebook`
+y seleccionar el intérprete `.venv/bin/python` como kernel en el editor de notebooks.
+El directorio de trabajo debe ser la raíz del repositorio (no `notebooks/`), para
+resolver las rutas de datos y figuras. IPython e ipykernel permiten ejecutar las
+celdas; no son necesarios para leer los resultados incorporados ni regenerarlos.
+
 ## Dataset y alcance (anexo de fuentes y referencias)
 
 - **Fuente:** AI4I 2020 Predictive Maintenance Dataset, UCI, identificador 601.
