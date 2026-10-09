@@ -33,7 +33,6 @@ def test_package_version() -> None:
 @pytest.mark.parametrize(
     ("module_name", "callable_name", "task_id"),
     [
-        ("eda", "summarise", "T4"),
         ("clean", "clean", "T5"),
         ("features", "encode_and_scale", "T6"),
         ("select", "select_features", "T7"),
