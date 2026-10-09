@@ -1,7 +1,5 @@
 import importlib
-from pathlib import Path
 
-import polars as pl
 import pytest
 
 
@@ -29,19 +27,3 @@ def test_public_modules_import(module_name: str, callable_name: str | None) -> N
 def test_package_version() -> None:
     package = importlib.import_module("agrofail")
     assert package.__version__ == "0.1.0"
-
-
-@pytest.mark.parametrize(
-    ("module_name", "callable_name", "task_id"),
-    [
-        ("report", "build_notebook", "T9"),
-    ],
-)
-def test_pipeline_stubs_remain_explicit(module_name: str, callable_name: str, task_id: str) -> None:
-    function = getattr(importlib.import_module(f"agrofail.{module_name}"), callable_name)
-    if module_name == "report":
-        args = (pl.DataFrame(), Path("unused.ipynb"))
-    else:
-        args = (pl.DataFrame(),)
-    with pytest.raises(NotImplementedError, match=rf"TODO\({task_id}\):"):
-        function(*args)

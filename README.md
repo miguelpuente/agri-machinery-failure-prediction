@@ -20,11 +20,22 @@ La descarga guarda el CSV en `data/raw/ai4i2020.csv`. Si ya existe, se reutiliza
 sin descargarlo nuevamente. Tras la descarga, ejecutar `uv run pytest` también
 verifica los nombres de columnas contra el archivo real.
 
-**Estado actual:** estructura inicial con pruebas de importación y configuración.
-Las funciones del pipeline son firmas pendientes de implementación y lanzan
-`NotImplementedError`; todavía no existe un pipeline ejecutable completo.
+**Estado actual:** las seis secciones de la Pre-Entrega están implementadas en
+módulos Python y verificadas con pruebas. El notebook de entrega contiene texto
+explicativo, resultados reales y figuras incorporadas; no se entrena ningún modelo.
 
-## Dataset y alcance
+Tras descargar el CSV, regenerar el artefacto con:
+
+```bash
+uv run python -m agrofail.report
+```
+
+El comando escribe `notebooks/preentrega.ipynb` y las figuras en
+`notebooks/figures/`. Las imágenes también quedan embebidas en el notebook, que
+puede leerse sin ejecutar sus celdas. El notebook es un artefacto generado, no un
+archivo de trabajo: los cambios se realizan en los módulos Python y se regenera.
+
+## Dataset y alcance (anexo de fuentes y referencias)
 
 - **Fuente:** AI4I 2020 Predictive Maintenance Dataset, UCI, identificador 601.
   [Página del dataset](https://archive.ics.uci.edu/dataset/601/ai4i+2020+predictive+maintenance+dataset).
@@ -63,7 +74,8 @@ src/agrofail/clean.py        3. Limpieza
 src/agrofail/features.py     4. Transformaciones
 src/agrofail/select.py       5. Selección de variables
 src/agrofail/split.py        6. Separación de entrenamiento y prueba
-src/agrofail/report.py       Generación futura del notebook de entrega
+src/agrofail/report.py       Generación del notebook de entrega
+notebooks/preentrega.ipynb   Artefacto generado con resultados y anexo
 tests/                      Pruebas del paquete
 data/raw/                   Datos originales, excluidos de Git
 data/processed/             Datos preparados, excluidos de Git
@@ -71,7 +83,8 @@ data/processed/             Datos preparados, excluidos de Git
 
 ## Próximo paso
 
-Implementar las seis etapas en módulos Python y generar el notebook `.ipynb`
-de entrega desde el pipeline mediante `report.py`. Los notebooks no se utilizan
-como archivos de trabajo. Las transformaciones que aprendan parámetros deberán
-ajustarse únicamente con datos de entrenamiento para evitar fuga de información.
+Revisar el notebook generado y su anexo para la entrega del curso. La división
+estratificada ocurre antes de ajustar codificación y escalado: sus parámetros se
+aprenden únicamente en entrenamiento y se reutilizan en prueba para evitar fuga
+de información. El entrenamiento y la evaluación de modelos quedan para una
+etapa posterior.
