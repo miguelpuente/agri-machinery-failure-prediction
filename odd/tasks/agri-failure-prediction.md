@@ -25,7 +25,7 @@ Build the course Pre-Entrega as a modern Python project: an executable pipeline 
 - [x] T1: Create the private GitHub repository and push the class documentation; verify remote and default branch.
 - [x] T2: Scaffold the uv project (`pyproject.toml`, `src/agrofail` stubs, smoke tests, README, dataset download script) with pytest and ruff green.
 - [x] T3: Real dataset acquisition and `load.py` with schema validation (consigna section 1).
-- [ ] T4: `eda.py` — distributions, missing values, correlations, basic visualisations (section 2).
+- [x] T4: `eda.py` — distributions, missing values, correlations, basic visualisations (section 2).
 - [ ] T5: `clean.py` — nulls, duplicates, outliers (section 3).
 - [ ] T6: `features.py` — categorical encoding, numeric scaling, feature creation/removal (section 4).
 - [ ] T7: `select.py` — variable selection, dropping the leakage failure-mode columns (section 5).
@@ -53,7 +53,8 @@ Build the course Pre-Entrega as a modern Python project: an executable pipeline 
 - `uv.lock` stays untracked (`7ac399e`): generated file, and its 1,516 lines exceed the native lens context budget; `uv sync` regenerates it locally. Pin dependency bounds in `pyproject.toml` later if tighter reproducibility is needed.
 - T3 done: `e6427be` implements `load_dataset` (polars, BOM-safe) and `validate_schema` with the exact 14-column check from `config`, naming missing and unexpected columns; `tests/test_load.py` covers synthetic round-trips, BOM CSVs, reordered columns, schema mismatches and the real dataset; `tests/test_imports.py` no longer asserts the loader stub. Observed: RED `10 failed` (stub/AttributeError) then GREEN `10 passed`; full suite `uv run pytest -q` -> `29 passed`; `uv run ruff check .` clean; `uv run ruff format --check src tests` clean. Route: delegated direct (one bounded writer).
 - Delivery: PR #1 (scaffold slice) opened as child of the chain (`feat/agri-failure-prediction-01-scaffold` -> `feat/agri-failure-prediction`, label `type:feature`). The tracker PR to `main` stays unopened while the tracker branch has no diff from `main`; it opens when the first child integrates. Issue-first linkage skipped: issue publication stops at the repo's issue-form gate (no YAML Issue Forms; `status:approved` is protected).
+- T4 done: `428a040` implements `summarise` (shape, dtypes, null counts, numeric stats with `ddof=1`, target class balance), `correlation_matrix` (labelled Pearson over `config.NUMERIC_COLUMNS`, polars-native), `plot_distributions` and `plot_correlation_heatmap` (headless `Agg` matplotlib); `tests/test_eda.py` has 9 deterministic cases (synthetic frames, NaN/null semantics, empty/all-missing/constant sensors, non-empty plot files) plus the real dataset. Observed: RED `7 failed` then GREEN `37 passed`; `uv run ruff check .` clean; `uv run ruff format --check src tests` clean. Route: delegated direct (one bounded writer). Slice at 388/400 lines: the next work-unit commit reaches the budget and triggers the review consent.
 
 ## Next step
 
-T4 — `eda.py`: distributions, missing values, correlations and basic visualisations (consigna section 2).
+T5 — `clean.py`: nulls, duplicates, outliers (consigna section 3).
