@@ -32,6 +32,7 @@ Build the course Pre-Entrega as a modern Python project: an executable pipeline 
 - [ ] T8: `split.py` — stratified train/test split (section 6).
 - [ ] T9: `report.py` — generate the delivery `.ipynb` with Spanish explanatory text and real pipeline outputs.
 - [ ] T10: README and dataset annex final pass with a full verification run.
+- [ ] T11: Harden the downloader (atomic cache write) and add its behavioral tests (advisory findings `R3-interrupted-download-cache`, `R3-downloader-behavior-unproved`).
 
 ## Acceptance criteria
 
@@ -47,6 +48,9 @@ Build the course Pre-Entrega as a modern Python project: an executable pipeline 
 - Schema verified against the real CSV header: the identifier column is `UDI` (not `UID`); failure-mode columns `TWF, HDF, PWF, OSF, RNF` confirmed as target leakage candidates.
 - Defect found and fixed during normalization: `ruff format` rewrites Python code blocks embedded in Markdown and altered `docs/ML CLASE _ 04.md`, breaking transcription fidelity; the change was reverted and `a5ad56b` excludes `docs`, `odd` and `data` from formatting.
 - Native review notes: a first accumulated candidate (1,942 changed lines, of which 1,516 are the generated `uv.lock`) exceeded the reviewer lens context budget (`lens_context_budget_exceeded`); no review authority was created and that candidate is terminal. The branch was re-cut into the chain above under the user-chosen `feature-branch-chain` strategy. Slice assessment now runs per boundary with `--untracked-scope=exclude`; `under_budget` keeps the slice pending until about 400 lines accumulate.
+- Native review outcome for the scaffold slice (17 committed paths + 2 intended untracked `.gitkeep`, 426 changed lines): consent `granted`; one selected lens `review-reliability`; result `approved`; acknowledged and authority burned on lineage `review-afee37843e522c5f` (target `sha256:2541c4bb6377c09a606f864ff05862a1e038f51b5962e79f2f8d93a7c62e7f60`, consumed revision `sha256:50dbed532c3afb0c08c467ad8965a55f5bc0b635b194492b4aa7f1a75b3f7bf6`). Reviewed boundary advances past `c9b53b7`.
+- Advisory (non-blocking) reliability findings carried as later work in T11: `R3-interrupted-download-cache` (scripts/download_dataset.py:25 — write to a temporary sibling and atomically replace the destination, plus a failure-injection test) and `R3-downloader-behavior-unproved` (scripts/download_dataset.py:15-33 — unit tests with a mocked ZIP response asserting saved bytes, row count and cache reuse).
+- `uv.lock` stays untracked (`7ac399e`): generated file, and its 1,516 lines exceed the native lens context budget; `uv sync` regenerates it locally. Pin dependency bounds in `pyproject.toml` later if tighter reproducibility is needed.
 
 ## Next step
 
