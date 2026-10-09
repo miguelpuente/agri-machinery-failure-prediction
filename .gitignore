@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+docs/*.pdf
+.atl/
+.codegraph/
+.ipynb_checkpoints/
+# Generated lockfile: untracked on purpose. A 1.5k-line lockfile exceeds the
+# native reviewer lens context budget and would block every reviewable slice.
+uv.lock
