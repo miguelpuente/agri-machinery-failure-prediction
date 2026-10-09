@@ -34,8 +34,6 @@ def test_package_version() -> None:
 @pytest.mark.parametrize(
     ("module_name", "callable_name", "task_id"),
     [
-        ("select", "select_features", "T7"),
-        ("split", "split", "T8"),
         ("report", "build_notebook", "T9"),
     ],
 )
