@@ -116,7 +116,6 @@ def test_report_real_dataset(tmp_path: Path) -> None:
 def test_final_notebook_complete_and_populated(report_frame: pl.DataFrame, tmp_path: Path) -> None:
     import base64
 
-    from agrofail.compare import choose_model, compare_models
     from agrofail.features import apply_encode_and_scale, fit_encode_and_scale
     from agrofail.metrics import evaluate_model
     from agrofail.models import train_models
@@ -152,7 +151,7 @@ def test_final_notebook_complete_and_populated(report_frame: pl.DataFrame, tmp_p
         "interpretabilidad",
         "dominio",
         "F1",
-        "no se ha medido",
+        "validación cruzada",
     ]:
         assert text.lower() in narrative.lower()
     assert "En esta Pre-Entrega" not in narrative
@@ -174,7 +173,6 @@ def test_final_notebook_complete_and_populated(report_frame: pl.DataFrame, tmp_p
         {key: value for key, value in vars(result).items() if key not in ("fpr", "tpr")}
         for result in expected
     ]
-    assert f"**{choose_model(compare_models(expected)).name}**" in narrative
     for cell in code:
         compile(cell.source, "delivery-cell", "exec")
     comparison = next(c for c in code if "compare_models" in c.source)
@@ -184,6 +182,60 @@ def test_final_notebook_complete_and_populated(report_frame: pl.DataFrame, tmp_p
     for metric in ["accuracy", "precision", "recall", "f1", "roc_auc", "tn", "fp", "fn", "tp"]:
         assert metric in html
     assert "…" not in html
+
+
+def test_final_tuning_section(report_frame: pl.DataFrame, tmp_path: Path) -> None:
+    from dataclasses import asdict
+
+    from agrofail.compare import choose_model, compare_models
+    from agrofail.metrics import evaluate_model
+    from agrofail.report import build_final_notebook
+    from agrofail.select import select_features
+
+    notebook = nbformat.read(
+        build_final_notebook(report_frame, tmp_path / "tuned.ipynb"), as_version=4
+    )
+    narrative = "\n".join(c.source for c in notebook.cells if c.cell_type == "markdown")
+    assert "Ajuste de hiperparámetros y estabilidad" in narrative
+    from agrofail.report import _tuning_features
+    from agrofail.tuning import tune_models
+
+    assert "solo con entrenamiento" in narrative
+    assert "auditoría final independiente" in narrative
+    cell = next(c for c in notebook.cells if c.cell_type == "code" and "tune_models" in c.source)
+    html = cell.outputs[0].data["text/html"]
+    assert all(key in html for key in ["cv_mean", "cv_std", "best_params"])
+    train, test = split(clean(report_frame))
+    expected = tune_models(
+        _tuning_features(select_features(train)),
+        train[config.TARGET_COLUMN],
+        categorical_columns=(len(config.NUMERIC_COLUMNS),),
+    )
+    actual = ast.literal_eval(cell.outputs[1].data["text/plain"])
+    assert actual == [
+        {"name": r.name, "cv_mean": r.cv_mean, "cv_std": r.cv_std, "best_params": r.best_params}
+        for r in expected
+    ]
+    comparison = next(
+        c for c in notebook.cells if c.cell_type == "code" and "tuned_results =" in c.source
+    )
+    assert all(r.name in comparison.outputs[0].data["text/html"] for r in expected)
+    metrics = [
+        evaluate_model(r, _tuning_features(select_features(test)), test[config.TARGET_COLUMN])
+        for r in expected
+    ]
+    table = compare_models(metrics)
+    from agrofail.report import _text_output
+
+    expected_table = pl.DataFrame(
+        [{"rank": i, **asdict(row)} for i, row in enumerate(table.rows, 1)]
+    )
+    assert comparison.outputs[0].data == _text_output(expected_table).data
+    assert f"**{choose_model(table).name}** ajustado" in narrative
+    choice_cell = next(
+        c for c in notebook.cells if c.cell_type == "code" and "choice_data =" in c.source
+    )
+    assert "Training CV F1 mean=" in choice_cell.outputs[0].data["text/plain"]
 
 
 def test_final_report_rejects_missing_target(report_frame: pl.DataFrame, tmp_path: Path) -> None:

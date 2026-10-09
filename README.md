@@ -3,8 +3,8 @@
 Proyecto integrador de Machine Learning: preparar un pipeline reproducible para
 analizar datos de mantenimiento predictivo. La Pre-Entrega contempla selección
 del dataset, análisis exploratorio, limpieza, transformaciones, selección de
-variables y separación de entrenamiento y prueba. El entrenamiento de modelos
-queda fuera de esta etapa.
+variables y separación de entrenamiento y prueba. La Entrega Final agrega modelos,
+evaluación, comparación y ajuste de hiperparámetros con validación cruzada.
 
 ## Inicio rápido
 
@@ -20,19 +20,21 @@ La descarga guarda el CSV en `data/raw/ai4i2020.csv`. Si ya existe, se reutiliza
 sin descargarlo nuevamente. Tras la descarga, ejecutar `uv run pytest` también
 verifica los nombres de columnas contra el archivo real.
 
-**Estado actual:** las seis secciones de la Pre-Entrega están implementadas en
-módulos Python y verificadas con pruebas. El notebook de entrega contiene texto
-explicativo, resultados reales y figuras incorporadas; no se entrena ningún modelo.
+**Estado actual:** ambas entregas están implementadas en módulos Python y verificadas
+con pruebas. Los notebooks contienen texto explicativo, resultados reales y figuras
+incorporadas. La Pre-Entrega no entrena modelos; la Entrega Final incluye tres líneas
+base y sus versiones ajustadas, matrices de confusión, curvas ROC y elección justificada.
 
-Tras descargar el CSV, regenerar el artefacto con:
+Tras descargar el CSV, regenerar ambas entregas con:
 
 ```bash
 uv run python -m agrofail.report
 ```
 
-El comando escribe `notebooks/preentrega.ipynb` y las figuras en
-`notebooks/figures/`. Las imágenes también quedan embebidas en el notebook, que
-puede leerse sin ejecutar sus celdas. El notebook es un artefacto generado, no un
+El comando escribe `notebooks/preentrega.ipynb`, `notebooks/entrega-final.ipynb` y las
+figuras en `notebooks/figures/`. Los selectores `--pre` y `--final` regeneran solo la
+entrega correspondiente. Las imágenes también quedan embebidas en los notebooks,
+que pueden leerse sin ejecutar sus celdas. Cada notebook es un artefacto generado, no un
 archivo de trabajo: los cambios se realizan en los módulos Python y se regenera.
 
 ## Dataset y alcance (anexo de fuentes y referencias)
@@ -60,8 +62,8 @@ deben excluirse de los predictores para evitar fuga de información. `UDI` y
 |---|---|
 | uv | Entorno y dependencias |
 | Polars y PyArrow | Tablas y archivos de datos |
-| scikit-learn | Transformaciones y separación de datos |
-| Matplotlib | Visualizaciones exploratorias |
+| scikit-learn | Transformaciones, modelos, métricas y GridSearchCV |
+| Matplotlib | EDA, matrices de confusión y curvas ROC |
 | nbformat y Jupytext | Generación del artefacto de entrega |
 | pytest y Ruff | Pruebas y revisión estática |
 
@@ -74,17 +76,31 @@ src/agrofail/clean.py        3. Limpieza
 src/agrofail/features.py     4. Transformaciones
 src/agrofail/select.py       5. Selección de variables
 src/agrofail/split.py        6. Separación de entrenamiento y prueba
-src/agrofail/report.py       Generación del notebook de entrega
-notebooks/preentrega.ipynb   Artefacto generado con resultados y anexo
+src/agrofail/models.py       Regresión logística, Random Forest y árbol de decisión
+src/agrofail/metrics.py      Accuracy, precisión, recall, F1 y ROC-AUC
+src/agrofail/compare.py      Comparación y elección según los cinco criterios de clase
+src/agrofail/tuning.py       GridSearchCV y estabilidad del F1 entre pliegues
+src/agrofail/report.py       Generación de ambas entregas
+notebooks/preentrega.ipynb   Preparación de datos y anexo
+notebooks/entrega-final.ipynb Modelado, ajuste, conclusiones y anexo
 tests/                      Pruebas del paquete
 data/raw/                   Datos originales, excluidos de Git
 data/processed/             Datos preparados, excluidos de Git
 ```
 
-## Próximo paso
+## Evaluación y próximo paso
 
 Revisar el notebook generado y su anexo para la entrega del curso. La división
 estratificada ocurre antes de ajustar codificación y escalado: sus parámetros se
 aprenden únicamente en entrenamiento y se reutilizan en prueba para evitar fuga
-de información. El entrenamiento y la evaluación de modelos quedan para una
-etapa posterior.
+de información. El ajuste usa grillas pequeñas y cinco pliegues estratificados con
+semilla fija, maximizando F1 ante el desbalance. En esta búsqueda, one-hot y escalado
+se aprenden dentro de cada pliegue a partir de sensores originales y códigos de tipo
+fijos. Se reportan parámetros ganadores, media y desviación estándar del F1 y una
+comparación ajustada en test; la elección prioriza F1, luego ROC-AUC y accuracy.
+
+La variación de CV mide estabilidad interna, no robustez entre equipos o temporadas.
+Los mismos pliegues seleccionan hiperparámetros, y test participa en la elección
+entre modelos: ninguno constituye una auditoría final independiente. Antes de usar
+las alertas en campo, validar con datos agrícolas nuevos y cuantificar costos de
+fallas omitidas y falsas alarmas; no se optimizaron umbrales ni se validó uso operativo.

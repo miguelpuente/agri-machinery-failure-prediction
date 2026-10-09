@@ -22,6 +22,7 @@ from agrofail.metrics import ModelMetrics, evaluate_model
 from agrofail.models import train_models
 from agrofail.select import select_features, selection_rationale
 from agrofail.split import split
+from agrofail.tuning import tune_models
 
 _DATASET_PAGE = "https://archive.ics.uci.edu/dataset/601/ai4i+2020+predictive+maintenance+dataset"
 _DEFAULT_OUTPUT = config.PROJECT_ROOT / "notebooks" / "preentrega.ipynb"
@@ -74,7 +75,8 @@ def build_final_notebook(df: pl.DataFrame | None = None, output_path: Path = _FI
 
     Reuse the preparation pipeline, fitting only on training rows. Select a
     provisional model on the held-out split; this split is no longer an unbiased
-    final audit of the selected model. No tuning or operational validation occurs.
+    final audit of the selected model. Tuning uses training-only CV; no operational
+    validation occurs.
     """
     return _build_notebook(df, output_path, final=True)
 
@@ -273,7 +275,7 @@ def _build_notebook(df: pl.DataFrame | None, output_path: Path, *, final: bool) 
         [_text_output({"train": _balance(train), "test": _balance(test)})],
     )
     if final:
-        cells.extend(_modeling_cells(train, test, figure_dir))
+        cells.extend(_modeling_cells(train, test, figure_dir, train_selected, test_selected))
     section(
         "## Anexo: fuente y referencias\n\n"
         f"Fuente: [AI4I 2020 en UCI]({_DATASET_PAGE}).\n\n"
@@ -339,8 +341,20 @@ def plot_model_metrics(results: list[ModelMetrics], figure_dir: Path) -> list[Pa
     return [*paths, path]
 
 
+def _tuning_features(frame: pl.DataFrame) -> pl.DataFrame:
+    """Use raw sensors and fixed domain category codes, without learned transforms."""
+    return frame.select(
+        *config.NUMERIC_COLUMNS,
+        pl.col("Type").replace_strict({"L": 0, "M": 1, "H": 2}).alias("Type"),
+    )
+
+
 def _modeling_cells(
-    train: pl.DataFrame, test: pl.DataFrame, figure_dir: Path
+    train: pl.DataFrame,
+    test: pl.DataFrame,
+    figure_dir: Path,
+    train_selected: pl.DataFrame,
+    test_selected: pl.DataFrame,
 ) -> list[nbformat.NotebookNode]:
     target = config.TARGET_COLUMN
     models = train_models(train.drop(target), train[target])
@@ -425,9 +439,94 @@ def _modeling_cells(
         "with pl.Config(tbl_rows=-1, tbl_cols=-1):\n    display(comparison)",
         [_text_output(comparison)],
     )
+    baseline_choice = choice
+    tuning_train = _tuning_features(train_selected)
+    tuning_test = _tuning_features(test_selected)
+    categorical_columns = (len(config.NUMERIC_COLUMNS),)
+    tuned = tune_models(tuning_train, train[target], categorical_columns=categorical_columns)
+    stability = [
+        {
+            "name": model.name,
+            "cv_mean": model.cv_mean,
+            "cv_std": model.cv_std,
+            "best_params": model.best_params,
+        }
+        for model in tuned
+    ]
+    section(
+        "## 9.1. Ajuste de hiperparámetros y estabilidad\n\n"
+        "GridSearchCV maximiza F1 mediante validación cruzada estratificada de 5 pliegues, "
+        f"con mezcla y semilla {config.RANDOM_STATE}, solo con entrenamiento. "
+        "La grilla pequeña explora C con penalización L2 compatible con el solver; "
+        "50/100 árboles, profundidad 8/sin límite y hojas de 1/3 registros en el bosque; "
+        "profundidad 4/8 y hojas de 1/3 en el árbol. No optimiza pesos ni umbrales. "
+        "Se usan sensores sin escala previa y códigos fijos L=0, M=1, H=2, tratados "
+        "como categorías, no magnitudes. One-hot y escalado logístico se ajustan dentro "
+        "de cada pliegue para evitar fuga desde validación. El mejor pipeline se reajusta "
+        "con todo entrenamiento. Test no participa en la búsqueda.\n\n"
+        "cv_mean y cv_std son media y desviación estándar poblacional del F1 de los "
+        "pliegues del candidato ganador. Miden variación interna, no un intervalo de "
+        "confianza ni validación independiente: los mismos pliegues eligen parámetros. "
+        "Una desviación pequeña no prueba robustez entre temporadas o establecimientos.",
+        "from pprint import pformat\n\n"
+        "from agrofail.report import _tuning_features\n"
+        "from agrofail.tuning import tune_models\n\n"
+        "tuning_train = _tuning_features(train_selected)\n"
+        "tuning_test = _tuning_features(test_selected)\n"
+        "tuned = tune_models(tuning_train, train[target],\n"
+        "                    categorical_columns=(len(config.NUMERIC_COLUMNS),))\n"
+        "stability = [{'name': m.name, 'cv_mean': m.cv_mean, 'cv_std': m.cv_std,\n"
+        "              'best_params': m.best_params} for m in tuned]\n"
+        "stability_table = pl.DataFrame([\n"
+        "    {**row, 'best_params': pformat(row['best_params'])} for row in stability])\n"
+        "with pl.Config(tbl_rows=-1, tbl_cols=-1, fmt_str_lengths=200):\n"
+        "    display(stability_table)\npprint(stability)",
+        [
+            _text_output(
+                pl.DataFrame(
+                    [{**row, "best_params": pformat(row["best_params"])} for row in stability]
+                )
+            ),
+            _text_output(stability),
+        ],
+    )
+    tuned_results = [evaluate_model(model, tuning_test, test[target]) for model in tuned]
+    table = compare_models(tuned_results)
+    comparison = pl.DataFrame([{"rank": i, **asdict(row)} for i, row in enumerate(table.rows, 1)])
+    choice = choose_model(table)
+    best = table.rows[0]
+    selected = next(model for model in tuned if model.name == choice.name)
+    choice_data = asdict(choice)
+    choice_data["rationale"]["stability"] = (
+        f"Training CV F1 mean={selected.cv_mean:.4f}, std={selected.cv_std:.4f}; "
+        "selected on these folds, not an independent audit or domain validation."
+    )
+    tree = next(model for model in tuned if model.name == "Decision Tree")
+    if choice.name == "Decision Tree":
+        choice_data["rationale"]["interpretability"] = (
+            f"The tuned tree has maximum depth {tree.best_params['classifier__max_depth']}; "
+            "inspect its rules before claiming simplicity."
+        )
+    interpretations["Decision Tree"] = (
+        f"su profundidad máxima ajustada de {tree.best_params['classifier__max_depth']} "
+        "permite inspeccionar reglas, con complejidad mayor si aumenta la profundidad"
+    )
+    section(
+        "## 9.2. Comparación ajustada en prueba\n\n"
+        "Se evalúan los pipelines ajustados con el mismo test y la misma regla F1, "
+        "ROC-AUC y accuracy. No se garantiza mejora frente a las líneas base. "
+        f"La elección pasa de **{baseline_choice.name}** a **{choice.name}** "
+        "(puede conservar la misma familia). La elección final se basa en esta tabla.",
+        "tuned_results = [evaluate_model(model, tuning_test, test[target]) for model in tuned]\n"
+        "table = compare_models(tuned_results)\n"
+        "comparison = pl.DataFrame([{'rank': i, **asdict(row)}\n"
+        "                           for i, row in enumerate(table.rows, 1)])\n"
+        "display(comparison)",
+        [_text_output(comparison)],
+    )
     section(
         "## 10. Elección justificada y reflexión técnica\n\n"
-        f"Se propone **{choice.name}** como línea base provisional, no como sistema listo "
+        f"Se propone **{choice.name}** ajustado como modelo provisional, no como sistema listo "
         "para producción.\n\n"
         f"- **Rendimiento:** F1={best.f1:.4f}, ROC-AUC={best.roc_auc:.4f}, "
         f"accuracy={best.accuracy:.4f}, precisión={best.precision:.4f} y recall={best.recall:.4f}; "
@@ -436,23 +535,35 @@ def _modeling_cells(
         "Una falla omitida puede causar una parada inesperada; una falsa alarma puede "
         "generar inspección innecesaria. No se dispone de costos medidos: F1 es un "
         "compromiso inicial, no una demostración de menor costo.\n"
-        "- **Estabilidad:** no se ha medido en múltiples particiones, temporadas o "
-        "establecimientos; una sola semilla no demuestra robustez.\n"
+        f"- **Estabilidad:** F1 medio de validación cruzada={selected.cv_mean:.4f}, "
+        f"desviación estándar={selected.cv_std:.4f} en 5 pliegues de entrenamiento. "
+        "Esta variación medida no demuestra robustez temporal ni agrícola.\n"
         f"- **Interpretabilidad:** {interpretations[choice.name]}. Esta limitación "
         "debe considerarse al explicar alarmas al equipo de mantenimiento.\n"
         "- **Adecuación al dominio:** sensores y desgaste son relevantes para el "
         "mantenimiento, pero los datos sintéticos industriales no validan uso agrícola.\n\n"
         "La comparación usa test para elegir entre modelos: por ello deja de ser una "
         "auditoría final independiente del elegido. Se necesita validación posterior "
-        "con datos nuevos. No se ajustaron hiperparámetros ni umbrales en esta entrega.",
-        "choice = choose_model(table)\npprint(asdict(choice))",
-        [_text_output(asdict(choice))],
+        "con datos nuevos. Se ajustaron hiperparámetros en entrenamiento, no umbrales.",
+        "choice = choose_model(table)\n"
+        "selected = next(m for m in tuned if m.name == choice.name)\n"
+        "choice_data = asdict(choice)\n"
+        "choice_data['rationale']['stability'] = (\n"
+        "    f'Training CV F1 mean={selected.cv_mean:.4f}, std={selected.cv_std:.4f}; '\n"
+        "    'selected on these folds, not an independent audit or domain validation.')\n"
+        "if choice.name == 'Decision Tree':\n"
+        "    choice_data['rationale']['interpretability'] = (\n"
+        '        f"The tuned tree has maximum depth '
+        "{selected.best_params['classifier__max_depth']}; \"\n"
+        "        'inspect its rules before claiming simplicity.')\n"
+        "pprint(choice_data)",
+        [_text_output(choice_data)],
     )
     positives = int(test[target].sum())
     section(
         "## 11. Hallazgos y recomendaciones\n\n"
         f"La evaluación incluye {test.height} registros y {positives} fallas "
-        f"({positives / test.height:.2%}). El baseline elegido detecta {best.tp} fallas "
+        f"({positives / test.height:.2%}). El modelo ajustado elegido detecta {best.tp} fallas "
         f"y omite {best.fn}; genera {best.fp} falsas alarmas. Estos conteos permiten "
         "discutir el mantenimiento más directamente que accuracy aislada.\n\n"
         "Se recomienda recopilar registros reales de maquinaria agrícola con fechas, "
