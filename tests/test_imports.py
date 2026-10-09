@@ -13,7 +13,8 @@ import pytest
         ("agrofail.load", "load_dataset"),
         ("agrofail.eda", "summarise"),
         ("agrofail.clean", "clean"),
-        ("agrofail.features", "encode_and_scale"),
+        ("agrofail.features", "fit_encode_and_scale"),
+        ("agrofail.features", "apply_encode_and_scale"),
         ("agrofail.select", "select_features"),
         ("agrofail.split", "split"),
         ("agrofail.report", "build_notebook"),
@@ -33,7 +34,6 @@ def test_package_version() -> None:
 @pytest.mark.parametrize(
     ("module_name", "callable_name", "task_id"),
     [
-        ("features", "encode_and_scale", "T6"),
         ("select", "select_features", "T7"),
         ("split", "split", "T8"),
         ("report", "build_notebook", "T9"),
