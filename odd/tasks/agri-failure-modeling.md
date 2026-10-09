@@ -48,4 +48,4 @@ Extend the completed Pre-Entrega pipeline into the Proyecto Final Integrador: tr
 
 ## Next step
 
-Feature complete (M1-M6). Remaining delivery work: push the Entrega Final to the GitHub chain as new child slices (`-09-models`, `-10-comparison`, `-11-tuning`) so the existing PRs keep their slice diffs, per the chosen `feature-branch-chain` strategy.
+Feature complete (M1-M6) and delivered on GitHub: the Entrega Final rides the chain as PRs #9 (`09-models`), #10 (`10-comparison`) and #11 (`11-tuning`), each targeting its parent slice so the diffs stay focused. Remaining: the merge choreography (user decision — merge children in order, then open the tracker PR to `main`), and the native-review runtime blockage remains unresolved.
