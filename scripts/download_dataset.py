@@ -12,23 +12,34 @@ DATASET_URL = (
 DESTINATION = Path(__file__).resolve().parents[1] / "data" / "raw" / "ai4i2020.csv"
 
 
-def main() -> None:
-    """Save only the expected CSV member and report its number of data rows."""
-    if DESTINATION.exists():
+def main(dest: Path | None = None, url: str = DATASET_URL) -> None:
+    """Save the expected CSV and report its number of data rows.
+
+    Publish the cache atomically by replacing it only after a sibling temporary
+    file is fully written. Remove the temporary file if writing or replacing fails.
+    """
+    if dest is None:
+        dest = DESTINATION
+    if dest.exists():
         print("CSV already exists; skipping download.")
     else:
-        with urlopen(DATASET_URL, timeout=60) as response:
+        with urlopen(url, timeout=60) as response:
             archive_bytes = response.read()
         with ZipFile(BytesIO(archive_bytes)) as archive:
             csv_bytes = archive.read("ai4i2020.csv")
-        DESTINATION.parent.mkdir(parents=True, exist_ok=True)
-        DESTINATION.write_bytes(csv_bytes)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        temporary = dest.with_suffix(".part")
+        try:
+            temporary.write_bytes(csv_bytes)
+            temporary.replace(dest)
+        finally:
+            temporary.unlink(missing_ok=True)
 
-    with DESTINATION.open(newline="", encoding="utf-8-sig") as source:
+    with dest.open(newline="", encoding="utf-8-sig") as source:
         reader = csv.reader(source)
         next(reader)
         row_count = sum(1 for _ in reader)
-    print(f"Dataset: {DESTINATION}")
+    print(f"Dataset: {dest}")
     print(f"Rows: {row_count}")
 
 
