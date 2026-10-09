@@ -25,6 +25,9 @@ packages = ["src/agrofail"]
 
 [tool.ruff]
 line-length = 100
+# Course transcriptions and process tracking must never be reformatted:
+# their code samples stay byte-faithful to the PDF sources.
+extend-exclude = ["docs", "odd", "data"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
