@@ -16,6 +16,8 @@ import pytest
         ("agrofail.select", "select_features"),
         ("agrofail.split", "split"),
         ("agrofail.report", "build_notebook"),
+        ("agrofail.models", "train_models"),
+        ("agrofail.metrics", "evaluate_model"),
     ],
 )
 def test_public_modules_import(module_name: str, callable_name: str | None) -> None:
