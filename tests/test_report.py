@@ -80,8 +80,11 @@ def test_notebook_sections_and_real_outputs(report_frame: pl.DataFrame, tmp_path
         expected_train.select(config.NUMERIC_COLUMNS).mean().row(0)
     )
     assert set(config.ID_COLUMNS + config.FAILURE_MODE_COLUMNS).issubset(
-        parameters["removed_columns"]
+        parameters["excluded_columns"]
     )
+    assert "Type" not in parameters["excluded_columns"]
+    assert parameters["encoded_columns"] == {"Type": ["Type_H", "Type_L", "Type_M"]}
+    assert "uv sync --extra notebook" in notebook.cells[0].source
     partitions = ast.literal_eval(notebook.cells[11].outputs[0].data["text/plain"])
     assert partitions["train"]["shape"][0] == 32
     assert partitions["test"]["shape"][0] == 8
@@ -90,6 +93,9 @@ def test_notebook_sections_and_real_outputs(report_frame: pl.DataFrame, tmp_path
     selection_table = notebook.cells[9].outputs[0].data["text/html"]
     assert "<table" in selection_table
     assert all(column in selection_table for column in report_frame.columns)
+    assert "condiciones térmicas" in selection_table
+    assert "Ambient thermal" not in selection_table
+    assert "correlación" in notebook.cells[9].outputs[1].data["text/plain"]
 
 
 def test_report_does_not_mutate_input(report_frame: pl.DataFrame, tmp_path: Path) -> None:
@@ -235,7 +241,76 @@ def test_final_tuning_section(report_frame: pl.DataFrame, tmp_path: Path) -> Non
     choice_cell = next(
         c for c in notebook.cells if c.cell_type == "code" and "choice_data =" in c.source
     )
-    assert "Training CV F1 mean=" in choice_cell.outputs[0].data["text/plain"]
+    assert "F1 medio de CV en entrenamiento=" in choice_cell.outputs[0].data["text/plain"]
+    assert "Ranked first" not in choice_cell.outputs[0].data["text/plain"]
+    assert "puede conservar la misma familia" not in narrative
+    assert "Evaluación de líneas base" in narrative
+    images = [o.data["text/plain"] for o in choice_cell.outputs if "image/png" in o.data]
+    assert images == ["tuned-confusion-0.png", "tuned-roc-models.png"]
+
+
+def test_metric_figure_labels_and_contrast(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from matplotlib.figure import Figure
+
+    from agrofail.metrics import ModelMetrics
+    from agrofail.report import plot_model_metrics
+
+    figures = []
+    monkeypatch.setattr(Figure, "savefig", lambda figure, path: figures.append(figure))
+    result = ModelMetrics(
+        name="Decision Tree",
+        accuracy=0.9,
+        precision=0.8,
+        recall=0.7,
+        f1=0.75,
+        roc_auc=0.88,
+        tn=1929,
+        fp=9,
+        fn=21,
+        tp=47,
+        fpr=[0.0, 1.0],
+        tpr=[0.0, 1.0],
+    )
+    baseline = plot_model_metrics([result], tmp_path, evaluation="baseline")
+    tuned = plot_model_metrics([result], tmp_path, evaluation="tuned")
+    assert set(baseline).isdisjoint(tuned)
+    assert "línea base" in figures[0].axes[0].get_title()
+    assert "ajustado" in figures[2].axes[0].get_title()
+    texts = figures[0].axes[0].texts
+    assert [text.get_text() for text in texts] == ["1929", "9", "21", "47"]
+    assert [text.get_color() for text in texts] == ["white", "black", "black", "black"]
+
+
+def test_spanish_eda_captions(
+    report_frame: pl.DataFrame, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from matplotlib.figure import Figure
+
+    from agrofail import eda
+
+    figures = []
+    monkeypatch.setattr(Figure, "savefig", lambda figure, path: figures.append(figure))
+    eda.plot_distributions(report_frame, tmp_path, language="es")
+    eda.plot_correlation_heatmap(report_frame, tmp_path, language="es")
+    assert figures[0].axes[0].get_title() == f"Distribución de {config.NUMERIC_COLUMNS[0]}"
+    assert figures[0].axes[0].get_ylabel() == "Frecuencia"
+    assert figures[-1].axes[0].get_title() == "Correlaciones de Pearson entre sensores"
+
+
+def test_selection_presentation_preserves_internal_policy(report_frame: pl.DataFrame) -> None:
+    from agrofail.report import selection_presentation
+    from agrofail.select import selection_rationale
+
+    frame = report_frame.with_columns(pl.lit(1).alias("Type_L"), pl.lit(3).alias("extra"))
+    rationale = selection_rationale(frame)
+    decisions, diagnostics = selection_presentation(rationale)
+    assert "Ambient thermal" in rationale.kept[config.NUMERIC_COLUMNS[0]]
+    assert diagnostics["variances"] == rationale.variances
+    assert diagnostics["correlations"] == rationale.correlations
+    rows = {row["column"]: row for row in decisions.to_dicts()}
+    assert "sin imponer un orden" in rows["Type_L"]["reason"]
+    assert rows["extra"]["decision"] == "excluida"
+    assert "evidencia de relevancia" in rows["extra"]["reason"]
 
 
 def test_final_report_rejects_missing_target(report_frame: pl.DataFrame, tmp_path: Path) -> None:
@@ -255,3 +330,16 @@ def test_final_report_real_dataset(tmp_path: Path) -> None:
         notebook = nbformat.read(builder(output_path=tmp_path / f"{name}.ipynb"), as_version=4)
         nbformat.validate(notebook)
         assert "10000" in notebook.cells[1].outputs[0].data["text/plain"]
+        if name == "final":
+            baseline = ast.literal_eval(notebook.cells[15].outputs[0].data["text/plain"])
+            assert [round(row["f1"], 4) for row in baseline] == [0.1772, 0.6286, 0.3095]
+            assert [row["fn"] for row in baseline] == [61, 35, 55]
+            choice = ast.literal_eval(notebook.cells[23].outputs[0].data["text/plain"])
+            assert choice["name"] == "Decision Tree"
+            assert "F1=0.7581" in choice["rationale"]["performance"]
+            assert "ROC-AUC=0.8877" in choice["rationale"]["performance"]
+            assert "negativos=21" in choice["rationale"]["error_types"]
+            assert "positivos=9" in choice["rationale"]["error_types"]
+            assert "entrenamiento=0.7096" in choice["rationale"]["stability"]
+            assert "estándar=0.0436" in choice["rationale"]["stability"]
+            assert "detecta 47 fallas" in notebook.cells[24].source
