@@ -1,6 +1,8 @@
 import ast
 import base64
+from io import BytesIO
 from pathlib import Path
+from zipfile import ZipFile
 
 import nbformat
 import polars as pl
@@ -8,7 +10,7 @@ import pytest
 
 from agrofail import config
 from agrofail.clean import clean
-from agrofail.report import build_notebook
+from agrofail.report import build_final_notebook, build_notebook
 from agrofail.split import split
 
 
@@ -34,11 +36,110 @@ def report_frame() -> pl.DataFrame:
     return pl.concat([frame, frame.head(1), missing])
 
 
+@pytest.mark.parametrize("builder", [build_notebook, build_final_notebook])
+def test_colab_setup_cells(builder, report_frame: pl.DataFrame, tmp_path: Path) -> None:
+    notebook = nbformat.read(builder(report_frame, tmp_path / "colab.ipynb"), as_version=4)
+    preamble, setup = notebook.cells[:2]
+    assert preamble.cell_type == "markdown"
+    assert "Colab" in preamble.source
+    assert "raíz del repositorio" in preamble.source
+    assert "pipeline real" in preamble.source
+    assert setup.cell_type == "code"
+    assert (
+        "git+https://github.com/miguelpuente/agri-machinery-failure-prediction.git" in setup.source
+    )
+    assert '"pip", "install"' in setup.source
+    assert "urlopen" in setup.source
+    assert "ZipFile" in setup.source
+    assert "config.DATASET_URL" in setup.source
+    assert "utf-8-sig" in setup.source
+    assert setup.execution_count is None
+    assert not setup.outputs
+    compile(setup.source, "colab-setup", "exec")
+    loading = next(c for c in notebook.cells if "raw = load_dataset(" in c.source)
+    assert "load_dataset(Path('data/raw/ai4i2020.csv'))" in loading.source
+
+
+@pytest.fixture
+def setup_source(report_frame: pl.DataFrame, tmp_path: Path) -> str:
+    notebook = nbformat.read(build_notebook(report_frame, tmp_path / "setup.ipynb"), as_version=4)
+    assert "urlopen" in notebook.cells[1].source
+    return notebook.cells[1].source
+
+
+@pytest.mark.parametrize("cached,bom", [(False, False), (False, True), (True, True)])
+def test_colab_setup_download(
+    setup_source: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys, cached, bom
+) -> None:
+    import subprocess
+    import urllib.request
+
+    monkeypatch.chdir(tmp_path)
+    installs = []
+    monkeypatch.setattr(subprocess, "check_call", lambda args: installs.append(args))
+    payload = ("\ufeff" if bom else "") + "UDI,Machine failure\n1,0\n2,1\n"
+    archive = BytesIO()
+    with ZipFile(archive, "w") as bundle:
+        bundle.writestr("ai4i2020.csv", payload.encode("utf-8"))
+    downloads = []
+
+    def download(url, timeout):
+        downloads.append((url, timeout))
+        assert not cached, "Cached CSV must not trigger network access"
+        return BytesIO(archive.getvalue())
+
+    monkeypatch.setattr(urllib.request, "urlopen", download)
+    destination = tmp_path / "data/raw/ai4i2020.csv"
+    if cached:
+        destination.parent.mkdir(parents=True)
+        destination.write_bytes(payload.encode("utf-8"))
+    namespace = {}
+    exec(compile(setup_source, "colab-setup", "exec"), namespace)
+    assert namespace["header"][0] == "UDI"
+    assert destination.read_bytes() == payload.encode("utf-8")
+    assert not destination.with_suffix(".part").exists()
+    assert (tmp_path / "data/processed").is_dir()
+    assert (tmp_path / "notebooks/figures").is_dir()
+    assert "Rows: 2" in capsys.readouterr().out
+    assert installs[0][1:3] == ["-m", "pip"]
+    assert downloads == ([] if cached else [(config.DATASET_URL, 60)])
+    exec(compile(setup_source, "colab-setup", "exec"), {})
+    assert len(downloads) == (0 if cached else 1)
+
+
+def test_colab_setup_failed_publish(
+    setup_source: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import subprocess
+    import urllib.request
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(subprocess, "check_call", lambda args: None)
+    archive = BytesIO()
+    with ZipFile(archive, "w") as bundle:
+        bundle.writestr("ai4i2020.csv", "UDI,Machine failure\n1,0\n")
+    monkeypatch.setattr(
+        urllib.request, "urlopen", lambda *args, **kwargs: BytesIO(archive.getvalue())
+    )
+
+    def fail_replace(self, target):
+        assert self.read_bytes()
+        assert not target.exists()
+        raise OSError("publish failed")
+
+    monkeypatch.setattr(Path, "replace", fail_replace)
+    with pytest.raises(OSError, match="publish failed"):
+        exec(compile(setup_source, "colab-setup", "exec"), {})
+    assert not (tmp_path / "data/raw/ai4i2020.csv").exists()
+    assert not (tmp_path / "data/raw/ai4i2020.part").exists()
+
+
 def test_notebook_sections_and_real_outputs(report_frame: pl.DataFrame, tmp_path: Path) -> None:
     path = build_notebook(report_frame, tmp_path / "delivery.ipynb")
     assert path.stat().st_size > 0
     notebook = nbformat.read(path, as_version=4)
     nbformat.validate(notebook)
+    notebook.cells = notebook.cells[2:]
     assert notebook.nbformat == 4
     phrases = [
         ("1. Selección del dataset", "datos industriales sintéticos"),
@@ -116,6 +217,7 @@ def test_report_real_dataset(tmp_path: Path) -> None:
     path = build_notebook(output_path=tmp_path / "real.ipynb")
     notebook = nbformat.read(path, as_version=4)
     nbformat.validate(notebook)
+    notebook.cells = notebook.cells[2:]
     assert "10000" in notebook.cells[1].outputs[0].data["text/plain"]
 
 
@@ -162,7 +264,7 @@ def test_final_notebook_complete_and_populated(report_frame: pl.DataFrame, tmp_p
         assert text.lower() in narrative.lower()
     assert "En esta Pre-Entrega" not in narrative
     code = [c for c in notebook.cells if c.cell_type == "code"]
-    assert all(c.outputs for c in code)
+    assert all(c.outputs for c in code[1:])
     evaluation = next(c for c in code if "evaluate_model" in c.source)
     assert sum("image/png" in o.get("data", {}) for o in evaluation.outputs) == 4
     for output in evaluation.outputs[1:]:
@@ -329,6 +431,7 @@ def test_final_report_real_dataset(tmp_path: Path) -> None:
     for builder, name in [(build_notebook, "pre"), (build_final_notebook, "final")]:
         notebook = nbformat.read(builder(output_path=tmp_path / f"{name}.ipynb"), as_version=4)
         nbformat.validate(notebook)
+        notebook.cells = notebook.cells[2:]
         assert "10000" in notebook.cells[1].outputs[0].data["text/plain"]
         if name == "final":
             baseline = ast.literal_eval(notebook.cells[15].outputs[0].data["text/plain"])
