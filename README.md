@@ -43,6 +43,15 @@ El directorio de trabajo debe ser la raíz del repositorio (no `notebooks/`), pa
 resolver las rutas de datos y figuras. IPython e ipykernel permiten ejecutar las
 celdas; no son necesarios para leer los resultados incorporados ni regenerarlos.
 
+## Cómo verlo en Colab
+
+Abrir la [Pre-Entrega](https://colab.research.google.com/github/miguelpuente/agri-machinery-failure-prediction/blob/main/notebooks/preentrega.ipynb)
+o la [Entrega Final](https://colab.research.google.com/github/miguelpuente/agri-machinery-failure-prediction/blob/main/notebooks/entrega-final.ipynb)
+y seleccionar **Entorno de ejecución → Ejecutar todas**. La primera celda de código
+instala el proyecto desde GitHub y descarga el dataset oficial de UCI solo si falta;
+no hace falta clonar el repositorio ni subir archivos. Se requiere acceso a Internet.
+Los resultados incorporados provienen del pipeline real y se recalculan al ejecutar.
+
 ## Dataset y alcance (anexo de fuentes y referencias)
 
 - **Fuente:** AI4I 2020 Predictive Maintenance Dataset, UCI, identificador 601.

@@ -28,6 +28,48 @@ _DATASET_PAGE = "https://archive.ics.uci.edu/dataset/601/ai4i+2020+predictive+ma
 _DEFAULT_OUTPUT = config.PROJECT_ROOT / "notebooks" / "preentrega.ipynb"
 _FINAL_OUTPUT = config.PROJECT_ROOT / "notebooks" / "entrega-final.ipynb"
 
+_COLAB_SETUP = """import csv
+import subprocess
+import sys
+from io import BytesIO
+from pathlib import Path
+from urllib.request import urlopen
+from zipfile import ZipFile
+
+subprocess.check_call([
+    sys.executable, "-m", "pip", "install", "-q",
+    "git+https://github.com/miguelpuente/agri-machinery-failure-prediction.git",
+])
+
+# Import the project only after installation in a fresh runtime.
+from agrofail import config  # noqa: E402
+
+for directory in ("data/raw", "data/processed", "notebooks/figures"):
+    Path(directory).mkdir(parents=True, exist_ok=True)
+
+destination = Path("data/raw/ai4i2020.csv")
+if not destination.exists():
+    with urlopen(config.DATASET_URL, timeout=60) as response:
+        archive_bytes = response.read()
+    with ZipFile(BytesIO(archive_bytes)) as archive:
+        csv_bytes = archive.read("ai4i2020.csv")
+    temporary = destination.with_suffix(".part")
+    try:
+        temporary.write_bytes(csv_bytes)
+        temporary.replace(destination)
+    finally:
+        temporary.unlink(missing_ok=True)
+else:
+    print("CSV already exists; skipping download.")
+
+with destination.open(newline="", encoding="utf-8-sig") as source:
+    reader = csv.reader(source)
+    header = next(reader)
+    row_count = sum(1 for _ in reader)
+print(f"Dataset: {destination}")
+print(f"Rows: {row_count}")
+"""
+
 
 def _text_output(value: object) -> nbformat.NotebookNode:
     if isinstance(value, pl.DataFrame):
@@ -204,7 +246,20 @@ def _build_notebook(df: pl.DataFrame | None, output_path: Path, *, final: bool) 
     figure_dir = output_path.parent / "figures"
     figures = eda.plot_distributions(raw, figure_dir, language="es")
     figures.append(eda.plot_correlation_heatmap(raw, figure_dir, language="es"))
-    cells: list[nbformat.NotebookNode] = []
+    cells: list[nbformat.NotebookNode] = [
+        nbformat.v4.new_markdown_cell(
+            "## Preparación para Google Colab\n\n"
+            "Abrir este notebook en Colab y ejecutar todas las celdas en orden. "
+            "Usar la raíz del repositorio como directorio de trabajo en una copia local, "
+            "no `notebooks/`; en Colab, el directorio inicial del entorno cumple ese papel "
+            "sin clonar el repositorio. La siguiente celda instala el proyecto público "
+            "desde GitHub, crea los directorios de trabajo y descarga el dataset oficial "
+            "de UCI solo si falta. Se requiere acceso a Internet. "
+            "Los resultados y figuras incorporados fueron producidos por el pipeline real; "
+            "al ejecutar todas las celdas se recalculan."
+        ),
+        nbformat.v4.new_code_cell(_COLAB_SETUP),
+    ]
 
     def section(markdown: str, source: str, outputs: list[nbformat.NotebookNode]) -> None:
         cells.extend(
@@ -233,7 +288,8 @@ def _build_notebook(df: pl.DataFrame | None, output_path: Path, *, final: bool) 
         "from pathlib import Path\nfrom pprint import pprint\n"
         "\nimport polars as pl\n\nfrom agrofail import config, eda\n"
         "from agrofail.load import load_dataset\n\n"
-        "raw = load_dataset()\npprint({'shape': raw.shape, 'target': config.TARGET_COLUMN})",
+        "raw = load_dataset(Path('data/raw/ai4i2020.csv'))\n"
+        "pprint({'shape': raw.shape, 'target': config.TARGET_COLUMN})",
         [_text_output({"shape": raw.shape, "target": config.TARGET_COLUMN})],
     )
     section(
