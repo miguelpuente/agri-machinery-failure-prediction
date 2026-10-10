@@ -1,10 +1,39 @@
 # Predicción de fallas en maquinaria agropecuaria
 
-Proyecto integrador de Machine Learning: preparar un pipeline reproducible para
-analizar datos de mantenimiento predictivo. La Pre-Entrega contempla selección
-del dataset, análisis exploratorio, limpieza, transformaciones, selección de
-variables y separación de entrenamiento y prueba. La Entrega Final agrega modelos,
-evaluación, comparación y ajuste de hiperparámetros con validación cruzada.
+Proyecto integrador de Machine Learning: un pipeline reproducible de mantenimiento
+predictivo que recorre el ciclo completo — selección del dataset, análisis exploratorio,
+limpieza, transformaciones, selección de variables, separación train/test, y modelado
+comparado con ajuste de hiperparámetros. Las dos entregas del curso se generan como
+notebooks funcionales desde código de producción, verificado con pruebas automatizadas.
+
+## Entregas
+
+| Entrega | Contenido | Abrir |
+|---|---|---|
+| **Pre-Entrega** | Las seis secciones de la consigna: dataset, EDA, limpieza, transformaciones, selección de variables y split — con anexo de fuentes | [Colab](https://colab.research.google.com/github/miguelpuente/agri-machinery-failure-prediction/blob/main/notebooks/preentrega.ipynb) · [código](notebooks/preentrega.ipynb) |
+| **Entrega Final** | El ciclo completo más modelado: métricas, matrices de confusión, curvas ROC, comparación, tuning con validación cruzada, hallazgos y recomendaciones | [Colab](https://colab.research.google.com/github/miguelpuente/agri-machinery-failure-prediction/blob/main/notebooks/entrega-final.ipynb) · [código](notebooks/entrega-final.ipynb) |
+
+En Colab: **Entorno de ejecución → Ejecutar todas**. La primera celda instala el
+proyecto desde GitHub y descarga el dataset oficial; no hace falta clonar nada.
+
+## Resultados
+
+Dataset AI4I 2020 (10.000 filas, objetivo `Machine failure`, ~3,4% positivo).
+Test estratificado: 2.000 filas / **68 fallas**. Las fallas perdidas (fn) son el
+error caro en mantenimiento: cada una es una parada no planificada.
+
+| Modelo | F1 | ROC-AUC | Fallas perdidas |
+|---|---:|---:|---:|
+| Regresión Logística | 0,1772 | 0,8996 | 61 de 68 |
+| Random Forest (default) | 0,6286 | 0,9653 | 35 de 68 |
+| Árbol de Decisión (prof. 4) | 0,3095 | 0,8668 | 55 de 68 |
+| **Árbol de Decisión tuneado** | **0,7581** | 0,8877 | **21 de 68** |
+
+**Modelo elegido: Árbol de Decisión** (max_depth=8, min_samples_leaf=3), con F1 de
+validación cruzada **0,7096 ± 0,0436**. Dos lecciones sostienen la elección: el
+*accuracy* engaña con targets desbalanceados (la regresión logística acierta 96,7%
+y detecta 7 de 68 fallas), y el ajuste de hiperparámetros cambió el ganador respecto
+de los valores por defecto.
 
 ## Inicio rápido
 
@@ -16,41 +45,25 @@ uv run pytest
 uv run python scripts/download_dataset.py
 ```
 
-La descarga guarda el CSV en `data/raw/ai4i2020.csv`. Si ya existe, se reutiliza
-sin descargarlo nuevamente. Tras la descarga, ejecutar `uv run pytest` también
-verifica los nombres de columnas contra el archivo real.
+La descarga guarda el CSV en `data/raw/ai4i2020.csv` con publicación atómica: si ya
+existe, se reutiliza; si una descarga se interrumpe, no queda cache corrupta. Tras
+descargar, `uv run pytest` verifica los nombres de columnas contra el archivo real.
 
-**Estado actual:** ambas entregas están implementadas en módulos Python y verificadas
-con pruebas. Los notebooks contienen texto explicativo, resultados reales y figuras
-incorporadas. La Pre-Entrega no entrena modelos; la Entrega Final incluye tres líneas
-base y sus versiones ajustadas, matrices de confusión, curvas ROC y elección justificada.
-
-Tras descargar el CSV, regenerar ambas entregas con:
+Regenerar ambas entregas con:
 
 ```bash
 uv run python -m agrofail.report
 ```
 
-El comando escribe `notebooks/preentrega.ipynb`, `notebooks/entrega-final.ipynb` y las
-figuras en `notebooks/figures/`. Los selectores `--pre` y `--final` regeneran solo la
-entrega correspondiente. Las imágenes también quedan embebidas en los notebooks,
-que pueden leerse sin ejecutar sus celdas. Cada notebook es un artefacto generado, no un
-archivo de trabajo: los cambios se realizan en los módulos Python y se regenera.
+Escribe `notebooks/preentrega.ipynb`, `notebooks/entrega-final.ipynb` y las figuras
+en `notebooks/figures/`. Los selectores `--pre` y `--final` regeneran una sola entrega.
+Las imágenes quedan embebidas en los notebooks, que pueden leerse sin ejecutar sus
+celdas. **Cada notebook es un artefacto generado, no un archivo de trabajo:** los
+cambios se hacen en los módulos Python y se regenera.
 
-Para ejecutar las celdas, instalar el runtime opcional con `uv sync --extra notebook`
-y seleccionar el intérprete `.venv/bin/python` como kernel en el editor de notebooks.
-El directorio de trabajo debe ser la raíz del repositorio (no `notebooks/`), para
-resolver las rutas de datos y figuras. IPython e ipykernel permiten ejecutar las
-celdas; no son necesarios para leer los resultados incorporados ni regenerarlos.
-
-## Cómo verlo en Colab
-
-Abrir la [Pre-Entrega](https://colab.research.google.com/github/miguelpuente/agri-machinery-failure-prediction/blob/main/notebooks/preentrega.ipynb)
-o la [Entrega Final](https://colab.research.google.com/github/miguelpuente/agri-machinery-failure-prediction/blob/main/notebooks/entrega-final.ipynb)
-y seleccionar **Entorno de ejecución → Ejecutar todas**. La primera celda de código
-instala el proyecto desde GitHub y descarga el dataset oficial de UCI solo si falta;
-no hace falta clonar el repositorio ni subir archivos. Se requiere acceso a Internet.
-Los resultados incorporados provienen del pipeline real y se recalculan al ejecutar.
+Para ejecutar las celdas fuera de Colab, instalar el runtime opcional con
+`uv sync --extra notebook` y usar `.venv/bin/python` como kernel, con la raíz del
+repositorio como directorio de trabajo.
 
 ## Dataset y alcance (anexo de fuentes y referencias)
 
@@ -98,21 +111,19 @@ src/agrofail/tuning.py       GridSearchCV y estabilidad del F1 entre pliegues
 src/agrofail/report.py       Generación de ambas entregas
 notebooks/preentrega.ipynb   Preparación de datos y anexo
 notebooks/entrega-final.ipynb Modelado, ajuste, conclusiones y anexo
-tests/                      Pruebas del paquete
-data/raw/                   Datos originales, excluidos de Git
-data/processed/             Datos preparados, excluidos de Git
+tests/                       Pruebas del paquete (136)
+data/raw/                    Datos originales, excluidos de Git
+data/processed/              Datos preparados, excluidos de Git
 ```
 
-## Evaluación y próximo paso
+## Rigor y límites declarados
 
-Revisar el notebook generado y su anexo para la entrega del curso. La división
-estratificada ocurre antes de ajustar codificación y escalado: sus parámetros se
-aprenden únicamente en entrenamiento y se reutilizan en prueba para evitar fuga
-de información. El ajuste usa grillas pequeñas y cinco pliegues estratificados con
-semilla fija, maximizando F1 ante el desbalance. En esta búsqueda, one-hot y escalado
-se aprenden dentro de cada pliegue a partir de sensores originales y códigos de tipo
-fijos. Se reportan parámetros ganadores, media y desviación estándar del F1 y una
-comparación ajustada en test; la elección prioriza F1, luego ROC-AUC y accuracy.
+La división estratificada ocurre antes de ajustar codificación y escalado: sus
+parámetros se aprenden únicamente en entrenamiento y se reutilizan en prueba para
+evitar fuga de información. En la búsqueda de hiperparámetros, one-hot y escalado se
+aprenden **dentro de cada pliegue**. La selección prioriza F1 (ante el desbalance),
+luego ROC-AUC y accuracy; se reportan parámetros ganadores y la media y desviación
+del F1 entre pliegues.
 
 La variación de CV mide estabilidad interna, no robustez entre equipos o temporadas.
 Los mismos pliegues seleccionan hiperparámetros, y test participa en la elección
