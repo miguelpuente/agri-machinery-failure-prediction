@@ -1,6 +1,7 @@
-import { GitBranch, Heart } from 'lucide-react'
+import { Heart } from 'lucide-react'
 
 import { BRAND } from '../lib/theme'
+import { GitHubIcon } from './icons'
 
 export function Footer() {
   return (
@@ -26,7 +27,7 @@ export function Footer() {
             target="_blank"
             rel="noreferrer"
           >
-            <GitBranch className="size-3.5" aria-hidden="true" />
+            <GitHubIcon className="size-3.5" aria-hidden="true" />
             Repositorio
           </a>
           <a

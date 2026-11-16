@@ -1,6 +1,7 @@
-import { GitBranch, Share2 } from 'lucide-react'
+import { Share2 } from 'lucide-react'
 
 import { BRAND } from '../lib/theme'
+import { GitHubIcon } from './icons'
 import { ProgressRing, cn } from './ui'
 
 export function Header({
@@ -47,7 +48,7 @@ export function Header({
             target="_blank"
             rel="noreferrer"
           >
-            <GitBranch className="size-4" aria-hidden="true" />
+            <GitHubIcon className="size-4" aria-hidden="true" />
             GitHub
           </a>
         </nav>

@@ -1,10 +1,11 @@
-import { ArrowUpRight, BookOpen, Database, ExternalLink, GitBranch, ShieldCheck } from 'lucide-react'
+import { ArrowUpRight, BookOpen, Database, ExternalLink, ShieldCheck } from 'lucide-react'
 
 import { AI4I } from '../data/ai4i'
 import { DAYS, WEEK_LABELS } from '../data/days'
 import { BRAND, WEEK_THEME } from '../lib/theme'
 import { formatDecimal, formatNumber, formatPercent } from '../lib/format'
 import type { WeekNumber } from '../types'
+import { GitHubIcon } from './icons'
 import { Callout, Pill, cn } from './ui'
 
 export function RouteSection({ onOpen }: { onOpen: (day: number) => void }) {
@@ -102,7 +103,7 @@ export function AboutSection() {
                 rel="noreferrer"
                 className="inline-flex min-h-10 items-center gap-2 rounded-full bg-sion px-4 py-2 text-xs font-semibold text-ink transition-colors hover:bg-sion/90"
               >
-                <GitBranch className="size-4" aria-hidden="true" />
+                <GitHubIcon className="size-4" aria-hidden="true" />
                 Repositorio
                 <ArrowUpRight className="size-3.5" aria-hidden="true" />
               </a>
