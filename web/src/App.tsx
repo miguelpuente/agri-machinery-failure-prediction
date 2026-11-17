@@ -1,5 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import confetti from 'canvas-confetti'
+
+import { downloadCertificate } from './lib/certificate'
 import { ArrowUp } from 'lucide-react'
 
 import { AboutSection, RouteSection } from './components/AboutSections'
@@ -8,6 +10,7 @@ const DayModal = lazy(() =>
   import('./components/DayModal').then((module) => ({ default: module.DayModal })),
 )
 import { Footer } from './components/Footer'
+import { GlossarySection } from './components/GlossarySection'
 import { Header } from './components/Header'
 import { Hero } from './components/Hero'
 import { ProgressPanel } from './components/ProgressPanel'
@@ -23,6 +26,12 @@ import {
   sanitizeCompletedDays,
   saveProgress,
 } from './lib/progress'
+import {
+  loadQuizResults,
+  quizScore,
+  recordQuizResult,
+  saveQuizResults,
+} from './lib/quizProgress'
 
 function celebrate() {
   if (typeof window === 'undefined') return
@@ -54,12 +63,17 @@ export default function App() {
   const [shareOpen, setShareOpen] = useState(false)
   const [showTop, setShowTop] = useState(false)
   const [importStatus, setImportStatus] = useState<string | null>(null)
+  const [quizResults, setQuizResults] = useState(() => loadQuizResults())
   const lastTrigger = useRef<HTMLElement | null>(null)
   const lastShareTrigger = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     saveProgress(completedDays)
   }, [completedDays])
+
+  useEffect(() => {
+    saveQuizResults(quizResults)
+  }, [quizResults])
 
   useEffect(() => {
     const onScroll = () => setShowTop(window.scrollY > 700)
@@ -109,6 +123,12 @@ export default function App() {
     if (completed) celebrate()
   }, [])
 
+  const quizStats = useMemo(() => quizScore(quizResults), [quizResults])
+
+  const handleQuizAnswered = useCallback((day: number, correct: boolean) => {
+    setQuizResults((current) => recordQuizResult(current, day, correct))
+  }, [])
+
   const nextPending = useMemo(
     () => DAYS.find((day) => !completedDays.includes(day.day))?.day ?? null,
     [completedDays],
@@ -132,6 +152,15 @@ export default function App() {
     setImportStatus(null)
     clearProgress()
   }, [])
+
+  const handleCertificate = useCallback(() => {
+    downloadCertificate({
+      completed: completedDays.length,
+      total: TOTAL_DAYS,
+      quizCorrect: quizStats.correct,
+      date: new Date(),
+    })
+  }, [completedDays.length, quizStats.correct])
 
   const handleImport = useCallback(
     async (file: File) => {
@@ -189,6 +218,9 @@ export default function App() {
           onOpenNext={openNext}
           onImport={handleImport}
           importStatus={importStatus}
+          quizCorrect={quizStats.correct}
+          quizAnswered={quizStats.answered}
+          onCertificate={handleCertificate}
         />
         <CalendarSection
           days={DAYS}
@@ -198,6 +230,7 @@ export default function App() {
           onOpen={openDay}
         />
         <RouteSection onOpen={openDay} />
+        <GlossarySection onOpen={openDay} />
         <AboutSection />
       </main>
 
@@ -246,6 +279,7 @@ export default function App() {
               if (next != null) openDay(next)
             }}
             onOpenDay={openDay}
+            onQuizAnswered={(correct) => handleQuizAnswered(activeDayData.day, correct)}
           />
         ) : null}
       </Suspense>

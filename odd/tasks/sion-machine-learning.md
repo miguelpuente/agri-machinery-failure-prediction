@@ -44,6 +44,8 @@ Build a static, interactive 24-day Machine Learning site named **Sion Machine Le
 - [x] T15: SION deploy artifacts for `chiqui.sion.net.ar`: nginx container, compose, runbook, tunnel/DNS/monitoring checklist. No production changes without explicit authorization.
 - [x] T16: P1 improvements after P0: focus trap/skip link, code-splitting, self-hosted fonts, OG/SEO, import progress, continue CTA, error boundary, stale-data check, CI + axe.
 - [ ] T17: Deploy `chiqui.sion.net.ar` with explicit user authorization and post-deploy smoke.
+- [x] T18: P2 base: glossary with search, persisted quiz score, completion certificate PNG, PWA manifest and service worker.
+- [ ] T19: P2 follow-ups pending decision: analytics, English version, visual-regression snapshots.
 
 ## Log
 
@@ -103,6 +105,16 @@ P1 improvements landed:
 - **Quality gates**: `npm run verify` (test+build+lint), `npm run smoke`, and `npm run audit` (axe-core, 5 views × desktop/mobile, 0 violations). GitHub Actions is blocked by the factory guard (no self-hosted runner online), so these remain local gates.
 - Verification after P1: 32 Vitest tests, build main 359 KB / 108 KB gzip, smoke OK, axe 0 violations, `npm audit` 0 vulnerabilities. Python suite remains 138 passed; export `--check` current.
 
+
+P2 base landed:
+
+- **Glossary**: 39 terms in `web/src/data/glossary.ts` with definitions and day links, a searchable `#glosario` section, nav entry desktop/mobile, empty state and data invariants.
+- **Quiz score**: `web/src/lib/quizProgress.ts` persists `{correct, attempts, answeredAt}` per day in `sion_ml_quiz_v1`; the quiz reports answers, the progress panel shows `Quizzes: X/24 correctos · Y respondidos`; tests cover sanitization, retries, persistence and scoring.
+- **Completion certificate**: when all 24 days are complete, the progress panel offers a PNG certificate generated on a canvas (1200×800, SION colors, quiz score, date, disclaimer); the smoke downloads it.
+- **PWA**: `manifest.webmanifest` with 192/512 icons, standalone display, theme/background colors; `public/sw.js` with network-first navigation and cache-first assets; registration only in production; preview verified `serviceWorker.ready` with the correct scope and manifest.
+- Verification: 38 Vitest tests, build main 370 KB / 112 KB gzip with lazy lab chunks, smoke passes (glossary search, import/export, certificate), axe 0 violations, `npm audit` 0, Python suite 138 passed, export `--check` current.
+- Not added: analytics (privacy/no telemetry), English version (large i18n), visual-regression baselines; these remain T19 pending a user decision.
+
 ## Next step
 
-T17 — deploy `chiqui.sion.net.ar` with explicit authorization: build `sion/chiqui-web:<tag>` on `sion-oracle`, `chiqui_web` on `sion_frontend`, tunnel hostname, public DNS, Uptime Kuma monitor, post-deploy smoke and headers check. No production changes have been made yet.
+T17 — deploy `chiqui.sion.net.ar` with explicit authorization, or decide T19 (analytics, English, visual regression). The deploy artifacts are ready and production is untouched.

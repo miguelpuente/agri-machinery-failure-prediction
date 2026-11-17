@@ -1,4 +1,4 @@
-import { Download, RotateCcw, Share2, Sparkles, Upload } from 'lucide-react'
+import { Award, Download, RotateCcw, Share2, Sparkles, Upload } from 'lucide-react'
 
 import { ProgressRing } from './ui'
 
@@ -12,6 +12,9 @@ export function ProgressPanel({
   onOpenNext,
   onImport,
   importStatus,
+  quizCorrect,
+  quizAnswered,
+  onCertificate,
 }: {
   completed: number
   total: number
@@ -22,6 +25,9 @@ export function ProgressPanel({
   onOpenNext: () => void
   onImport: (file: File) => void
   importStatus: string | null
+  quizCorrect: number
+  quizAnswered: number
+  onCertificate: () => void
 }) {
   const percent = Math.round((completed / total) * 100)
   const allDone = completed === total
@@ -58,6 +64,16 @@ export function ProgressPanel({
               >
                 <Sparkles className="size-4" aria-hidden="true" />
                 Ir al día {String(nextDay).padStart(2, '0')}
+              </button>
+            ) : null}
+            {allDone ? (
+              <button
+                type="button"
+                onClick={onCertificate}
+                className="inline-flex min-h-10 items-center gap-2 rounded-full bg-sion px-4 py-2 text-xs font-semibold text-ink transition-colors hover:bg-sion/90"
+              >
+                <Award className="size-4" aria-hidden="true" />
+                Certificado
               </button>
             ) : null}
             <button
@@ -113,6 +129,9 @@ export function ProgressPanel({
         </p>
         <p aria-live="polite" className="mt-1 text-[11px] text-sion">
           {importStatus ?? 'Importar fusiona los días del archivo con tu avance actual.'}
+        </p>
+        <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-mist">
+          Quizzes: {quizCorrect}/{total} correctos · {quizAnswered} respondidos
         </p>
       </div>
     </section>

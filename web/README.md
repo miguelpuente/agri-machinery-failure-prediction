@@ -6,7 +6,9 @@ institucional de SION y con los datos, métricas y notebooks reales de este repo
 
 - 24 días / 4 semanas, todos abiertos.
 - Cada día: concepto, código Python, laboratorio interactivo, quiz, reto y notebook.
-- Progreso en `localStorage`, exportación JSON, enlaces compartibles `?dia=N`.
+- Progreso en `localStorage`, exportación e importación JSON, enlaces compartibles `?dia=N`.
+- Glosario de 39 términos con búsqueda, quiz score persistido y certificado PNG al completar.
+- PWA instalable (manifest + service worker) con navegación network-first y assets cache-first.
 - Sin backend, sin secretos y sin telemetría.
 
 ## Stack

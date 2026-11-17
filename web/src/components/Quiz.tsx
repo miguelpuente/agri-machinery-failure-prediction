@@ -4,7 +4,13 @@ import { Check, RotateCcw, X } from 'lucide-react'
 import type { Quiz as QuizType } from '../types'
 import { cn } from './ui'
 
-export function Quiz({ quiz }: { quiz: QuizType }) {
+export function Quiz({
+  quiz,
+  onAnswered,
+}: {
+  quiz: QuizType
+  onAnswered?: (correct: boolean) => void
+}) {
   const [selected, setSelected] = useState<number | null>(null)
   const [answered, setAnswered] = useState(false)
   const correct = selected === quiz.correctIndex
@@ -32,6 +38,7 @@ export function Quiz({ quiz }: { quiz: QuizType }) {
                 if (answered) return
                 setSelected(index)
                 setAnswered(true)
+                onAnswered?.(index === quiz.correctIndex)
               }}
               disabled={answered}
               aria-pressed={isSelected}

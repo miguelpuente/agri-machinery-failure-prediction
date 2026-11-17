@@ -34,6 +34,15 @@ check(
   (await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)) <= 1,
   'desktop home has horizontal overflow',
 )
+await page.locator('#glossary-search').fill('leakage')
+check(
+  (await page.locator('#glosario article').count()) >= 1,
+  'glossary search should find leakage',
+)
+await page.locator('#glossary-search').fill('zzzz-no-existe')
+check((await page.locator('text=Sin resultados').count()) > 0, 'glossary empty state should render')
+await page.locator('#glossary-search').fill('')
+
 const cards = page.locator('button[data-day-card]')
 check((await cards.count()) === 24, `home should render 24 day cards, got ${await cards.count()}`)
 
@@ -127,6 +136,30 @@ await page.waitForTimeout(300)
 check(
   (await page.locator('text=0 de 24 laboratorios').count()) > 0,
   'reset should clear progress',
+)
+
+await page.locator('input[type="file"]').setInputFiles({
+  name: 'complete.json',
+  mimeType: 'application/json',
+  buffer: Buffer.from(
+    JSON.stringify({
+      version: 1,
+      total: 24,
+      completedDays: Array.from({ length: 24 }, (_, index) => index + 1),
+    }),
+  ),
+})
+await page.waitForSelector('text=24 de 24 laboratorios')
+check(
+  (await page.getByRole('button', { name: 'Certificado' }).count()) > 0,
+  'the completion certificate should appear after all 24 days',
+)
+const certificatePromise = page.waitForEvent('download')
+await page.getByRole('button', { name: 'Certificado' }).click()
+const certificate = await certificatePromise
+check(
+  certificate.suggestedFilename() === 'sion-machine-learning-certificado.png',
+  `unexpected certificate filename ${certificate.suggestedFilename()}`,
 )
 
 await browser.close()

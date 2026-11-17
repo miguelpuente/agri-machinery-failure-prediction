@@ -27,6 +27,7 @@ export function DayModal({
   onPrev,
   onNext,
   onOpenDay,
+  onQuizAnswered,
 }: {
   day: Day
   total: number
@@ -36,6 +37,7 @@ export function DayModal({
   onPrev: () => void
   onNext: () => void
   onOpenDay: (day: number) => void
+  onQuizAnswered: (correct: boolean) => void
 }) {
   const closeRef = useRef<HTMLButtonElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
@@ -181,7 +183,7 @@ export function DayModal({
               <h3 id="quiz-title" className="sr-only">
                 Quiz
               </h3>
-              <Quiz key={day.day} quiz={day.quiz} />
+              <Quiz key={day.day} quiz={day.quiz} onAnswered={onQuizAnswered} />
             </section>
 
             <section aria-labelledby="challenge-title">
