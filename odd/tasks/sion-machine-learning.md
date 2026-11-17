@@ -116,6 +116,8 @@ P2 base landed:
 - Verification: 38 Vitest tests, build main 370 KB / 112 KB gzip with lazy lab chunks, smoke passes (glossary search, import/export, certificate), axe 0 violations, `npm audit` 0, Python suite 138 passed, export `--check` current.
 - Not added: analytics (privacy/no telemetry), English version (large i18n), visual-regression baselines; these remain T19 pending a user decision.
 
+- T20 material library deployed on 2026-11-17: 18 PDFs (109 MB) synced to `/opt/sion_factory/storage/chiqui/docs`, mounted read-only at `/usr/share/nginx/html/docs`; `chiqui_web` on image `ba9f355` (PR #16 merged to `main`). The `#material` section lists 16 classes, the plan and the Preentrega, each with PDF and Markdown transcription links. All 18 URLs return `application/pdf` with a 7-day cache; production smoke and axe audit pass. Local dev links need a `web/public/docs` copy (gitignored), documented in `web/README.md`.
+
 - T17 deployed on 2026-11-17 with explicit authorization. `chiqui_web` runs healthy on `sion_frontend` from `sion/chiqui-web:6c17437`; tunnel `apps-sion` config v46 maps `chiqui.sion.net.ar` → `http://chiqui_web:80`; proxied CNAME created; public (no Access). Verified from `main`: `/healthz` 200, `manifest.webmanifest` `application/manifest+json`, PWA service worker scope `/`, self-hosted fonts, production smoke OK, axe 0 violations. PR #15 merged `feat/sion-machine-learning` into `main` at `6c17437`; that merge commit is the live image. Uptime Kuma monitor is pending because no Kuma API/UI credentials were available; add `https://chiqui.sion.net.ar/healthz`.
 
 ## Next step

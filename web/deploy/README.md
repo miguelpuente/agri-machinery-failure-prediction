@@ -10,18 +10,20 @@ the reproducible procedure, current state and next steps.
 |---|---|
 | URL | <https://chiqui.sion.net.ar/> |
 | Container | `chiqui_web` (healthy) on `sion_frontend` |
-| Image | `sion/chiqui-web:6c17437` |
-| Code | `main` @ `6c17437` (merge commit of PR #15) |
+| Image | `sion/chiqui-web:ba9f355` |
+| Code | `main` @ `ba9f355` (merge commit of PR #16, material library) |
 | Tunnel | `apps-sion` config version 46, `chiqui.sion.net.ar` → `http://chiqui_web:80` |
 | DNS | proxied `CNAME chiqui` → `9f619bf9-bd07-46bb-882c-51c6288c60df.cfargotunnel.com` |
 | Access | public (no Access app) |
 | Monitor | **pending**: add `https://chiqui.sion.net.ar/healthz` (HTTP 200, body `ok`) in Uptime Kuma |
+| Material | 18 PDFs on `/opt/sion_factory/storage/chiqui/docs`, mounted read-only at `/usr/share/nginx/html/docs` |
 
 Verified after deploy from `main`: `/healthz` 200, SPA deep links, `manifest.webmanifest`
 with `application/manifest+json`, self-hosted fonts, PWA service worker, production smoke
-(24 labs, progress, import/export, certificate) and axe audit (0 violations). PR #15 was
-merged to `main`; the live image is the merge commit `6c17437`. A later docs-only commit
-does not require a redeploy.
+(24 labs, progress, import/export, certificate), all 18 material PDFs returning
+`application/pdf`, and axe audit (0 violations). PR #15 and PR #16 were merged to `main`;
+the live image is the merge commit `ba9f355`. A later docs-only commit does not require a
+redeploy.
 
 ## Material PDFs (109 MB)
 

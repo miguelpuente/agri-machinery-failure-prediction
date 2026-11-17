@@ -20,7 +20,8 @@ proyecto desde GitHub y descarga el dataset oficial; no hace falta clonar nada.
 
 `web/` contiene una SPA estática ([live](https://chiqui.sion.net.ar/)) con **24 laboratorios interactivos** de mantenimiento
 predictivo sobre AI4I, con la identidad visual de SION y los datos y métricas reales de
-este proyecto. Cada día combina concepto, código, laboratorio, quiz, reto y notebook.
+este proyecto. Cada día combina concepto, código, laboratorio, quiz, reto y notebook, y
+suma una biblioteca de material teórico en PDF (16 clases, plan y Preentrega).
 
 ```bash
 cd web
