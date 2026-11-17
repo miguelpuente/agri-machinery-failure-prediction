@@ -39,6 +39,9 @@ export function Header({
           <a className="inline-flex min-h-8 items-center transition-colors hover:text-foam" href="#ruta">
             Ruta
           </a>
+          <a className="inline-flex min-h-8 items-center transition-colors hover:text-foam" href="#material">
+            Material
+          </a>
           <a className="inline-flex min-h-8 items-center transition-colors hover:text-foam" href="#glosario">
             Glosario
           </a>
@@ -82,6 +85,7 @@ export function Header({
         {[
           { href: '#calendario', label: 'Calendario' },
           { href: '#ruta', label: 'Ruta' },
+          { href: '#material', label: 'Material' },
           { href: '#glosario', label: 'Glosario' },
           { href: '#proyecto', label: 'Proyecto' },
         ].map((link) => (

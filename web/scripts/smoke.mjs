@@ -18,7 +18,7 @@ await page.goto(base, { waitUntil: 'networkidle' })
 await page.waitForSelector('text=Sion Machine Learning')
 await page.evaluate(() => document.fonts.ready)
 check(
-  await page.evaluate(() => document.fonts.check('16px Inter') && document.fonts.check('16px Outfit')),
+  await page.evaluate(() => document.fonts.check('400 16px Inter') && document.fonts.check('700 16px Outfit')),
   'self-hosted fonts did not load',
 )
 check(
@@ -33,6 +33,10 @@ check(
 check(
   (await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)) <= 1,
   'desktop home has horizontal overflow',
+)
+check(
+  (await page.locator('#material a[href^="/docs/"]').count()) >= 18,
+  'material section should expose the PDF links',
 )
 await page.locator('#glossary-search').fill('leakage')
 check(

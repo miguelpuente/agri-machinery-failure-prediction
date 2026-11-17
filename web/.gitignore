@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local copies of the course PDFs (served from the SION volume in production)
+public/docs/

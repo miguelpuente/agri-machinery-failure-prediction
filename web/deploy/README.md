@@ -23,6 +23,44 @@ with `application/manifest+json`, self-hosted fonts, PWA service worker, product
 merged to `main`; the live image is the merge commit `6c17437`. A later docs-only commit
 does not require a redeploy.
 
+## Material PDFs (109 MB)
+
+The 18 PDFs are **not in Git**. They live on the host and are mounted read-only into the
+container:
+
+```text
+/opt/sion_factory/storage/chiqui/docs  →  /usr/share/nginx/html/docs
+```
+
+Slugs:
+
+- `ml-clase-01.pdf` … `ml-clase-16.pdf`
+- `plan-de-estudios.pdf`
+- `preentrega.pdf`
+
+Sync from a checkout that has the original `docs/*.pdf` files (for example, the dev
+machine):
+
+```bash
+python3 - <<'PY'
+from pathlib import Path
+import shutil
+src = Path('docs')
+dst = Path('/tmp/chiqui-docs')
+dst.mkdir(exist_ok=True)
+mapping = {f'ML CLASE _ {i:02d}.pdf': f'ml-clase-{i:02d}.pdf' for i in range(1, 17)}
+mapping['Talento Tech -Machine learning.pdf'] = 'plan-de-estudios.pdf'
+mapping['Preentrega(BORRADOR).pdf'] = 'preentrega.pdf'
+for source, target in mapping.items():
+    shutil.copyfile(src / source, dst / target)
+PY
+rsync -az /tmp/chiqui-docs/ sion-oracle:/opt/sion_factory/storage/chiqui/docs/
+```
+
+The compose file mounts the directory read-only; nginx serves `/docs/` with a 7-day cache
+and the inherited security headers. A fresh server needs this sync before the material
+links work. The Markdown transcriptions stay in GitHub and are linked from the site.
+
 ## Architecture
 
 ```text
