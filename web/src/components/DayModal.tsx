@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import {
   ArrowLeft,
   ArrowRight,
@@ -13,6 +13,7 @@ import {
 import type { Day } from '../types'
 import { setBackgroundInert, useFocusTrap } from '../lib/useFocusTrap'
 import { WEEK_THEME } from '../lib/theme'
+import { ErrorBoundary } from './ErrorBoundary'
 import { LAB_COMPONENTS } from './labs'
 import { Quiz } from './Quiz'
 import { Callout, CodeBlock, Pill, cn } from './ui'
@@ -153,7 +154,17 @@ export function DayModal({
               </div>
               <p className="mt-1 text-sm leading-6 text-mist">{day.labInstruction}</p>
               <div className="mt-3">
-                <Lab key={day.day} />
+                <ErrorBoundary key={day.day} label={day.labTitle}>
+                  <Suspense
+                    fallback={
+                      <div className="rounded-xl border border-line bg-panel-2/50 p-6 text-sm text-mist">
+                        Cargando laboratorio…
+                      </div>
+                    }
+                  >
+                    <Lab key={day.day} />
+                  </Suspense>
+                </ErrorBoundary>
               </div>
             </section>
 

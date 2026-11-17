@@ -1,4 +1,4 @@
-import { Download, RotateCcw, Share2, Sparkles } from 'lucide-react'
+import { Download, RotateCcw, Share2, Sparkles, Upload } from 'lucide-react'
 
 import { ProgressRing } from './ui'
 
@@ -10,6 +10,8 @@ export function ProgressPanel({
   onReset,
   onShare,
   onOpenNext,
+  onImport,
+  importStatus,
 }: {
   completed: number
   total: number
@@ -18,6 +20,8 @@ export function ProgressPanel({
   onReset: () => void
   onShare: () => void
   onOpenNext: () => void
+  onImport: (file: File) => void
+  importStatus: string | null
 }) {
   const percent = Math.round((completed / total) * 100)
   const allDone = completed === total
@@ -72,6 +76,21 @@ export function ProgressPanel({
               <Download className="size-4" aria-hidden="true" />
               Exportar
             </button>
+            <label className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-line bg-ink/40 px-3.5 py-2 text-xs font-medium text-mist transition-colors hover:border-sion/40 hover:text-foam">
+              <Upload className="size-4" aria-hidden="true" />
+              Importar
+              <input
+                type="file"
+                accept="application/json,.json"
+                aria-label="Importar progreso desde un archivo JSON"
+                className="sr-only"
+                onChange={(event) => {
+                  const file = event.currentTarget.files?.[0]
+                  if (file) onImport(file)
+                  event.currentTarget.value = ''
+                }}
+              />
+            </label>
             <button
               type="button"
               onClick={onReset}
@@ -91,6 +110,9 @@ export function ProgressPanel({
         </div>
         <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-mist">
           Progreso guardado solo en este navegador · {percent}%
+        </p>
+        <p aria-live="polite" className="mt-1 text-[11px] text-sion">
+          {importStatus ?? 'Importar fusiona los días del archivo con tu avance actual.'}
         </p>
       </div>
     </section>

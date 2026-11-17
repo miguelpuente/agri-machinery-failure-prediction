@@ -3,7 +3,9 @@ import { describe, expect, it } from 'vitest'
 import {
   PROGRESS_KEY,
   exportProgress,
+  importProgress,
   loadProgress,
+  mergeProgress,
   parseDeepLink,
   progressPercent,
   sanitizeCompletedDays,
@@ -73,6 +75,18 @@ describe('progress helpers', () => {
     expect(payload.completedDays).toEqual([1, 2])
     expect(payload.total).toBe(24)
     expect(typeof payload.exportedAt).toBe('string')
+  })
+
+  it('imports a versioned export, a raw array and rejects malformed input', () => {
+    const payload = JSON.stringify({ version: 1, total: 24, completedDays: [2, 1, 99] })
+    expect(importProgress(payload)).toEqual([1, 2])
+    expect(importProgress(JSON.stringify([3, 3, 25]))).toEqual([3])
+    expect(importProgress('{nope')).toEqual([])
+    expect(importProgress(JSON.stringify({ completedDays: 'nope' }))).toEqual([])
+  })
+
+  it('merges progress without duplicates or out-of-range days', () => {
+    expect(mergeProgress([1, 3], [3, 4, 99])).toEqual([1, 3, 4])
   })
 
   it('reads a valid ?dia deep link and rejects invalid ones', () => {

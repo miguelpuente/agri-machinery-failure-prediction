@@ -6,7 +6,23 @@ import { formatNumber, formatPercent } from '../lib/format'
 import { HeroVisual } from './HeroVisual'
 import { cn } from './ui'
 
-export function Hero({ onStart, total }: { onStart: () => void; total: number }) {
+export function Hero({
+  onStart,
+  total,
+  nextDay,
+  completed,
+}: {
+  onStart: () => void
+  total: number
+  nextDay: number | null
+  completed: number
+}) {
+  const cta =
+    nextDay == null
+      ? 'Repasar el día 01'
+      : completed > 0
+        ? `Continuar por el día ${String(nextDay).padStart(2, '0')}`
+        : 'Empezar por el día 01'
   return (
     <section id="top" className="relative overflow-hidden px-4 pb-10 pt-14 sm:px-6 sm:pt-20">
       <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
@@ -33,7 +49,7 @@ export function Hero({ onStart, total }: { onStart: () => void; total: number })
               className="inline-flex min-h-11 items-center gap-2 rounded-full bg-sion px-5 py-2.5 text-sm font-semibold text-ink transition-transform hover:-translate-y-0.5 hover:bg-sion/90"
             >
               <CalendarDays className="size-4" aria-hidden="true" />
-              Empezar por el día 01
+              {cta}
             </button>
             <a
               href="#proyecto"

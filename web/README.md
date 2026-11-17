@@ -13,7 +13,8 @@ institucional de SION y con los datos, métricas y notebooks reales de este repo
 
 React 19 + Vite + TypeScript + Tailwind CSS 4. Vitest para pruebas unitarias y Playwright
 para el smoke test. La identidad visual usa los tokens de SION: fondo `#05080D`, teal
-`#00D1B2`, profundo `#00766B`, Inter + Outfit.
+`#00D1B2`, profundo `#00766B`, Inter + Outfit self-hosted (sin Google Fonts en runtime).
+Los labs se cargan por chunks: el home no descarga los componentes de los 24 días.
 
 ## Inicio rápido
 
@@ -35,15 +36,22 @@ Abrir `http://localhost:5173` (o el puerto que indique Vite).
 | `npm run test` | Vitest: progreso, contenido y matemática de los labs |
 | `npm run test:watch` | Vitest en modo watch |
 | `npm run lint` | Oxlint |
-| `npm run smoke` | Playwright: rendering de los 24 labs, progreso, export, share y overflow móvil |
+| `npm run verify` | `test` + `build` + `lint` |
+| `npm run smoke` | Playwright: rendering de los 24 labs, progreso, import/export, share, foco y overflow móvil |
+| `npm run audit` | axe-core: accesibilidad y overflow en 5 vistas × desktop/mobile |
 
-El smoke test necesita el servidor de desarrollo corriendo en `http://localhost:4173` (o
-definir `BASE_URL`):
+El smoke test y la auditoría necesitan el servidor de desarrollo corriendo en
+`http://localhost:4173` (o definir `BASE_URL`):
 
 ```bash
 npm run dev -- --port 4173
 npm run smoke
+npm run audit
 ```
+
+La CI de GitHub está bloqueada por el guard de la factory: no hay runner self-hosted
+online para este repo (`can-reenable-ci.py` devuelve exit 1). Por eso `verify`, `smoke` y
+`audit` son gates locales hasta que se habilite un runner.
 
 ## Datos reales
 
@@ -60,6 +68,12 @@ El script escribe muestras, estadísticas, correlaciones, métricas de los model
 matrices de confusión, puntos ROC, grilla de GridSearchCV, importancia de variables,
 clústeres y la regresión de temperatura. Las cifras del sitio quedan atadas al proyecto:
 test de 2.000 filas con 68 fallas, F1 del árbol tuneado 0,7581 y CV 0,7096 ± 0,0436.
+
+Para verificar que el JSON committed sigue al día sin reescribirlo:
+
+```bash
+uv run python scripts/export_web_data.py --check
+```
 
 ## Estructura
 

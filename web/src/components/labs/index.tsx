@@ -1,60 +1,49 @@
-import type { ComponentType } from 'react'
+import { lazy, type ComponentType, type LazyExoticComponent } from 'react'
 
 import type { LabId } from '../../types'
-import {
-  CategoricalEncodingLab,
-  FeatureEngineeringLab,
-  FeatureScalingLab,
-  NullsImputationLab,
-  PandasInspectorLab,
-  TrainTestLeakageLab,
-} from './DataPrepLabs'
-import {
-  LinearRegressionFitLab,
-  LogisticSigmoidLab,
-  RegressionMetricsLab,
-  TargetDiagnosticsLab,
-} from './RegressionLabs'
-import { ConfusionMatrixLab, ImbalancedMetricsLab } from './ClassificationLabs'
-import {
-  DecisionTreeDepthLab,
-  KnnCanvasLab,
-  KnnScalingLab,
-  RandomForestEnsembleLab,
-} from './NeighborTreeLabs'
-import { KmeansRealLab, KmeansStepperLab } from './ClusteringLabs'
-import {
-  FinalProjectLab,
-  GridsearchHeatmapLab,
-  JoblibSerializationLab,
-  ModelComparisonLab,
-  PreEntregaChecklistLab,
-  SklearnPipelineLab,
-} from './PipelineLabs'
 
-export const LAB_COMPONENTS: Record<LabId, ComponentType> = {
-  'pandas-inspector': PandasInspectorLab,
-  'nulls-imputation': NullsImputationLab,
-  'feature-engineering': FeatureEngineeringLab,
-  'categorical-encoding': CategoricalEncodingLab,
-  'feature-scaling': FeatureScalingLab,
-  'train-test-leakage': TrainTestLeakageLab,
-  'linear-regression-fit': LinearRegressionFitLab,
-  'regression-metrics': RegressionMetricsLab,
-  'target-diagnostics': TargetDiagnosticsLab,
-  'logistic-sigmoid': LogisticSigmoidLab,
-  'confusion-matrix': ConfusionMatrixLab,
-  'imbalanced-metrics': ImbalancedMetricsLab,
-  'knn-canvas': KnnCanvasLab,
-  'knn-scaling': KnnScalingLab,
-  'decision-tree-depth': DecisionTreeDepthLab,
-  'random-forest-ensemble': RandomForestEnsembleLab,
-  'kmeans-stepper': KmeansStepperLab,
-  'kmeans-real': KmeansRealLab,
-  'pre-entrega-checklist': PreEntregaChecklistLab,
-  'sklearn-pipeline': SklearnPipelineLab,
-  'gridsearch-heatmap': GridsearchHeatmapLab,
-  'joblib-serialization': JoblibSerializationLab,
-  'model-comparison': ModelComparisonLab,
-  'final-project': FinalProjectLab,
+type LabComponent = ComponentType | LazyExoticComponent<ComponentType>
+
+function lazyLab<T extends Record<string, ComponentType>>(
+  loader: () => Promise<T>,
+  name: keyof T,
+): LazyExoticComponent<ComponentType> {
+  return lazy(async () => {
+    const module = await loader()
+    return { default: module[name] }
+  })
+}
+
+const dataPrepLabs = () => import('./DataPrepLabs')
+const regressionLabs = () => import('./RegressionLabs')
+const classificationLabs = () => import('./ClassificationLabs')
+const neighborTreeLabs = () => import('./NeighborTreeLabs')
+const clusteringLabs = () => import('./ClusteringLabs')
+const pipelineLabs = () => import('./PipelineLabs')
+
+export const LAB_COMPONENTS: Record<LabId, LabComponent> = {
+  'pandas-inspector': lazyLab(dataPrepLabs, 'PandasInspectorLab'),
+  'nulls-imputation': lazyLab(dataPrepLabs, 'NullsImputationLab'),
+  'feature-engineering': lazyLab(dataPrepLabs, 'FeatureEngineeringLab'),
+  'categorical-encoding': lazyLab(dataPrepLabs, 'CategoricalEncodingLab'),
+  'feature-scaling': lazyLab(dataPrepLabs, 'FeatureScalingLab'),
+  'train-test-leakage': lazyLab(dataPrepLabs, 'TrainTestLeakageLab'),
+  'linear-regression-fit': lazyLab(regressionLabs, 'LinearRegressionFitLab'),
+  'regression-metrics': lazyLab(regressionLabs, 'RegressionMetricsLab'),
+  'target-diagnostics': lazyLab(regressionLabs, 'TargetDiagnosticsLab'),
+  'logistic-sigmoid': lazyLab(regressionLabs, 'LogisticSigmoidLab'),
+  'confusion-matrix': lazyLab(classificationLabs, 'ConfusionMatrixLab'),
+  'imbalanced-metrics': lazyLab(classificationLabs, 'ImbalancedMetricsLab'),
+  'knn-canvas': lazyLab(neighborTreeLabs, 'KnnCanvasLab'),
+  'knn-scaling': lazyLab(neighborTreeLabs, 'KnnScalingLab'),
+  'decision-tree-depth': lazyLab(neighborTreeLabs, 'DecisionTreeDepthLab'),
+  'random-forest-ensemble': lazyLab(neighborTreeLabs, 'RandomForestEnsembleLab'),
+  'kmeans-stepper': lazyLab(clusteringLabs, 'KmeansStepperLab'),
+  'kmeans-real': lazyLab(clusteringLabs, 'KmeansRealLab'),
+  'pre-entrega-checklist': lazyLab(pipelineLabs, 'PreEntregaChecklistLab'),
+  'sklearn-pipeline': lazyLab(pipelineLabs, 'SklearnPipelineLab'),
+  'gridsearch-heatmap': lazyLab(pipelineLabs, 'GridsearchHeatmapLab'),
+  'joblib-serialization': lazyLab(pipelineLabs, 'JoblibSerializationLab'),
+  'model-comparison': lazyLab(pipelineLabs, 'ModelComparisonLab'),
+  'final-project': lazyLab(pipelineLabs, 'FinalProjectLab'),
 }

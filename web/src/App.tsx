@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import confetti from 'canvas-confetti'
 import { ArrowUp } from 'lucide-react'
 
 import { AboutSection, RouteSection } from './components/AboutSections'
 import { CalendarSection, type CalendarFilter } from './components/CalendarSection'
-import { DayModal } from './components/DayModal'
+const DayModal = lazy(() =>
+  import('./components/DayModal').then((module) => ({ default: module.DayModal })),
+)
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import { Hero } from './components/Hero'
@@ -14,7 +16,9 @@ import { DAYS, TOTAL_DAYS } from './data/days'
 import {
   clearProgress,
   exportProgress,
+  importProgress,
   loadProgress,
+  mergeProgress,
   parseDeepLink,
   sanitizeCompletedDays,
   saveProgress,
@@ -49,6 +53,7 @@ export default function App() {
   })
   const [shareOpen, setShareOpen] = useState(false)
   const [showTop, setShowTop] = useState(false)
+  const [importStatus, setImportStatus] = useState<string | null>(null)
   const lastTrigger = useRef<HTMLElement | null>(null)
   const lastShareTrigger = useRef<HTMLElement | null>(null)
 
@@ -124,8 +129,30 @@ export default function App() {
   const handleReset = useCallback(() => {
     if (!window.confirm('¿Reiniciar el progreso de los 24 días en este navegador?')) return
     setCompletedDays([])
+    setImportStatus(null)
     clearProgress()
   }, [])
+
+  const handleImport = useCallback(
+    async (file: File) => {
+      try {
+        const text = await file.text()
+        const imported = importProgress(text)
+        if (imported.length === 0) {
+          setImportStatus('El archivo no tiene días válidos.')
+          return
+        }
+        const merged = mergeProgress(completedDays, imported)
+        setCompletedDays(merged)
+        setImportStatus(
+          `Importados ${imported.length} días · total ${merged.length}/${TOTAL_DAYS}.`,
+        )
+      } catch {
+        setImportStatus('No se pudo leer el archivo.')
+      }
+    },
+    [completedDays],
+  )
 
   const openNext = useCallback(() => {
     if (nextPending != null) openDay(nextPending)
@@ -146,7 +173,12 @@ export default function App() {
       <Header completed={completedDays.length} total={TOTAL_DAYS} onShare={openShare} />
 
       <main id="main-content" tabIndex={-1}>
-        <Hero onStart={() => openDay(1)} total={TOTAL_DAYS} />
+        <Hero
+          onStart={() => openDay(nextPending ?? 1)}
+          total={TOTAL_DAYS}
+          nextDay={nextPending}
+          completed={completedDays.length}
+        />
         <ProgressPanel
           completed={completedDays.length}
           total={TOTAL_DAYS}
@@ -155,6 +187,8 @@ export default function App() {
           onReset={handleReset}
           onShare={openShare}
           onOpenNext={openNext}
+          onImport={handleImport}
+          importStatus={importStatus}
         />
         <CalendarSection
           days={DAYS}
@@ -185,22 +219,36 @@ export default function App() {
         </a>
       ) : null}
 
-      {activeDayData ? (
-        <DayModal
-          day={activeDayData}
-          total={TOTAL_DAYS}
-          completed={completedDays.includes(activeDayData.day)}
-          onClose={closeDay}
-          onToggleComplete={toggleComplete}
-          onPrev={() => {
-            if (previous != null) openDay(previous)
-          }}
-          onNext={() => {
-            if (next != null) openDay(next)
-          }}
-          onOpenDay={openDay}
-        />
-      ) : null}
+      <Suspense
+        fallback={
+          <div
+            className="fixed inset-0 z-50 grid place-items-center bg-ink/85 backdrop-blur-sm"
+            role="status"
+            aria-live="polite"
+          >
+            <div className="rounded-full border border-line bg-panel px-4 py-2 text-sm text-mist">
+              Cargando día…
+            </div>
+          </div>
+        }
+      >
+        {activeDayData ? (
+          <DayModal
+            day={activeDayData}
+            total={TOTAL_DAYS}
+            completed={completedDays.includes(activeDayData.day)}
+            onClose={closeDay}
+            onToggleComplete={toggleComplete}
+            onPrev={() => {
+              if (previous != null) openDay(previous)
+            }}
+            onNext={() => {
+              if (next != null) openDay(next)
+            }}
+            onOpenDay={openDay}
+          />
+        ) : null}
+      </Suspense>
 
       <ShareDialog
         open={shareOpen}

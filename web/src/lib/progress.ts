@@ -68,6 +68,27 @@ export function progressPercent(completedDays: number[], total = TOTAL_DAYS): nu
   return Math.round((completed / total) * 100)
 }
 
+export function importProgress(raw: string, total = TOTAL_DAYS): number[] {
+  try {
+    const parsed: unknown = JSON.parse(raw)
+    if (Array.isArray(parsed)) return sanitizeCompletedDays(parsed, total)
+    if (parsed && typeof parsed === 'object' && 'completedDays' in parsed) {
+      return sanitizeCompletedDays((parsed as { completedDays: unknown }).completedDays, total)
+    }
+    return []
+  } catch {
+    return []
+  }
+}
+
+export function mergeProgress(
+  current: number[],
+  incoming: number[],
+  total = TOTAL_DAYS,
+): number[] {
+  return sanitizeCompletedDays([...current, ...incoming], total)
+}
+
 export function exportProgress(completedDays: number[], total = TOTAL_DAYS): string {
   return JSON.stringify(
     {

@@ -16,6 +16,20 @@ function check(condition, message) {
 
 await page.goto(base, { waitUntil: 'networkidle' })
 await page.waitForSelector('text=Sion Machine Learning')
+await page.evaluate(() => document.fonts.ready)
+check(
+  await page.evaluate(() => document.fonts.check('16px Inter') && document.fonts.check('16px Outfit')),
+  'self-hosted fonts did not load',
+)
+check(
+  await page.evaluate(
+    () =>
+      !performance
+        .getEntriesByType('resource')
+        .some((entry) => entry.name.includes('fonts.googleapis') || entry.name.includes('fonts.gstatic')),
+  ),
+  'external Google Fonts should not be requested',
+)
 check(
   (await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)) <= 1,
   'desktop home has horizontal overflow',
@@ -59,7 +73,7 @@ await page.locator('[role="dialog"]').waitFor({ state: 'visible' })
 await page.locator('[role="dialog"]').getByRole('button', { name: 'Marcar completado' }).first().click()
 await page.locator('[role="dialog"] button[aria-label="Cerrar"]').click()
 await page.waitForSelector('text=1 de 24 laboratorios')
-await page.waitForTimeout(150)
+await page.waitForTimeout(350)
 check(
   (await page.evaluate(() => document.activeElement?.getAttribute('data-day-card'))) === '1',
   'closing the day dialog should restore focus to its card',
@@ -67,12 +81,16 @@ check(
 
 await page.reload({ waitUntil: 'networkidle' })
 await page.waitForSelector('text=1 de 24 laboratorios')
+check(
+  (await page.getByRole('button', { name: /Continuar por el día 02/ }).count()) > 0,
+  'hero CTA should continue with the next pending day',
+)
 
 await page.getByRole('button', { name: 'Compartir', exact: true }).first().click()
 await page.waitForSelector('text=Pasá el link')
 check((await page.locator('#share-message').inputValue()).includes('1/24'), 'share text should include progress')
 await page.getByRole('button', { name: 'Cerrar', exact: true }).last().click()
-await page.waitForTimeout(150)
+await page.waitForTimeout(350)
 check(
   (await page.evaluate(() => document.activeElement?.getAttribute('aria-label'))) === 'Compartir',
   'closing the share dialog should restore focus to its trigger',
@@ -82,6 +100,17 @@ await page.getByRole('button', { name: /Completados/ }).click()
 check(
   (await page.locator('button[data-day-card]').count()) === 1,
   'completed filter should show one day',
+)
+
+await page.locator('input[type="file"]').setInputFiles({
+  name: 'progress.json',
+  mimeType: 'application/json',
+  buffer: Buffer.from(JSON.stringify({ version: 1, total: 24, completedDays: [2, 3] })),
+})
+await page.waitForSelector('text=Importados 2 días')
+check(
+  (await page.locator('text=3 de 24 laboratorios').count()) > 0,
+  'import should merge the file with current progress',
 )
 
 const downloadPromise = page.waitForEvent('download')
