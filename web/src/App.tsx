@@ -11,6 +11,7 @@ const DayModal = lazy(() =>
 )
 import { Footer } from './components/Footer'
 import { GlossarySection } from './components/GlossarySection'
+import { MaterialSection } from './components/MaterialSection'
 import { Header } from './components/Header'
 import { Hero } from './components/Hero'
 import { ProgressPanel } from './components/ProgressPanel'
@@ -233,6 +234,7 @@ export default function App() {
           onOpen={openDay}
         />
         <RouteSection onOpen={openDay} />
+        <MaterialSection />
         <GlossarySection onOpen={openDay} />
         <AboutSection />
       </main>

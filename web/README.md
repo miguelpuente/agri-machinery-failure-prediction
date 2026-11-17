@@ -9,6 +9,8 @@ institucional de SION y con los datos, métricas y notebooks reales de este repo
 - Progreso en `localStorage`, exportación e importación JSON, enlaces compartibles `?dia=N`.
 - Glosario de 39 términos con búsqueda, quiz score persistido y certificado PNG al completar.
 - PWA instalable (manifest + service worker) con navegación network-first y assets cache-first.
+- **Material teórico**: 16 clases, plan de estudios y Preentrega en PDF (109 MB), con enlaces a la
+  transcripción Markdown del repositorio.
 - Sin backend, sin secretos y sin telemetría.
 
 ## Stack
@@ -76,6 +78,17 @@ Para verificar que el JSON committed sigue al día sin reescribirlo:
 ```bash
 uv run python scripts/export_web_data.py --check
 ```
+
+### PDFs del material teórico
+
+Los PDFs originales **no se commitean**: se sirven desde el volumen
+`/opt/sion_factory/storage/chiqui/docs` montado read-only en `chiqui_web`. Los slugs son
+`ml-clase-01.pdf` … `ml-clase-16.pdf`, `plan-de-estudios.pdf` y `preentrega.pdf`.
+La sincronización y el runbook están en [`deploy/README.md`](deploy/README.md).
+
+En desarrollo local los links `/docs/...` devuelven 404 salvo que copies los PDFs a
+`web/public/docs/` (ignorado por Git y Docker). El resto de la sección y las
+transcripciones funcionan sin PDFs.
 
 ## Estructura
 

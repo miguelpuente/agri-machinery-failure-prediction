@@ -46,6 +46,7 @@ Build a static, interactive 24-day Machine Learning site named **Sion Machine Le
 - [x] T17: Deploy `chiqui.sion.net.ar` with explicit user authorization and post-deploy smoke.
 - [x] T18: P2 base: glossary with search, persisted quiz score, completion certificate PNG, PWA manifest and service worker.
 - [ ] T19: P2 follow-ups pending decision: analytics, English version, visual-regression snapshots.
+- [x] T20: Material teórico: 18 PDFs served from the SION volume with a `#material` section, day/class cards, Markdown transcript links and production verification.
 
 ## Log
 
@@ -119,4 +120,4 @@ P2 base landed:
 
 ## Next step
 
-The site is live from `main`. Remaining: add the Uptime Kuma monitor and decide T19 (analytics, English, visual regression).
+The site is live from `main`. T20 adds the material section and PDF volume; deploy it from `main` after merging the feature branch. Remaining: add the Uptime Kuma monitor and decide T19 (analytics, English, visual regression).
