@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import math
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -435,9 +436,27 @@ def build_payload(df: pl.DataFrame) -> dict[str, Any]:
     }
 
 
+def _normalized(payload: dict[str, Any]) -> Any:
+    """Round-trip through JSON so integer keys compare like the committed file."""
+    return json.loads(json.dumps(payload, ensure_ascii=False))
+
+
 def main() -> None:
+    check = "--check" in sys.argv[1:]
     df = load_dataset()
     payload = build_payload(df)
+
+    if check:
+        if not OUTPUT_PATH.exists():
+            print(f"STALE: {OUTPUT_PATH} is missing; run without --check")
+            raise SystemExit(1)
+        current = json.loads(OUTPUT_PATH.read_text(encoding="utf-8"))
+        if current != _normalized(payload):
+            print(f"STALE: {OUTPUT_PATH} does not match the pipeline; run without --check")
+            raise SystemExit(1)
+        print(f"OK: {OUTPUT_PATH.relative_to(OUTPUT_PATH.parents[3])} is current")
+        return
+
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_PATH.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

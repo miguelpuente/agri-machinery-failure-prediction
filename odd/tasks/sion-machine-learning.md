@@ -42,7 +42,7 @@ Build a static, interactive 24-day Machine Learning site named **Sion Machine Le
 - [x] T13: Read-only infrastructure audit (`infra/LOCAL_DEV.md`, `infra/PROD.md`, ingress) and multi-lens site audit (accessibility, mobile, performance, content, security, testing).
 - [x] T14: P0 fixes: axe accessibility blockers, mobile touch/chart/readability, content consistency, and deploy headers.
 - [x] T15: SION deploy artifacts for `chiqui.sion.net.ar`: nginx container, compose, runbook, tunnel/DNS/monitoring checklist. No production changes without explicit authorization.
-- [ ] T16: P1 improvements after P0: focus trap/skip link, code-splitting, self-hosted fonts, OG/SEO, import progress, continue CTA, error boundary, stale-data check, CI + axe.
+- [x] T16: P1 improvements after P0: focus trap/skip link, code-splitting, self-hosted fonts, OG/SEO, import progress, continue CTA, error boundary, stale-data check, CI + axe.
 - [ ] T17: Deploy `chiqui.sion.net.ar` with explicit user authorization and post-deploy smoke.
 
 ## Log
@@ -90,6 +90,19 @@ P0 fixes landed on 2026-11-17:
 
 T15 deploy artifacts (prepared, not executed): `web/deploy/Dockerfile` (node:24-alpine build → nginx:1.29-alpine), `web/deploy/nginx.conf` (SPA fallback, `/healthz`, cache, CSP and security headers), `web/deploy/compose.prod.yaml` (`chiqui_web`, external `sion_frontend`, read-only/tmpfs, healthcheck, log limits), `web/deploy/README.md` (arm64 build, tunnel/DNS, Uptime Kuma, verification, rollback) and `web/.dockerignore`. Dockerfile lint check passes and both base tags resolve for arm64; a full local image build hit the environment's npm registry/timeout twice at `npm ci`, so the runtime image still needs a build on `sion-oracle` or a machine with a warm npm cache. No production changes were made.
 
+
+P1 improvements landed:
+
+- **Code splitting**: `DayModal` is lazy; the 24 labs are grouped into six lazy chunks. The initial JS dropped from one 440 KB chunk to ~359 KB (108 KB gzip) plus on-demand chunks (DayModal 13.7 KB, DataPrep 15.3 KB, Regression 10.5 KB, Classification 6.2 KB, NeighborTree 11.6 KB, Clustering 7.4 KB, Pipeline 21.6 KB).
+- **Self-hosted fonts**: Inter and Outfit copied from `sion-web/static/fonts` into `web/public/fonts`, `@font-face` with preload, Google Fonts links removed, system mono fallback; CSP in Netlify and nginx tightened to `style-src 'self' 'unsafe-inline'` and `font-src 'self'`.
+- **SEO/social**: canonical `https://chiqui.sion.net.ar/`, OG/Twitter image `og-image.png` (1200×630), `og:url`, `robots.txt` and `sitemap.xml`.
+- **Progress import**: `importProgress`/`mergeProgress` with tests; “Importar” file input in the progress panel merges valid days and reports the result. Export/import round-trip covered by smoke.
+- **Continue CTA**: hero now opens the next pending day and labels it “Continuar por el día NN”; falls back to “Repasar el día 01”.
+- **Error boundary**: a lab render/load failure shows a recoverable panel without taking down the day.
+- **Stale data gate**: `uv run python scripts/export_web_data.py --check` rebuilds and compares the payload; verified `OK: web/src/data/ai4i.json is current`.
+- **Quality gates**: `npm run verify` (test+build+lint), `npm run smoke`, and `npm run audit` (axe-core, 5 views × desktop/mobile, 0 violations). GitHub Actions is blocked by the factory guard (no self-hosted runner online), so these remain local gates.
+- Verification after P1: 32 Vitest tests, build main 359 KB / 108 KB gzip, smoke OK, axe 0 violations, `npm audit` 0 vulnerabilities. Python suite remains 138 passed; export `--check` current.
+
 ## Next step
 
-T16 — P1 improvements (focus/animation polish, code-splitting, self-hosted fonts, OG/SEO, import progress, continue CTA, error boundary, stale-data check, CI + axe). Then T17: deploy `chiqui.sion.net.ar` with explicit authorization and post-deploy smoke.
+T17 — deploy `chiqui.sion.net.ar` with explicit authorization: build `sion/chiqui-web:<tag>` on `sion-oracle`, `chiqui_web` on `sion_frontend`, tunnel hostname, public DNS, Uptime Kuma monitor, post-deploy smoke and headers check. No production changes have been made yet.
