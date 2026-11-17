@@ -36,13 +36,15 @@ import {
 function celebrate() {
   if (typeof window === 'undefined') return
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-  void confetti({
+  const options = {
     particleCount: 90,
     spread: 70,
     origin: { y: 0.72 },
     colors: ['#00d1b2', '#38bdf8', '#a3e635', '#f2b84b', '#e6f1f0'],
     disableForReducedMotion: true,
-  })
+    useWorker: false,
+  }
+  void confetti(options as Parameters<typeof confetti>[0])
 }
 
 function replaceDayParam(day: number | null) {
