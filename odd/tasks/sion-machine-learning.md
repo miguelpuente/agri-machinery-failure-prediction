@@ -115,8 +115,8 @@ P2 base landed:
 - Verification: 38 Vitest tests, build main 370 KB / 112 KB gzip with lazy lab chunks, smoke passes (glossary search, import/export, certificate), axe 0 violations, `npm audit` 0, Python suite 138 passed, export `--check` current.
 - Not added: analytics (privacy/no telemetry), English version (large i18n), visual-regression baselines; these remain T19 pending a user decision.
 
-- T17 deployed on 2026-11-17 with explicit authorization. `chiqui_web` runs healthy on `sion_frontend` from `sion/chiqui-web:cf34012`; tunnel `apps-sion` config v46 maps `chiqui.sion.net.ar` → `http://chiqui_web:80`; proxied CNAME created; public (no Access). Verified: `/healthz` 200, `manifest.webmanifest` `application/manifest+json`, PWA service worker scope `/`, self-hosted fonts, production smoke OK, axe 0 violations. The code is on `feat/sion-machine-learning` (`cf34012`), not merged to `main`; merge + redeploy from `main` is the next delivery step. Uptime Kuma monitor is pending because no Kuma API/UI credentials were available; add `https://chiqui.sion.net.ar/healthz`.
+- T17 deployed on 2026-11-17 with explicit authorization. `chiqui_web` runs healthy on `sion_frontend` from `sion/chiqui-web:6c17437`; tunnel `apps-sion` config v46 maps `chiqui.sion.net.ar` → `http://chiqui_web:80`; proxied CNAME created; public (no Access). Verified from `main`: `/healthz` 200, `manifest.webmanifest` `application/manifest+json`, PWA service worker scope `/`, self-hosted fonts, production smoke OK, axe 0 violations. PR #15 merged `feat/sion-machine-learning` into `main` at `6c17437`; that merge commit is the live image. Uptime Kuma monitor is pending because no Kuma API/UI credentials were available; add `https://chiqui.sion.net.ar/healthz`.
 
 ## Next step
 
-The site is live. Remaining: add the Uptime Kuma monitor, merge `feat/sion-machine-learning` to `main` and redeploy from `main`, and decide T19 (analytics, English, visual regression).
+The site is live from `main`. Remaining: add the Uptime Kuma monitor and decide T19 (analytics, English, visual regression).
