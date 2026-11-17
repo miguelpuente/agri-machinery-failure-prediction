@@ -278,7 +278,11 @@ export function KmeansRealLab() {
         </LabPanel>
 
         <LabPanel title="Detalle de clústeres">
-          <div className="overflow-x-auto">
+          <p className="mb-2 text-[11px] leading-5 text-mist">
+            El gráfico muestra hasta 100 puntos por clúster (400 de 10.000). Los conteos de la tabla
+            son del dataset completo.
+          </p>
+          <div className="overflow-x-auto" role="region" aria-label="Detalle de clústeres" tabIndex={0}>
             <table className="w-full border-collapse text-left text-[11px]">
               <thead>
                 <tr>

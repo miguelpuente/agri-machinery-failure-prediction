@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 
 import type { Day } from '../types'
+import { setBackgroundInert, useFocusTrap } from '../lib/useFocusTrap'
 import { WEEK_THEME } from '../lib/theme'
 import { LAB_COMPONENTS } from './labs'
 import { Quiz } from './Quiz'
@@ -41,9 +42,10 @@ export function DayModal({
   const theme = WEEK_THEME[day.week]
   const Lab = LAB_COMPONENTS[day.labId]
 
+  useFocusTrap(panelRef)
+
   useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null
-    closeRef.current?.focus()
+    setBackgroundInert(true)
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()
     }
@@ -53,7 +55,7 @@ export function DayModal({
     return () => {
       window.removeEventListener('keydown', onKey)
       document.body.style.overflow = overflow
-      previous?.focus?.()
+      setBackgroundInert(false)
     }
   }, [onClose])
 
@@ -79,7 +81,7 @@ export function DayModal({
         aria-labelledby={titleId}
         className="modal-panel relative flex h-full w-full max-w-5xl flex-col overflow-y-auto border border-line bg-panel shadow-2xl shadow-black/60 sm:h-auto sm:max-h-[92vh] sm:rounded-2xl"
       >
-        <header className="sticky top-0 z-20 border-b border-line bg-panel/95 px-4 py-4 backdrop-blur sm:px-6">
+        <div className="sticky top-0 z-20 border-b border-line bg-panel/95 px-4 py-4 backdrop-blur sm:px-6">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
@@ -103,7 +105,6 @@ export function DayModal({
                 type="button"
                 onClick={() => onToggleComplete(day.day, !completed)}
                 aria-pressed={completed}
-                aria-label={completed ? 'Quitar marca de completado' : 'Marcar como completado'}
                 className={cn(
                   'inline-flex min-h-10 items-center gap-2 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors',
                   completed
@@ -112,6 +113,7 @@ export function DayModal({
                 )}
               >
                 {completed ? <CheckCircle2 className="size-4" aria-hidden="true" /> : <Check className="size-4" aria-hidden="true" />}
+                <span className="sm:hidden">{completed ? 'Completado' : 'Completar'}</span>
                 <span className="hidden sm:inline">{completed ? 'Completado' : 'Marcar completado'}</span>
               </button>
               <button
@@ -125,10 +127,10 @@ export function DayModal({
               </button>
             </div>
           </div>
-        </header>
+        </div>
 
         <div className="grid gap-6 px-4 py-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_280px]">
-          <main className="min-w-0 space-y-6">
+          <div className="min-w-0 space-y-6">
             <section aria-labelledby="concept-title">
               <h3 id="concept-title" className="font-display text-lg font-semibold text-foam">
                 Concepto
@@ -181,7 +183,7 @@ export function DayModal({
                 </Callout>
               </div>
             </section>
-          </main>
+          </div>
 
           <aside className="space-y-4 lg:sticky lg:top-28 lg:self-start">
             <div className="rounded-xl border border-line bg-panel-2/50 p-4">
@@ -195,7 +197,6 @@ export function DayModal({
                 type="button"
                 onClick={() => onToggleComplete(day.day, !completed)}
                 aria-pressed={completed}
-                aria-label={completed ? 'Quitar marca de completado' : 'Marcar como completado'}
                 className={cn(
                   'mt-2 inline-flex min-h-9 w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold transition-colors',
                   completed
@@ -275,7 +276,7 @@ export function DayModal({
                     aria-label={`Ir al día ${value}`}
                     aria-current={value === day.day ? 'page' : undefined}
                     className={cn(
-                      'grid size-6 place-items-center rounded font-mono text-[9px] transition-colors',
+                      'grid size-8 place-items-center rounded font-mono text-[9px] transition-colors sm:size-7',
                       value === day.day
                         ? 'bg-sion text-ink'
                         : 'text-mist hover:bg-line/60 hover:text-foam',

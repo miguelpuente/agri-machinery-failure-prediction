@@ -1,4 +1,4 @@
-import { useId, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 
 import { cn } from './ui'
 
@@ -43,10 +43,26 @@ export function PlotFrame({
   ariaLabel: string
   className?: string
 }) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [chartWidth, setChartWidth] = useState(width)
   const pad = { left: 48, right: 16, top: 16, bottom: 38 }
-  const innerWidth = width - pad.left - pad.right
+  const innerWidth = chartWidth - pad.left - pad.right
   const innerHeight = height - pad.top - pad.bottom
   const gradientId = useId()
+
+  useEffect(() => {
+    const node = containerRef.current
+    if (!node) return
+    const measure = () => {
+      const next = Math.max(320, Math.round(node.clientWidth))
+      if (next > 0) setChartWidth(next)
+    }
+    measure()
+    if (typeof ResizeObserver === 'undefined') return
+    const observer = new ResizeObserver(measure)
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
 
   const sx = (x: number) =>
     pad.left + ((x - xDomain[0]) / (xDomain[1] - xDomain[0] || 1)) * innerWidth
@@ -57,12 +73,13 @@ export function PlotFrame({
   const yTicks = ticks(yDomain[0], yDomain[1])
 
   return (
-    <svg
-      viewBox={`0 0 ${width} ${height}`}
-      role="img"
-      aria-label={ariaLabel}
-      className={cn('w-full', className)}
-    >
+    <div ref={containerRef} className={cn('w-full', className)}>
+      <svg
+        viewBox={`0 0 ${chartWidth} ${height}`}
+        role="img"
+        aria-label={ariaLabel}
+        className="block h-auto w-full"
+      >
       <defs>
         <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
           <stop offset="0%" stopColor="#00d1b2" stopOpacity="0.16" />
@@ -93,7 +110,7 @@ export function PlotFrame({
             y={height - 12}
             textAnchor="middle"
             fill="#8fa6a3"
-            fontSize="10"
+            fontSize="11"
             fontFamily="var(--font-mono)"
           >
             {formatX(tick)}
@@ -115,7 +132,7 @@ export function PlotFrame({
             y={sy(tick) + 3}
             textAnchor="end"
             fill="#8fa6a3"
-            fontSize="10"
+            fontSize="11"
             fontFamily="var(--font-mono)"
           >
             {formatY(tick)}
@@ -127,7 +144,7 @@ export function PlotFrame({
         y={height - 1}
         textAnchor="middle"
         fill="#8fa6a3"
-        fontSize="10"
+        fontSize="11"
         fontFamily="var(--font-mono)"
       >
         {xLabel}
@@ -137,14 +154,15 @@ export function PlotFrame({
         y={pad.top + innerHeight / 2}
         textAnchor="middle"
         fill="#8fa6a3"
-        fontSize="10"
+        fontSize="11"
         fontFamily="var(--font-mono)"
         transform={`rotate(-90 12 ${pad.top + innerHeight / 2})`}
       >
         {yLabel}
       </text>
-      {children({ sx, sy, left: pad.left, top: pad.top, innerWidth, innerHeight, xDomain, yDomain })}
-    </svg>
+        {children({ sx, sy, left: pad.left, top: pad.top, innerWidth, innerHeight, xDomain, yDomain })}
+      </svg>
+    </div>
   )
 }
 

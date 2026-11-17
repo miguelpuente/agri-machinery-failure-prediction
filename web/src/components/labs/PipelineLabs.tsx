@@ -289,7 +289,7 @@ export function GridsearchHeatmapLab() {
           <div
             className="grid gap-1"
             style={{ gridTemplateColumns: `3.2rem repeat(${data.leaves.length}, minmax(0, 1fr))` }}
-            role="grid"
+            role="group"
             aria-label="Mapa de calor de GridSearchCV"
           >
             <div />
@@ -318,14 +318,16 @@ export function GridsearchHeatmapLab() {
                       onFocus={() => setSelected({ depth, leaf })}
                       onClick={() => setSelected({ depth, leaf })}
                       title={`depth=${depth}, leaf=${leaf}, CV F1=${formatDecimal(value, 4)}`}
-                      aria-label={`depth ${depth}, leaf ${leaf}, F1 ${formatDecimal(value, 4)}`}
+                      aria-label={`depth ${depth}, leaf ${leaf}, F1 ${formatDecimal(value, 3)}`}
                       className={cn(
                         'relative min-h-11 rounded-md border text-center font-mono text-[11px] font-semibold tabular-nums transition-transform hover:scale-[1.03]',
                         isSelected ? 'border-foam' : 'border-line',
                       )}
                       style={{
                         backgroundColor: heatColor(value, min, max),
-                        color: (value - min) / (max - min || 1) > 0.55 ? '#05080d' : '#e6f1f0',
+                        backgroundImage:
+                          'linear-gradient(rgba(5, 8, 13, 0.5), rgba(5, 8, 13, 0.5))',
+                        color: '#e6f1f0',
                       }}
                     >
                       {formatDecimal(value, 3)}
@@ -354,9 +356,12 @@ export function GridsearchHeatmapLab() {
           <p className="font-display text-2xl font-semibold text-foam">
             depth {selected.depth} · leaf {selected.leaf}
           </p>
-          <p className="mt-1 font-mono text-lg text-sion">CV F1 {formatDecimal(score ?? 0, 4)}</p>
+          <p className="mt-1 text-[10px] uppercase tracking-[0.12em] text-mist">
+            F1 de la grilla amplia (features codificadas)
+          </p>
+          <p className="mt-0.5 font-mono text-lg text-sion">CV F1 {formatDecimal(score ?? 0, 4)}</p>
           <div className="mt-3 space-y-2">
-            <Readout label="Grilla oficial" value={`F1 ${formatDecimal(AI4I.tuned.cvMean, 4)} ± ${formatDecimal(AI4I.tuned.cvStd, 4)}`} />
+            <Readout label="Grilla oficial del proyecto" value={`F1 ${formatDecimal(AI4I.tuned.cvMean, 4)} ± ${formatDecimal(AI4I.tuned.cvStd, 4)}`} />
             <Readout label="Mejor de la grilla amplia" value={`d ${data.best.maxDepth}, leaf ${data.best.minSamplesLeaf}`} />
             <Readout label="Elección del proyecto" value={`d ${data.chosen.maxDepth}, leaf ${data.chosen.minSamplesLeaf}`} tone="good" />
           </div>
@@ -494,6 +499,10 @@ export function JoblibSerializationLab() {
             {loaded
               ? 'El pipeline cargado reproduce las mismas predicciones: preprocessing y modelo viajan juntos.'
               : 'Guardá y cargá el artefacto. Si guardaste solo el clasificador, la carga no puede reconstruir el preprocessing.'}
+          </p>
+          <p className="mt-2 text-[11px] leading-5 text-mist">
+            Las cinco filas son una simulación didáctica: el objetivo es verificar que el artefacto
+            cargado reproduce el mismo resultado, no estimar performance.
           </p>
         </LabPanel>
       </div>

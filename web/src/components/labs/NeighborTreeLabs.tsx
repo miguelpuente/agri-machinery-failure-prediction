@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import { AI4I } from '../../data/ai4i'
 import { formatDecimal, formatNumber, formatPercent } from '../../lib/format'
-import { knnQuery } from '../../lib/labMath'
+import { clamp, knnQuery } from '../../lib/labMath'
 import { BarList, PlotFrame } from '../charts'
 import { Callout, Slider, cn } from '../ui'
 import { LabPanel, LabShell, Legend, Readout } from './shared'
@@ -99,8 +99,29 @@ export function KnnCanvasLab() {
               width={innerWidth}
               height={innerHeight}
               fill="transparent"
+              tabIndex={0}
+              role="application"
+              aria-label="Mover la consulta con un clic o con las flechas del teclado"
               style={{ cursor: 'crosshair' }}
-              onPointerDown={(event) => {
+              onKeyDown={(event) => {
+                const stepX = 0.2
+                const stepY = 2
+                if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return
+                event.preventDefault()
+                setQuery((current) => ({
+                  x: clamp(
+                    current.x + (event.key === 'ArrowRight' ? stepX : event.key === 'ArrowLeft' ? -stepX : 0),
+                    KNN_X_DOMAIN[0],
+                    KNN_X_DOMAIN[1],
+                  ),
+                  y: clamp(
+                    current.y + (event.key === 'ArrowUp' ? stepY : event.key === 'ArrowDown' ? -stepY : 0),
+                    KNN_Y_DOMAIN[0],
+                    KNN_Y_DOMAIN[1],
+                  ),
+                }))
+              }}
+              onClick={(event) => {
                 const svg = event.currentTarget.ownerSVGElement
                 if (!svg) return
                 const rect = svg.getBoundingClientRect()
@@ -135,7 +156,8 @@ export function KnnCanvasLab() {
           Predicción: {result.label === 1 ? 'FALLA' : 'SANA'}.
         </span>{' '}
         Con k={k}, la mayoría de los {result.neighbors.length} vecinos votó por{' '}
-        {result.label === 1 ? 'falla' : 'sana'}. Hacé clic en el lienzo para mover la consulta.
+        {result.label === 1 ? 'falla' : 'sana'}. Hacé clic en el lienzo o usá las flechas del teclado
+        para mover la consulta.
       </div>
 
       <p className="text-xs leading-5 text-mist">

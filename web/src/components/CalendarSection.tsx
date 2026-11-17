@@ -29,7 +29,7 @@ function DayCard({
     <button
       type="button"
       onClick={() => onOpen(day.day)}
-      aria-label={`Abrir día ${String(day.day).padStart(2, '0')}: ${day.title}`}
+      data-day-card={day.day}
       className={cn(
         'group relative flex min-h-[178px] flex-col rounded-2xl border p-4 text-left transition-all duration-200',
         completed
@@ -92,7 +92,7 @@ function WeekSection({
   const label = days[0]?.weekLabel ?? ''
 
   return (
-    <section className="scroll-mt-24" aria-labelledby={`week-${week}`}>
+    <section className="scroll-mt-36 md:scroll-mt-24" aria-labelledby={`week-${week}`}>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
@@ -154,7 +154,7 @@ export function CalendarSection({
   )
 
   return (
-    <section id="calendario" className="scroll-mt-24 px-4 py-10 sm:px-6">
+    <section id="calendario" className="scroll-mt-36 px-4 py-10 sm:px-6 md:scroll-mt-24">
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>

@@ -45,7 +45,7 @@ print(df.select(pl.col("Machine failure").mean()))`,
     labId: 'pandas-inspector',
     labTitle: 'Inspector de lectura CSV',
     labInstruction:
-      'Alterná el separador y el decimal hasta que la tabla tenga 14 columnas y los sensores sean numéricos.',
+      'Este extracto simula un export con ";" y coma decimal; el CSV oficial de AI4I usa "," y ".". Alterná el separador y el decimal hasta que la tabla tenga 14 columnas y los sensores sean numéricos.',
     challenge:
       'Abrí el CSV descargado y explicá por qué UDI y Product ID no son predictores.',
     notebook: PREENTREGA,
@@ -491,7 +491,7 @@ print(knn.predict(X_test[:5]))`,
     labId: 'knn-canvas',
     labTitle: 'Lienzo de votación KNN',
     labInstruction:
-      'Hacé clic para ubicar una consulta, cambiá k y mirá el voto de los vecinos.',
+      'Hacé clic (o usá las flechas del teclado) para ubicar una consulta, cambiá k y mirá el voto de los vecinos.',
     challenge:
       '¿Qué pasa con k=1 y k=15? ¿Cuál es más estable frente a ruido?',
     notebook: ENTREGA_FINAL,

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import confetti from 'canvas-confetti'
 import { ArrowUp } from 'lucide-react'
 
@@ -49,6 +49,8 @@ export default function App() {
   })
   const [shareOpen, setShareOpen] = useState(false)
   const [showTop, setShowTop] = useState(false)
+  const lastTrigger = useRef<HTMLElement | null>(null)
+  const lastShareTrigger = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     saveProgress(completedDays)
@@ -70,6 +72,8 @@ export default function App() {
   }, [])
 
   const openDay = useCallback((day: number) => {
+    const active = document.activeElement as HTMLElement | null
+    if (active && !active.closest('[role="dialog"]')) lastTrigger.current = active
     setActiveDay(day)
     replaceDayParam(day)
   }, [])
@@ -77,6 +81,17 @@ export default function App() {
   const closeDay = useCallback(() => {
     setActiveDay(null)
     replaceDayParam(null)
+    window.requestAnimationFrame(() => lastTrigger.current?.focus())
+  }, [])
+
+  const openShare = useCallback(() => {
+    lastShareTrigger.current = document.activeElement as HTMLElement | null
+    setShareOpen(true)
+  }, [])
+
+  const closeShare = useCallback(() => {
+    setShareOpen(false)
+    window.requestAnimationFrame(() => lastShareTrigger.current?.focus())
   }, [])
 
   const toggleComplete = useCallback((day: number, completed: boolean) => {
@@ -120,11 +135,17 @@ export default function App() {
   const next = activeDay != null && activeDay < TOTAL_DAYS ? activeDay + 1 : null
 
   return (
-    <div className="relative min-h-screen">
+    <div id="app-shell" className="relative min-h-screen">
       <div className="site-background" aria-hidden="true" />
-      <Header completed={completedDays.length} total={TOTAL_DAYS} onShare={() => setShareOpen(true)} />
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-sion focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-ink"
+      >
+        Saltar al contenido
+      </a>
+      <Header completed={completedDays.length} total={TOTAL_DAYS} onShare={openShare} />
 
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <Hero onStart={() => openDay(1)} total={TOTAL_DAYS} />
         <ProgressPanel
           completed={completedDays.length}
@@ -132,7 +153,7 @@ export default function App() {
           nextDay={nextPending}
           onExport={handleExport}
           onReset={handleReset}
-          onShare={() => setShareOpen(true)}
+          onShare={openShare}
           onOpenNext={openNext}
         />
         <CalendarSection
@@ -185,7 +206,7 @@ export default function App() {
         open={shareOpen}
         completed={completedDays.length}
         total={TOTAL_DAYS}
-        onClose={() => setShareOpen(false)}
+        onClose={closeShare}
       />
     </div>
   )

@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Check, Copy, Share2, X } from 'lucide-react'
 
 import { BRAND } from '../lib/theme'
+import { setBackgroundInert, useFocusTrap } from '../lib/useFocusTrap'
 
 export function ShareDialog({
   open,
@@ -15,6 +16,15 @@ export function ShareDialog({
   onClose: () => void
 }) {
   const [copied, setCopied] = useState(false)
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  useFocusTrap(panelRef, open)
+
+  useEffect(() => {
+    if (!open) return
+    setBackgroundInert(true)
+    return () => setBackgroundInert(false)
+  }, [open])
 
   useEffect(() => {
     if (!open) return
@@ -52,6 +62,7 @@ export function ShareDialog({
         className="modal-backdrop absolute inset-0 cursor-default bg-ink/80 backdrop-blur-sm"
       />
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="share-title"

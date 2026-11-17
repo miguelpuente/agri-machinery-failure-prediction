@@ -20,7 +20,7 @@ check(
   (await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)) <= 1,
   'desktop home has horizontal overflow',
 )
-const cards = page.locator('button[aria-label^="Abrir día"]')
+const cards = page.locator('button[data-day-card]')
 check((await cards.count()) === 24, `home should render 24 day cards, got ${await cards.count()}`)
 
 for (let day = 1; day <= 24; day += 1) {
@@ -54,11 +54,16 @@ for (const day of [1, 13, 21, 24]) {
 await page.goto(base, { waitUntil: 'networkidle' })
 await page.evaluate(() => window.localStorage.clear())
 await page.reload({ waitUntil: 'networkidle' })
-await page.locator('button[aria-label^="Abrir día"]').first().click()
+await page.locator('button[data-day-card]').first().click()
 await page.locator('[role="dialog"]').waitFor({ state: 'visible' })
-await page.locator('[role="dialog"]').getByRole('button', { name: 'Marcar como completado' }).first().click()
+await page.locator('[role="dialog"]').getByRole('button', { name: 'Marcar completado' }).first().click()
 await page.locator('[role="dialog"] button[aria-label="Cerrar"]').click()
 await page.waitForSelector('text=1 de 24 laboratorios')
+await page.waitForTimeout(150)
+check(
+  (await page.evaluate(() => document.activeElement?.getAttribute('data-day-card'))) === '1',
+  'closing the day dialog should restore focus to its card',
+)
 
 await page.reload({ waitUntil: 'networkidle' })
 await page.waitForSelector('text=1 de 24 laboratorios')
@@ -67,10 +72,15 @@ await page.getByRole('button', { name: 'Compartir', exact: true }).first().click
 await page.waitForSelector('text=Pasá el link')
 check((await page.locator('#share-message').inputValue()).includes('1/24'), 'share text should include progress')
 await page.getByRole('button', { name: 'Cerrar', exact: true }).last().click()
+await page.waitForTimeout(150)
+check(
+  (await page.evaluate(() => document.activeElement?.getAttribute('aria-label'))) === 'Compartir',
+  'closing the share dialog should restore focus to its trigger',
+)
 
 await page.getByRole('button', { name: /Completados/ }).click()
 check(
-  (await page.locator('button[aria-label^="Abrir día"]').count()) === 1,
+  (await page.locator('button[data-day-card]').count()) === 1,
   'completed filter should show one day',
 )
 

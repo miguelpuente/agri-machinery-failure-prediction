@@ -76,7 +76,7 @@ export function Slider({
         step={step}
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="h-2 w-full cursor-pointer appearance-none rounded-full bg-line accent-sion"
+        className="range-sion w-full cursor-pointer"
       />
       {hint ? <p className="text-xs leading-5 text-mist">{hint}</p> : null}
     </div>
@@ -278,7 +278,12 @@ export function CodeBlock({ code, label = 'Python' }: { code: string; label?: st
           {copied ? 'Copiado' : 'Copiar'}
         </button>
       </div>
-      <pre className="code-scroll p-4 text-[12.5px] leading-6 text-foam/90">
+      <pre
+        tabIndex={0}
+        role="region"
+        aria-label={`Código ${label}`}
+        className="code-scroll p-4 text-[12.5px] leading-6 text-foam/90"
+      >
         <code>{code}</code>
       </pre>
     </div>
@@ -296,6 +301,9 @@ export function DataTable({
 }) {
   return (
     <div
+      role="region"
+      aria-label="Tabla de datos"
+      tabIndex={0}
       className="overflow-auto rounded-xl border border-line"
       style={maxHeight ? { maxHeight } : undefined}
     >

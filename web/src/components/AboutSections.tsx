@@ -10,7 +10,7 @@ import { Callout, Pill, cn } from './ui'
 
 export function RouteSection({ onOpen }: { onOpen: (day: number) => void }) {
   return (
-    <section id="ruta" className="scroll-mt-24 px-4 py-10 sm:px-6">
+    <section id="ruta" className="scroll-mt-36 px-4 py-10 sm:px-6 md:scroll-mt-24">
       <div className="mx-auto max-w-6xl">
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-sion">La ruta</p>
         <h2 className="mt-1 font-display text-3xl font-semibold tracking-tight text-foam">
@@ -42,7 +42,7 @@ export function RouteSection({ onOpen }: { onOpen: (day: number) => void }) {
                       <button
                         type="button"
                         onClick={() => onOpen(day.day)}
-                        className="group flex w-full items-baseline gap-2 rounded-md px-1 py-0.5 text-left text-xs text-mist transition-colors hover:bg-line/40 hover:text-foam"
+                        className="group flex min-h-8 w-full items-center gap-2 rounded-md px-1 py-1 text-left text-xs text-mist transition-colors hover:bg-line/40 hover:text-foam"
                       >
                         <span className={cn('font-mono text-[10px]', theme.text)}>
                           {String(day.day).padStart(2, '0')}
@@ -68,7 +68,7 @@ export function AboutSection() {
   ]
 
   return (
-    <section id="proyecto" className="scroll-mt-24 px-4 py-10 sm:px-6">
+    <section id="proyecto" className="scroll-mt-36 px-4 py-10 sm:px-6 md:scroll-mt-24">
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-8 lg:grid-cols-[1fr_0.9fr]">
           <div className="min-w-0">
@@ -148,7 +148,7 @@ export function AboutSection() {
                   2.000 filas · 68 fallas
                 </span>
               </div>
-              <div className="mt-3 overflow-x-auto">
+              <div className="mt-3 overflow-x-auto" role="region" aria-label="Tabla de resultados de modelos" tabIndex={0}>
                 <table className="w-full border-collapse text-left text-xs">
                   <thead>
                     <tr>

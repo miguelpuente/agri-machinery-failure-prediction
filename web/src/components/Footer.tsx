@@ -22,7 +22,7 @@ export function Footer() {
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-mist">
           <span>AI4I 2020 · CC BY 4.0</span>
           <a
-            className="inline-flex items-center gap-1.5 transition-colors hover:text-sion"
+            className="inline-flex min-h-8 items-center gap-1.5 transition-colors hover:text-sion"
             href={BRAND.repository}
             target="_blank"
             rel="noreferrer"
@@ -31,7 +31,7 @@ export function Footer() {
             Repositorio
           </a>
           <a
-            className="transition-colors hover:text-sion"
+            className="inline-flex min-h-8 items-center transition-colors hover:text-sion"
             href={BRAND.site}
             target="_blank"
             rel="noreferrer"

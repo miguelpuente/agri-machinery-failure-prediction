@@ -74,6 +74,10 @@ export function PandasInspectorLab() {
 
   return (
     <LabShell>
+      <Callout tone="info" title="Archivo de práctica">
+        El CSV oficial de AI4I usa coma y punto decimal. Este ejercicio simula un export
+        alternativo con punto y coma y coma decimal para practicar la detección del formato.
+      </Callout>
       <div className="grid gap-3 sm:grid-cols-2">
         <LabPanel title="Separador de columnas">
           <Segmented
@@ -101,7 +105,7 @@ export function PandasInspectorLab() {
 
       <div className="grid gap-3 lg:grid-cols-2">
         <LabPanel title="CSV crudo (extracto)">
-          <pre className="code-scroll max-h-52 rounded-lg border border-line bg-ink/60 p-3 text-[11px] leading-5 text-mist">
+          <pre tabIndex={0} role="region" aria-label="CSV crudo" className="code-scroll max-h-52 rounded-lg border border-line bg-ink/60 p-3 text-[11px] leading-5 text-mist">
             {csv}
           </pre>
         </LabPanel>
