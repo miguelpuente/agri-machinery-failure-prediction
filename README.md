@@ -18,7 +18,7 @@ proyecto desde GitHub y descarga el dataset oficial; no hace falta clonar nada.
 
 ## Sitio interactivo · Sion Machine Learning
 
-`web/` contiene una SPA estática con **24 laboratorios interactivos** de mantenimiento
+`web/` contiene una SPA estática ([live](https://chiqui.sion.net.ar/)) con **24 laboratorios interactivos** de mantenimiento
 predictivo sobre AI4I, con la identidad visual de SION y los datos y métricas reales de
 este proyecto. Cada día combina concepto, código, laboratorio, quiz, reto y notebook.
 

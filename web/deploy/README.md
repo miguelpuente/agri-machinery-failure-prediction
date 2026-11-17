@@ -1,8 +1,26 @@
 # Deploy SION · `chiqui.sion.net.ar`
 
-Runbook for the static site on `sion-oracle`. **Preparation only**: nothing here has
-been executed against production. Publishing requires explicit user authorization,
-SSH access to `sion-oracle`, and access to the Cloudflare dashboard/API.
+Runbook for the static site on `sion-oracle`. **Deployed on 2026-11-17** with explicit
+user authorization. The site is live at <https://chiqui.sion.net.ar/>. This document keeps
+the reproducible procedure, current state and next steps.
+
+## Current deployment (2026-11-17)
+
+| Field | Value |
+|---|---|
+| URL | <https://chiqui.sion.net.ar/> |
+| Container | `chiqui_web` (healthy) on `sion_frontend` |
+| Image | `sion/chiqui-web:cf34012` |
+| Code | `feat/sion-machine-learning` @ `cf34012` (not merged to `main` yet) |
+| Tunnel | `apps-sion` config version 46, `chiqui.sion.net.ar` → `http://chiqui_web:80` |
+| DNS | proxied `CNAME chiqui` → `9f619bf9-bd07-46bb-882c-51c6288c60df.cfargotunnel.com` |
+| Access | public (no Access app) |
+| Monitor | **pending**: add `https://chiqui.sion.net.ar/healthz` (HTTP 200, body `ok`) in Uptime Kuma |
+
+Verified after deploy: `/healthz` 200, SPA deep links, `manifest.webmanifest` with
+`application/manifest+json`, self-hosted fonts, PWA service worker, production smoke
+(24 labs, progress, import/export, certificate) and axe audit (0 violations). The GitHub
+branch must be merged to `main` before the next deploy from `main`.
 
 ## Architecture
 

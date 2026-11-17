@@ -1,6 +1,6 @@
 # Sion Machine Learning · sitio interactivo
 
-SPA estática con 24 laboratorios interactivos de mantenimiento predictivo sobre el dataset
+SPA estática (live en <https://chiqui.sion.net.ar/>) con 24 laboratorios interactivos de mantenimiento predictivo sobre el dataset
 AI4I 2020. Replica la experiencia de un calendario de aprendizaje, pero con la identidad
 institucional de SION y con los datos, métricas y notebooks reales de este repositorio.
 
