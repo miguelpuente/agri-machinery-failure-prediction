@@ -1,0 +1,26 @@
+{
+  "name": "Sion Machine Learning",
+  "short_name": "Sion ML",
+  "description": "24 laboratorios interactivos de mantenimiento predictivo sobre AI4I, con la identidad de SION.",
+  "lang": "es-AR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#05080D",
+  "theme_color": "#00D1B2",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

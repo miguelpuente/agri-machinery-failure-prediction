@@ -16,6 +16,26 @@ notebooks funcionales desde código de producción, verificado con pruebas autom
 En Colab: **Entorno de ejecución → Ejecutar todas**. La primera celda instala el
 proyecto desde GitHub y descarga el dataset oficial; no hace falta clonar nada.
 
+## Sitio interactivo · Sion Machine Learning
+
+`web/` contiene una SPA estática ([live](https://chiqui.sion.net.ar/)) con **24 laboratorios interactivos** de mantenimiento
+predictivo sobre AI4I, con la identidad visual de SION y los datos y métricas reales de
+este proyecto. Cada día combina concepto, código, laboratorio, quiz, reto y notebook.
+
+```bash
+cd web
+npm install
+npm run dev        # desarrollo
+npm run test       # Vitest
+npm run build      # typecheck + build estático
+npm run smoke      # Playwright (con el dev server en :4173)
+```
+
+Los datos de los labs se regeneran desde el CSV oficial con
+`uv run python scripts/export_web_data.py`; el JSON generado no se edita a mano. El
+`netlify.toml` de la raíz deja el sitio listo para un deploy estático, que requiere
+autorización explícita. Detalle completo en [`web/README.md`](web/README.md).
+
 ## Resultados
 
 Dataset AI4I 2020 (10.000 filas, objetivo `Machine failure`, ~3,4% positivo).
@@ -111,7 +131,7 @@ src/agrofail/tuning.py       GridSearchCV y estabilidad del F1 entre pliegues
 src/agrofail/report.py       Generación de ambas entregas
 notebooks/preentrega.ipynb   Preparación de datos y anexo
 notebooks/entrega-final.ipynb Modelado, ajuste, conclusiones y anexo
-tests/                       Pruebas del paquete (136)
+tests/                       Pruebas del paquete (138)
 data/raw/                    Datos originales, excluidos de Git
 data/processed/              Datos preparados, excluidos de Git
 ```

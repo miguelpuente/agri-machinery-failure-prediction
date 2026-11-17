@@ -1,0 +1,4572 @@
+{
+  "meta": {
+    "dataset": "AI4I 2020 Predictive Maintenance Dataset",
+    "source": "https://archive.ics.uci.edu/dataset/601/ai4i+2020+predictive+maintenance+dataset",
+    "license": "CC BY 4.0",
+    "citation": "Matzka, S. (2020). AI4I 2020 Predictive Maintenance Dataset. UCI Machine Learning Repository. https://doi.org/10.24432/C5HS5C",
+    "rows": 10000,
+    "columns": 14,
+    "failureCount": 339,
+    "failureRate": 0.0339,
+    "testSize": 0.2,
+    "randomState": 42
+  },
+  "summary": {
+    "rowCount": 10000,
+    "columnCount": 14,
+    "classBalance": {
+      "1": 339,
+      "0": 9661
+    }
+  },
+  "sensorStats": {
+    "Air temperature [K]": {
+      "min": 295.3,
+      "q1": 298.3,
+      "median": 300.1,
+      "q3": 301.5,
+      "max": 304.5,
+      "mean": 300.0049,
+      "std": 2.0003
+    },
+    "Process temperature [K]": {
+      "min": 305.7,
+      "q1": 308.8,
+      "median": 310.1,
+      "q3": 311.1,
+      "max": 313.8,
+      "mean": 310.0056,
+      "std": 1.4837
+    },
+    "Rotational speed [rpm]": {
+      "min": 1168.0,
+      "q1": 1423.0,
+      "median": 1503.0,
+      "q3": 1612.0,
+      "max": 2886.0,
+      "mean": 1538.7761,
+      "std": 179.2841
+    },
+    "Torque [Nm]": {
+      "min": 3.8,
+      "q1": 33.2,
+      "median": 40.1,
+      "q3": 46.8,
+      "max": 76.6,
+      "mean": 39.9869,
+      "std": 9.9689
+    },
+    "Tool wear [min]": {
+      "min": 0.0,
+      "q1": 53.0,
+      "median": 108.0,
+      "q3": 162.0,
+      "max": 253.0,
+      "mean": 107.951,
+      "std": 63.6541
+    }
+  },
+  "typeStats": {
+    "H": {
+      "count": 1003,
+      "failures": 21,
+      "failureRate": 0.0209
+    },
+    "L": {
+      "count": 6000,
+      "failures": 235,
+      "failureRate": 0.0392
+    },
+    "M": {
+      "count": 2997,
+      "failures": 83,
+      "failureRate": 0.0277
+    }
+  },
+  "correlation": {
+    "columns": [
+      "Air temperature [K]",
+      "Process temperature [K]",
+      "Rotational speed [rpm]",
+      "Torque [Nm]",
+      "Tool wear [min]"
+    ],
+    "matrix": [
+      [
+        1.0,
+        0.8761,
+        0.0227,
+        -0.0138,
+        0.0139
+      ],
+      [
+        0.8761,
+        1.0,
+        0.0193,
+        -0.0141,
+        0.0135
+      ],
+      [
+        0.0227,
+        0.0193,
+        1.0,
+        -0.875,
+        0.0002
+      ],
+      [
+        -0.0138,
+        -0.0141,
+        -0.875,
+        1.0,
+        -0.0031
+      ],
+      [
+        0.0139,
+        0.0135,
+        0.0002,
+        -0.0031,
+        1.0
+      ]
+    ]
+  },
+  "sampleRows": [
+    {
+      "UDI": 1,
+      "Product ID": "M14860",
+      "Type": "M",
+      "Air temperature [K]": 298.1,
+      "Process temperature [K]": 308.6,
+      "Rotational speed [rpm]": 1551,
+      "Torque [Nm]": 42.8,
+      "Tool wear [min]": 0,
+      "Machine failure": 0
+    },
+    {
+      "UDI": 2,
+      "Product ID": "L47181",
+      "Type": "L",
+      "Air temperature [K]": 298.2,
+      "Process temperature [K]": 308.7,
+      "Rotational speed [rpm]": 1408,
+      "Torque [Nm]": 46.3,
+      "Tool wear [min]": 3,
+      "Machine failure": 0
+    },
+    {
+      "UDI": 3,
+      "Product ID": "L47182",
+      "Type": "L",
+      "Air temperature [K]": 298.1,
+      "Process temperature [K]": 308.5,
+      "Rotational speed [rpm]": 1498,
+      "Torque [Nm]": 49.4,
+      "Tool wear [min]": 5,
+      "Machine failure": 0
+    },
+    {
+      "UDI": 4,
+      "Product ID": "L47183",
+      "Type": "L",
+      "Air temperature [K]": 298.2,
+      "Process temperature [K]": 308.6,
+      "Rotational speed [rpm]": 1433,
+      "Torque [Nm]": 39.5,
+      "Tool wear [min]": 7,
+      "Machine failure": 0
+    },
+    {
+      "UDI": 5,
+      "Product ID": "L47184",
+      "Type": "L",
+      "Air temperature [K]": 298.2,
+      "Process temperature [K]": 308.7,
+      "Rotational speed [rpm]": 1408,
+      "Torque [Nm]": 40.0,
+      "Tool wear [min]": 9,
+      "Machine failure": 0
+    },
+    {
+      "UDI": 6,
+      "Product ID": "M14865",
+      "Type": "M",
+      "Air temperature [K]": 298.1,
+      "Process temperature [K]": 308.6,
+      "Rotational speed [rpm]": 1425,
+      "Torque [Nm]": 41.9,
+      "Tool wear [min]": 11,
+      "Machine failure": 0
+    },
+    {
+      "UDI": 7,
+      "Product ID": "L47186",
+      "Type": "L",
+      "Air temperature [K]": 298.1,
+      "Process temperature [K]": 308.6,
+      "Rotational speed [rpm]": 1558,
+      "Torque [Nm]": 42.4,
+      "Tool wear [min]": 14,
+      "Machine failure": 0
+    },
+    {
+      "UDI": 8,
+      "Product ID": "L47187",
+      "Type": "L",
+      "Air temperature [K]": 298.1,
+      "Process temperature [K]": 308.6,
+      "Rotational speed [rpm]": 1527,
+      "Torque [Nm]": 40.2,
+      "Tool wear [min]": 16,
+      "Machine failure": 0
+    },
+    {
+      "UDI": 51,
+      "Product ID": "L47230",
+      "Type": "L",
+      "Air temperature [K]": 298.9,
+      "Process temperature [K]": 309.1,
+      "Rotational speed [rpm]": 2861,
+      "Torque [Nm]": 4.6,
+      "Tool wear [min]": 143,
+      "Machine failure": 1
+    },
+    {
+      "UDI": 70,
+      "Product ID": "L47249",
+      "Type": "L",
+      "Air temperature [K]": 298.9,
+      "Process temperature [K]": 309.0,
+      "Rotational speed [rpm]": 1410,
+      "Torque [Nm]": 65.7,
+      "Tool wear [min]": 191,
+      "Machine failure": 1
+    },
+    {
+      "UDI": 78,
+      "Product ID": "L47257",
+      "Type": "L",
+      "Air temperature [K]": 298.8,
+      "Process temperature [K]": 308.9,
+      "Rotational speed [rpm]": 1455,
+      "Torque [Nm]": 41.3,
+      "Tool wear [min]": 208,
+      "Machine failure": 1
+    },
+    {
+      "UDI": 161,
+      "Product ID": "L47340",
+      "Type": "L",
+      "Air temperature [K]": 298.4,
+      "Process temperature [K]": 308.2,
+      "Rotational speed [rpm]": 1282,
+      "Torque [Nm]": 60.7,
+      "Tool wear [min]": 216,
+      "Machine failure": 1
+    }
+  ],
+  "nullsSample": {
+    "rows": [
+      {
+        "UDI": 1,
+        "Product ID": "M14860",
+        "Type": "M",
+        "Air temperature [K]": 298.1,
+        "Process temperature [K]": 308.6,
+        "Rotational speed [rpm]": 1551,
+        "Torque [Nm]": 42.8,
+        "Tool wear [min]": 0,
+        "Machine failure": 0
+      },
+      {
+        "UDI": 2,
+        "Product ID": "L47181",
+        "Type": "L",
+        "Air temperature [K]": 298.2,
+        "Process temperature [K]": 308.7,
+        "Rotational speed [rpm]": 1408,
+        "Torque [Nm]": 46.3,
+        "Tool wear [min]": 3,
+        "Machine failure": 0
+      },
+      {
+        "UDI": 3,
+        "Product ID": "L47182",
+        "Type": "L",
+        "Air temperature [K]": null,
+        "Process temperature [K]": 308.5,
+        "Rotational speed [rpm]": 1498,
+        "Torque [Nm]": 49.4,
+        "Tool wear [min]": 5,
+        "Machine failure": 0
+      },
+      {
+        "UDI": 4,
+        "Product ID": "L47183",
+        "Type": "L",
+        "Air temperature [K]": 298.2,
+        "Process temperature [K]": 308.6,
+        "Rotational speed [rpm]": 1433,
+        "Torque [Nm]": 39.5,
+        "Tool wear [min]": 7,
+        "Machine failure": 0
+      },
+      {
+        "UDI": 5,
+        "Product ID": "L47184",
+        "Type": "L",
+        "Air temperature [K]": 298.2,
+        "Process temperature [K]": 308.7,
+        "Rotational speed [rpm]": 1408,
+        "Torque [Nm]": 40.0,
+        "Tool wear [min]": 9,
+        "Machine failure": 0
+      },
+      {
+        "UDI": 6,
+        "Product ID": "M14865",
+        "Type": "M",
+        "Air temperature [K]": 298.1,
+        "Process temperature [K]": null,
+        "Rotational speed [rpm]": 1425,
+        "Torque [Nm]": 41.9,
+        "Tool wear [min]": 11,
+        "Machine failure": 0
+      },
+      {
+        "UDI": 7,
+        "Product ID": "L47186",
+        "Type": "L",
+        "Air temperature [K]": 298.1,
+        "Process temperature [K]": 308.6,
+        "Rotational speed [rpm]": 1558,
+        "Torque [Nm]": 42.4,
+        "Tool wear [min]": 14,
+        "Machine failure": 0
+      },
+      {
+        "UDI": 8,
+        "Product ID": "L47187",
+        "Type": "L",
+        "Air temperature [K]": 298.1,
+        "Process temperature [K]": 308.6,
+        "Rotational speed [rpm]": 1527,
+        "Torque [Nm]": null,
+        "Tool wear [min]": 16,
+        "Machine failure": 0
+      },
+      {
+        "UDI": 51,
+        "Product ID": "L47230",
+        "Type": "L",
+        "Air temperature [K]": 298.9,
+        "Process temperature [K]": 309.1,
+        "Rotational speed [rpm]": 2861,
+        "Torque [Nm]": 4.6,
+        "Tool wear [min]": 143,
+        "Machine failure": 1
+      },
+      {
+        "UDI": 70,
+        "Product ID": "L47249",
+        "Type": "L",
+        "Air temperature [K]": 298.9,
+        "Process temperature [K]": 309.0,
+        "Rotational speed [rpm]": 1410,
+        "Torque [Nm]": 65.7,
+        "Tool wear [min]": 191,
+        "Machine failure": 1
+      },
+      {
+        "UDI": 78,
+        "Product ID": "L47257",
+        "Type": "L",
+        "Air temperature [K]": 298.8,
+        "Process temperature [K]": 308.9,
+        "Rotational speed [rpm]": 1455,
+        "Torque [Nm]": 41.3,
+        "Tool wear [min]": 208,
+        "Machine failure": 1
+      },
+      {
+        "UDI": 161,
+        "Product ID": "L47340",
+        "Type": "L",
+        "Air temperature [K]": 298.4,
+        "Process temperature [K]": 308.2,
+        "Rotational speed [rpm]": 1282,
+        "Torque [Nm]": 60.7,
+        "Tool wear [min]": 216,
+        "Machine failure": 1
+      }
+    ],
+    "nullCells": [
+      [
+        2,
+        "Air temperature [K]"
+      ],
+      [
+        5,
+        "Process temperature [K]"
+      ],
+      [
+        7,
+        "Torque [Nm]"
+      ]
+    ]
+  },
+  "cleaning": {
+    "duplicatesRemoved": 0,
+    "rowsDroppedMissing": 0,
+    "remainingRows": 10000,
+    "outlierRows": 459,
+    "outliersBySensor": {
+      "Air temperature [K]": 0,
+      "Process temperature [K]": 0,
+      "Rotational speed [rpm]": 418,
+      "Torque [Nm]": 69,
+      "Tool wear [min]": 0
+    }
+  },
+  "split": {
+    "trainRows": 8000,
+    "testRows": 2000,
+    "trainFailures": 271,
+    "testFailures": 68
+  },
+  "models": [
+    {
+      "name": "Logistic Regression",
+      "accuracy": 0.9675,
+      "precision": 0.6364,
+      "recall": 0.1029,
+      "f1": 0.1772,
+      "rocAuc": 0.8996,
+      "tn": 1928,
+      "fp": 4,
+      "fn": 61,
+      "tp": 7,
+      "roc": [
+        {
+          "fpr": 0.0,
+          "tpr": 0.0
+        },
+        {
+          "fpr": 0.0005,
+          "tpr": 0.1029
+        },
+        {
+          "fpr": 0.0036,
+          "tpr": 0.1912
+        },
+        {
+          "fpr": 0.0067,
+          "tpr": 0.2206
+        },
+        {
+          "fpr": 0.0083,
+          "tpr": 0.2794
+        },
+        {
+          "fpr": 0.0109,
+          "tpr": 0.3382
+        },
+        {
+          "fpr": 0.0124,
+          "tpr": 0.3971
+        },
+        {
+          "fpr": 0.0192,
+          "tpr": 0.4265
+        },
+        {
+          "fpr": 0.0217,
+          "tpr": 0.4853
+        },
+        {
+          "fpr": 0.0269,
+          "tpr": 0.5588
+        },
+        {
+          "fpr": 0.043,
+          "tpr": 0.6029
+        },
+        {
+          "fpr": 0.0476,
+          "tpr": 0.6324
+        },
+        {
+          "fpr": 0.059,
+          "tpr": 0.6618
+        },
+        {
+          "fpr": 0.0776,
+          "tpr": 0.6912
+        },
+        {
+          "fpr": 0.1051,
+          "tpr": 0.7206
+        },
+        {
+          "fpr": 0.1154,
+          "tpr": 0.75
+        },
+        {
+          "fpr": 0.1879,
+          "tpr": 0.7794
+        },
+        {
+          "fpr": 0.2086,
+          "tpr": 0.8088
+        },
+        {
+          "fpr": 0.235,
+          "tpr": 0.8382
+        },
+        {
+          "fpr": 0.2598,
+          "tpr": 0.8824
+        },
+        {
+          "fpr": 0.3261,
+          "tpr": 0.9118
+        },
+        {
+          "fpr": 0.3737,
+          "tpr": 0.9412
+        },
+        {
+          "fpr": 0.5864,
+          "tpr": 0.9706
+        },
+        {
+          "fpr": 1.0,
+          "tpr": 1.0
+        }
+      ]
+    },
+    {
+      "name": "Random Forest",
+      "accuracy": 0.9805,
+      "precision": 0.8919,
+      "recall": 0.4853,
+      "f1": 0.6286,
+      "rocAuc": 0.9653,
+      "tn": 1928,
+      "fp": 4,
+      "fn": 35,
+      "tp": 33,
+      "roc": [
+        {
+          "fpr": 0.0,
+          "tpr": 0.0
+        },
+        {
+          "fpr": 0.0,
+          "tpr": 0.0294
+        },
+        {
+          "fpr": 0.0,
+          "tpr": 0.1029
+        },
+        {
+          "fpr": 0.0,
+          "tpr": 0.1912
+        },
+        {
+          "fpr": 0.0,
+          "tpr": 0.2794
+        },
+        {
+          "fpr": 0.001,
+          "tpr": 0.3529
+        },
+        {
+          "fpr": 0.0016,
+          "tpr": 0.4118
+        },
+        {
+          "fpr": 0.0021,
+          "tpr": 0.4853
+        },
+        {
+          "fpr": 0.0031,
+          "tpr": 0.5735
+        },
+        {
+          "fpr": 0.0041,
+          "tpr": 0.6176
+        },
+        {
+          "fpr": 0.0047,
+          "tpr": 0.6618
+        },
+        {
+          "fpr": 0.0062,
+          "tpr": 0.7206
+        },
+        {
+          "fpr": 0.0088,
+          "tpr": 0.7353
+        },
+        {
+          "fpr": 0.0109,
+          "tpr": 0.7647
+        },
+        {
+          "fpr": 0.0145,
+          "tpr": 0.8088
+        },
+        {
+          "fpr": 0.0197,
+          "tpr": 0.8088
+        },
+        {
+          "fpr": 0.0248,
+          "tpr": 0.8235
+        },
+        {
+          "fpr": 0.0311,
+          "tpr": 0.8235
+        },
+        {
+          "fpr": 0.0373,
+          "tpr": 0.8676
+        },
+        {
+          "fpr": 0.0471,
+          "tpr": 0.8971
+        },
+        {
+          "fpr": 0.0595,
+          "tpr": 0.8971
+        },
+        {
+          "fpr": 0.0725,
+          "tpr": 0.8971
+        },
+        {
+          "fpr": 0.1139,
+          "tpr": 0.9265
+        },
+        {
+          "fpr": 1.0,
+          "tpr": 1.0
+        }
+      ]
+    },
+    {
+      "name": "Decision Tree",
+      "accuracy": 0.971,
+      "precision": 0.8125,
+      "recall": 0.1912,
+      "f1": 0.3095,
+      "rocAuc": 0.8668,
+      "tn": 1929,
+      "fp": 3,
+      "fn": 55,
+      "tp": 13,
+      "roc": [
+        {
+          "fpr": 0.0,
+          "tpr": 0.0
+        },
+        {
+          "fpr": 0.001,
+          "tpr": 0.1765
+        },
+        {
+          "fpr": 0.0016,
+          "tpr": 0.1912
+        },
+        {
+          "fpr": 0.0212,
+          "tpr": 0.5882
+        },
+        {
+          "fpr": 0.1139,
+          "tpr": 0.7941
+        },
+        {
+          "fpr": 1.0,
+          "tpr": 1.0
+        }
+      ]
+    }
+  ],
+  "tuned": {
+    "name": "Decision Tree",
+    "params": {
+      "max_depth": 8,
+      "min_samples_leaf": 3
+    },
+    "cvMean": 0.7096,
+    "cvStd": 0.0436,
+    "metrics": {
+      "name": "Decision Tree",
+      "accuracy": 0.985,
+      "precision": 0.8393,
+      "recall": 0.6912,
+      "f1": 0.7581,
+      "rocAuc": 0.8877,
+      "tn": 1923,
+      "fp": 9,
+      "fn": 21,
+      "tp": 47,
+      "roc": [
+        {
+          "fpr": 0.0,
+          "tpr": 0.0
+        },
+        {
+          "fpr": 0.0021,
+          "tpr": 0.5294
+        },
+        {
+          "fpr": 0.0021,
+          "tpr": 0.6471
+        },
+        {
+          "fpr": 0.0026,
+          "tpr": 0.6471
+        },
+        {
+          "fpr": 0.0036,
+          "tpr": 0.6765
+        },
+        {
+          "fpr": 0.0041,
+          "tpr": 0.6912
+        },
+        {
+          "fpr": 0.0047,
+          "tpr": 0.6912
+        },
+        {
+          "fpr": 0.0062,
+          "tpr": 0.6912
+        },
+        {
+          "fpr": 0.0072,
+          "tpr": 0.6912
+        },
+        {
+          "fpr": 0.0124,
+          "tpr": 0.6912
+        },
+        {
+          "fpr": 0.0243,
+          "tpr": 0.7794
+        },
+        {
+          "fpr": 0.0311,
+          "tpr": 0.7941
+        },
+        {
+          "fpr": 0.074,
+          "tpr": 0.8529
+        },
+        {
+          "fpr": 0.0761,
+          "tpr": 0.8529
+        },
+        {
+          "fpr": 0.9068,
+          "tpr": 0.9265
+        },
+        {
+          "fpr": 1.0,
+          "tpr": 1.0
+        }
+      ]
+    }
+  },
+  "featureImportance": [
+    {
+      "name": "Torque [Nm]",
+      "importance": 0.3169
+    },
+    {
+      "name": "Rotational speed [rpm]",
+      "importance": 0.2333
+    },
+    {
+      "name": "Tool wear [min]",
+      "importance": 0.1688
+    },
+    {
+      "name": "Air temperature [K]",
+      "importance": 0.1353
+    },
+    {
+      "name": "Process temperature [K]",
+      "importance": 0.1216
+    },
+    {
+      "name": "Type_L",
+      "importance": 0.0111
+    },
+    {
+      "name": "Type_M",
+      "importance": 0.0082
+    },
+    {
+      "name": "Type_H",
+      "importance": 0.0048
+    }
+  ],
+  "depthCurve": [
+    {
+      "depth": 1,
+      "trainF1": 0.2822,
+      "testF1": 0.2051
+    },
+    {
+      "depth": 2,
+      "trainF1": 0.3862,
+      "testF1": 0.3095
+    },
+    {
+      "depth": 3,
+      "trainF1": 0.3943,
+      "testF1": 0.3095
+    },
+    {
+      "depth": 4,
+      "trainF1": 0.4343,
+      "testF1": 0.3095
+    },
+    {
+      "depth": 5,
+      "trainF1": 0.5855,
+      "testF1": 0.4255
+    },
+    {
+      "depth": 6,
+      "trainF1": 0.6794,
+      "testF1": 0.5149
+    },
+    {
+      "depth": 7,
+      "trainF1": 0.6986,
+      "testF1": 0.5455
+    },
+    {
+      "depth": 8,
+      "trainF1": 0.841,
+      "testF1": 0.748
+    },
+    {
+      "depth": 9,
+      "trainF1": 0.8685,
+      "testF1": 0.6897
+    },
+    {
+      "depth": 10,
+      "trainF1": 0.9014,
+      "testF1": 0.7419
+    },
+    {
+      "depth": 11,
+      "trainF1": 0.9282,
+      "testF1": 0.7077
+    },
+    {
+      "depth": 12,
+      "trainF1": 0.9414,
+      "testF1": 0.7213
+    }
+  ],
+  "tuningHeatmap": {
+    "depths": [
+      2,
+      4,
+      6,
+      8,
+      10,
+      12
+    ],
+    "leaves": [
+      1,
+      3,
+      5,
+      10
+    ],
+    "scores": [
+      [
+        0.3325,
+        0.3325,
+        0.3325,
+        0.3325
+      ],
+      [
+        0.4115,
+        0.4079,
+        0.4005,
+        0.4242
+      ],
+      [
+        0.5641,
+        0.5967,
+        0.598,
+        0.5712
+      ],
+      [
+        0.6925,
+        0.7108,
+        0.7146,
+        0.6704
+      ],
+      [
+        0.7109,
+        0.7151,
+        0.7258,
+        0.7006
+      ],
+      [
+        0.7052,
+        0.7092,
+        0.723,
+        0.6965
+      ]
+    ],
+    "best": {
+      "maxDepth": 10,
+      "minSamplesLeaf": 5,
+      "cvF1": 0.7258
+    },
+    "chosen": {
+      "maxDepth": 8,
+      "minSamplesLeaf": 3
+    }
+  },
+  "linearRegression": {
+    "xLabel": "Air temperature [K]",
+    "yLabel": "Process temperature [K]",
+    "points": [
+      {
+        "x": 298.1,
+        "y": 308.6
+      },
+      {
+        "x": 298.9,
+        "y": 308.9
+      },
+      {
+        "x": 298.4,
+        "y": 308.3
+      },
+      {
+        "x": 298.0,
+        "y": 308.2
+      },
+      {
+        "x": 297.6,
+        "y": 308.2
+      },
+      {
+        "x": 297.3,
+        "y": 308.3
+      },
+      {
+        "x": 297.6,
+        "y": 309.3
+      },
+      {
+        "x": 297.6,
+        "y": 309.4
+      },
+      {
+        "x": 297.6,
+        "y": 308.9
+      },
+      {
+        "x": 296.8,
+        "y": 308.0
+      },
+      {
+        "x": 296.6,
+        "y": 307.5
+      },
+      {
+        "x": 295.5,
+        "y": 306.0
+      },
+      {
+        "x": 296.2,
+        "y": 307.1
+      },
+      {
+        "x": 296.9,
+        "y": 307.6
+      },
+      {
+        "x": 297.2,
+        "y": 308.3
+      },
+      {
+        "x": 297.6,
+        "y": 309.0
+      },
+      {
+        "x": 298.5,
+        "y": 310.1
+      },
+      {
+        "x": 298.8,
+        "y": 309.9
+      },
+      {
+        "x": 298.0,
+        "y": 308.7
+      },
+      {
+        "x": 298.0,
+        "y": 308.1
+      },
+      {
+        "x": 297.9,
+        "y": 307.4
+      },
+      {
+        "x": 298.2,
+        "y": 307.6
+      },
+      {
+        "x": 297.7,
+        "y": 307.2
+      },
+      {
+        "x": 298.1,
+        "y": 308.0
+      },
+      {
+        "x": 298.5,
+        "y": 308.3
+      },
+      {
+        "x": 299.3,
+        "y": 309.3
+      },
+      {
+        "x": 299.8,
+        "y": 309.4
+      },
+      {
+        "x": 299.2,
+        "y": 308.5
+      },
+      {
+        "x": 299.3,
+        "y": 308.5
+      },
+      {
+        "x": 299.0,
+        "y": 308.2
+      },
+      {
+        "x": 298.8,
+        "y": 308.6
+      },
+      {
+        "x": 299.3,
+        "y": 309.1
+      },
+      {
+        "x": 299.9,
+        "y": 309.4
+      },
+      {
+        "x": 299.9,
+        "y": 309.4
+      },
+      {
+        "x": 300.5,
+        "y": 309.3
+      },
+      {
+        "x": 300.9,
+        "y": 309.7
+      },
+      {
+        "x": 300.5,
+        "y": 309.6
+      },
+      {
+        "x": 299.8,
+        "y": 309.2
+      },
+      {
+        "x": 300.1,
+        "y": 309.2
+      },
+      {
+        "x": 301.3,
+        "y": 310.0
+      },
+      {
+        "x": 301.5,
+        "y": 310.6
+      },
+      {
+        "x": 301.6,
+        "y": 310.6
+      },
+      {
+        "x": 301.9,
+        "y": 310.9
+      },
+      {
+        "x": 301.7,
+        "y": 310.9
+      },
+      {
+        "x": 302.2,
+        "y": 311.2
+      },
+      {
+        "x": 302.3,
+        "y": 310.8
+      },
+      {
+        "x": 302.6,
+        "y": 311.5
+      },
+      {
+        "x": 302.3,
+        "y": 311.5
+      },
+      {
+        "x": 302.1,
+        "y": 310.8
+      },
+      {
+        "x": 301.9,
+        "y": 310.5
+      },
+      {
+        "x": 302.4,
+        "y": 311.0
+      },
+      {
+        "x": 301.7,
+        "y": 309.9
+      },
+      {
+        "x": 302.0,
+        "y": 309.9
+      },
+      {
+        "x": 302.4,
+        "y": 310.2
+      },
+      {
+        "x": 302.3,
+        "y": 310.2
+      },
+      {
+        "x": 303.0,
+        "y": 311.2
+      },
+      {
+        "x": 303.6,
+        "y": 311.8
+      },
+      {
+        "x": 303.8,
+        "y": 312.8
+      },
+      {
+        "x": 303.7,
+        "y": 312.4
+      },
+      {
+        "x": 303.8,
+        "y": 312.6
+      },
+      {
+        "x": 304.0,
+        "y": 313.2
+      },
+      {
+        "x": 304.3,
+        "y": 313.5
+      },
+      {
+        "x": 303.8,
+        "y": 312.7
+      },
+      {
+        "x": 303.9,
+        "y": 313.4
+      },
+      {
+        "x": 302.9,
+        "y": 312.4
+      },
+      {
+        "x": 302.9,
+        "y": 312.3
+      },
+      {
+        "x": 302.2,
+        "y": 311.6
+      },
+      {
+        "x": 302.7,
+        "y": 312.2
+      },
+      {
+        "x": 302.2,
+        "y": 311.9
+      },
+      {
+        "x": 301.6,
+        "y": 311.0
+      },
+      {
+        "x": 301.4,
+        "y": 311.1
+      },
+      {
+        "x": 300.5,
+        "y": 310.9
+      },
+      {
+        "x": 300.9,
+        "y": 311.0
+      },
+      {
+        "x": 301.1,
+        "y": 311.1
+      },
+      {
+        "x": 301.0,
+        "y": 310.7
+      },
+      {
+        "x": 301.2,
+        "y": 310.6
+      },
+      {
+        "x": 300.1,
+        "y": 309.7
+      },
+      {
+        "x": 300.4,
+        "y": 309.6
+      },
+      {
+        "x": 301.4,
+        "y": 310.8
+      },
+      {
+        "x": 301.5,
+        "y": 310.5
+      },
+      {
+        "x": 301.4,
+        "y": 310.7
+      },
+      {
+        "x": 301.1,
+        "y": 310.8
+      },
+      {
+        "x": 300.9,
+        "y": 311.4
+      },
+      {
+        "x": 300.7,
+        "y": 311.0
+      },
+      {
+        "x": 300.7,
+        "y": 310.6
+      },
+      {
+        "x": 300.3,
+        "y": 309.7
+      },
+      {
+        "x": 299.7,
+        "y": 309.6
+      },
+      {
+        "x": 300.0,
+        "y": 310.5
+      },
+      {
+        "x": 299.7,
+        "y": 310.6
+      },
+      {
+        "x": 300.1,
+        "y": 311.3
+      },
+      {
+        "x": 300.3,
+        "y": 311.1
+      },
+      {
+        "x": 300.4,
+        "y": 311.4
+      },
+      {
+        "x": 300.6,
+        "y": 311.9
+      },
+      {
+        "x": 300.0,
+        "y": 311.4
+      },
+      {
+        "x": 300.8,
+        "y": 312.5
+      },
+      {
+        "x": 301.0,
+        "y": 312.3
+      },
+      {
+        "x": 300.4,
+        "y": 311.9
+      },
+      {
+        "x": 299.5,
+        "y": 310.7
+      },
+      {
+        "x": 299.2,
+        "y": 310.6
+      },
+      {
+        "x": 298.7,
+        "y": 309.7
+      },
+      {
+        "x": 298.5,
+        "y": 309.5
+      },
+      {
+        "x": 298.5,
+        "y": 309.5
+      },
+      {
+        "x": 297.9,
+        "y": 308.7
+      },
+      {
+        "x": 297.4,
+        "y": 308.4
+      },
+      {
+        "x": 297.3,
+        "y": 308.7
+      },
+      {
+        "x": 297.4,
+        "y": 308.8
+      },
+      {
+        "x": 297.3,
+        "y": 308.7
+      },
+      {
+        "x": 297.2,
+        "y": 307.9
+      },
+      {
+        "x": 297.2,
+        "y": 308.1
+      },
+      {
+        "x": 297.4,
+        "y": 308.4
+      },
+      {
+        "x": 298.2,
+        "y": 308.7
+      },
+      {
+        "x": 298.6,
+        "y": 309.3
+      },
+      {
+        "x": 298.0,
+        "y": 308.5
+      },
+      {
+        "x": 299.2,
+        "y": 309.9
+      },
+      {
+        "x": 299.4,
+        "y": 310.7
+      },
+      {
+        "x": 299.1,
+        "y": 310.1
+      },
+      {
+        "x": 298.8,
+        "y": 310.0
+      },
+      {
+        "x": 298.3,
+        "y": 309.3
+      },
+      {
+        "x": 298.5,
+        "y": 308.8
+      },
+      {
+        "x": 299.0,
+        "y": 308.7
+      }
+    ],
+    "slope": 0.649871,
+    "intercept": 115.041,
+    "r2": 0.7676,
+    "mae": 0.5878,
+    "mse": 0.5116,
+    "rmse": 0.7153
+  },
+  "knn": {
+    "xLabel": "ΔT proceso - ambiente [K]",
+    "yLabel": "Torque [Nm]",
+    "points": [
+      {
+        "x": 7.6,
+        "y": 62.4,
+        "label": 1
+      },
+      {
+        "x": 7.7,
+        "y": 36.3,
+        "label": 0
+      },
+      {
+        "x": 7.8,
+        "y": 52.7,
+        "label": 1
+      },
+      {
+        "x": 7.8,
+        "y": 57.3,
+        "label": 1
+      },
+      {
+        "x": 7.8,
+        "y": 45.5,
+        "label": 1
+      },
+      {
+        "x": 7.8,
+        "y": 36.2,
+        "label": 0
+      },
+      {
+        "x": 7.9,
+        "y": 55.1,
+        "label": 1
+      },
+      {
+        "x": 7.9,
+        "y": 51.6,
+        "label": 1
+      },
+      {
+        "x": 7.9,
+        "y": 52.5,
+        "label": 1
+      },
+      {
+        "x": 8.0,
+        "y": 54.0,
+        "label": 1
+      },
+      {
+        "x": 8.0,
+        "y": 44.2,
+        "label": 1
+      },
+      {
+        "x": 8.0,
+        "y": 48.1,
+        "label": 1
+      },
+      {
+        "x": 8.1,
+        "y": 37.3,
+        "label": 0
+      },
+      {
+        "x": 8.1,
+        "y": 54.3,
+        "label": 1
+      },
+      {
+        "x": 8.1,
+        "y": 46.5,
+        "label": 1
+      },
+      {
+        "x": 8.2,
+        "y": 51.0,
+        "label": 1
+      },
+      {
+        "x": 8.2,
+        "y": 49.0,
+        "label": 1
+      },
+      {
+        "x": 8.2,
+        "y": 44.8,
+        "label": 1
+      },
+      {
+        "x": 8.2,
+        "y": 41.4,
+        "label": 0
+      },
+      {
+        "x": 8.3,
+        "y": 56.2,
+        "label": 1
+      },
+      {
+        "x": 8.3,
+        "y": 53.6,
+        "label": 1
+      },
+      {
+        "x": 8.3,
+        "y": 36.9,
+        "label": 0
+      },
+      {
+        "x": 8.4,
+        "y": 52.9,
+        "label": 1
+      },
+      {
+        "x": 8.4,
+        "y": 68.0,
+        "label": 1
+      },
+      {
+        "x": 8.4,
+        "y": 35.5,
+        "label": 0
+      },
+      {
+        "x": 8.4,
+        "y": 50.9,
+        "label": 1
+      },
+      {
+        "x": 8.4,
+        "y": 51.8,
+        "label": 1
+      },
+      {
+        "x": 8.4,
+        "y": 50.9,
+        "label": 1
+      },
+      {
+        "x": 8.5,
+        "y": 57.4,
+        "label": 1
+      },
+      {
+        "x": 8.5,
+        "y": 61.2,
+        "label": 1
+      },
+      {
+        "x": 8.5,
+        "y": 44.7,
+        "label": 0
+      },
+      {
+        "x": 8.6,
+        "y": 62.4,
+        "label": 1
+      },
+      {
+        "x": 8.6,
+        "y": 49.3,
+        "label": 1
+      },
+      {
+        "x": 8.7,
+        "y": 68.6,
+        "label": 1
+      },
+      {
+        "x": 8.7,
+        "y": 32.3,
+        "label": 0
+      },
+      {
+        "x": 8.8,
+        "y": 47.6,
+        "label": 1
+      },
+      {
+        "x": 8.8,
+        "y": 29.0,
+        "label": 1
+      },
+      {
+        "x": 8.8,
+        "y": 31.1,
+        "label": 0
+      },
+      {
+        "x": 8.9,
+        "y": 47.6,
+        "label": 0
+      },
+      {
+        "x": 8.9,
+        "y": 28.7,
+        "label": 0
+      },
+      {
+        "x": 8.9,
+        "y": 43.0,
+        "label": 0
+      },
+      {
+        "x": 9.0,
+        "y": 39.0,
+        "label": 1
+      },
+      {
+        "x": 9.0,
+        "y": 36.0,
+        "label": 0
+      },
+      {
+        "x": 9.0,
+        "y": 43.6,
+        "label": 0
+      },
+      {
+        "x": 9.0,
+        "y": 37.0,
+        "label": 0
+      },
+      {
+        "x": 9.0,
+        "y": 34.2,
+        "label": 0
+      },
+      {
+        "x": 9.1,
+        "y": 34.6,
+        "label": 0
+      },
+      {
+        "x": 9.1,
+        "y": 37.3,
+        "label": 1
+      },
+      {
+        "x": 9.1,
+        "y": 55.7,
+        "label": 0
+      },
+      {
+        "x": 9.1,
+        "y": 44.1,
+        "label": 0
+      },
+      {
+        "x": 9.1,
+        "y": 44.0,
+        "label": 0
+      },
+      {
+        "x": 9.1,
+        "y": 58.1,
+        "label": 0
+      },
+      {
+        "x": 9.1,
+        "y": 35.6,
+        "label": 0
+      },
+      {
+        "x": 9.2,
+        "y": 59.9,
+        "label": 1
+      },
+      {
+        "x": 9.2,
+        "y": 11.4,
+        "label": 1
+      },
+      {
+        "x": 9.2,
+        "y": 13.0,
+        "label": 1
+      },
+      {
+        "x": 9.2,
+        "y": 41.7,
+        "label": 0
+      },
+      {
+        "x": 9.2,
+        "y": 16.7,
+        "label": 0
+      },
+      {
+        "x": 9.2,
+        "y": 43.0,
+        "label": 0
+      },
+      {
+        "x": 9.2,
+        "y": 54.3,
+        "label": 0
+      },
+      {
+        "x": 9.2,
+        "y": 45.9,
+        "label": 0
+      },
+      {
+        "x": 9.2,
+        "y": 40.0,
+        "label": 0
+      },
+      {
+        "x": 9.2,
+        "y": 36.8,
+        "label": 0
+      },
+      {
+        "x": 9.3,
+        "y": 73.6,
+        "label": 1
+      },
+      {
+        "x": 9.3,
+        "y": 53.6,
+        "label": 0
+      },
+      {
+        "x": 9.3,
+        "y": 63.7,
+        "label": 1
+      },
+      {
+        "x": 9.3,
+        "y": 62.9,
+        "label": 1
+      },
+      {
+        "x": 9.3,
+        "y": 58.7,
+        "label": 1
+      },
+      {
+        "x": 9.3,
+        "y": 54.2,
+        "label": 1
+      },
+      {
+        "x": 9.3,
+        "y": 48.0,
+        "label": 1
+      },
+      {
+        "x": 9.3,
+        "y": 72.8,
+        "label": 1
+      },
+      {
+        "x": 9.3,
+        "y": 42.2,
+        "label": 0
+      },
+      {
+        "x": 9.3,
+        "y": 46.5,
+        "label": 0
+      },
+      {
+        "x": 9.3,
+        "y": 33.1,
+        "label": 0
+      },
+      {
+        "x": 9.4,
+        "y": 45.9,
+        "label": 1
+      },
+      {
+        "x": 9.4,
+        "y": 40.1,
+        "label": 0
+      },
+      {
+        "x": 9.4,
+        "y": 50.9,
+        "label": 0
+      },
+      {
+        "x": 9.4,
+        "y": 48.1,
+        "label": 0
+      },
+      {
+        "x": 9.4,
+        "y": 40.8,
+        "label": 0
+      },
+      {
+        "x": 9.4,
+        "y": 38.8,
+        "label": 0
+      },
+      {
+        "x": 9.5,
+        "y": 12.8,
+        "label": 1
+      },
+      {
+        "x": 9.5,
+        "y": 65.1,
+        "label": 1
+      },
+      {
+        "x": 9.5,
+        "y": 65.3,
+        "label": 1
+      },
+      {
+        "x": 9.5,
+        "y": 61.0,
+        "label": 1
+      },
+      {
+        "x": 9.5,
+        "y": 70.5,
+        "label": 1
+      },
+      {
+        "x": 9.5,
+        "y": 51.4,
+        "label": 0
+      },
+      {
+        "x": 9.5,
+        "y": 35.2,
+        "label": 0
+      },
+      {
+        "x": 9.5,
+        "y": 45.3,
+        "label": 0
+      },
+      {
+        "x": 9.5,
+        "y": 57.4,
+        "label": 0
+      },
+      {
+        "x": 9.5,
+        "y": 33.5,
+        "label": 0
+      },
+      {
+        "x": 9.5,
+        "y": 32.8,
+        "label": 0
+      },
+      {
+        "x": 9.5,
+        "y": 38.8,
+        "label": 0
+      },
+      {
+        "x": 9.5,
+        "y": 35.1,
+        "label": 0
+      },
+      {
+        "x": 9.6,
+        "y": 12.2,
+        "label": 1
+      },
+      {
+        "x": 9.6,
+        "y": 53.8,
+        "label": 1
+      },
+      {
+        "x": 9.6,
+        "y": 12.8,
+        "label": 1
+      },
+      {
+        "x": 9.6,
+        "y": 46.5,
+        "label": 0
+      },
+      {
+        "x": 9.6,
+        "y": 37.7,
+        "label": 0
+      },
+      {
+        "x": 9.6,
+        "y": 56.1,
+        "label": 0
+      },
+      {
+        "x": 9.6,
+        "y": 38.2,
+        "label": 1
+      },
+      {
+        "x": 9.6,
+        "y": 38.9,
+        "label": 0
+      },
+      {
+        "x": 9.6,
+        "y": 40.6,
+        "label": 0
+      },
+      {
+        "x": 9.7,
+        "y": 3.8,
+        "label": 1
+      },
+      {
+        "x": 9.7,
+        "y": 30.5,
+        "label": 1
+      },
+      {
+        "x": 9.7,
+        "y": 53.6,
+        "label": 1
+      },
+      {
+        "x": 9.7,
+        "y": 28.2,
+        "label": 0
+      },
+      {
+        "x": 9.7,
+        "y": 42.3,
+        "label": 0
+      },
+      {
+        "x": 9.7,
+        "y": 40.2,
+        "label": 0
+      },
+      {
+        "x": 9.8,
+        "y": 30.3,
+        "label": 0
+      },
+      {
+        "x": 9.8,
+        "y": 47.7,
+        "label": 0
+      },
+      {
+        "x": 9.8,
+        "y": 38.7,
+        "label": 0
+      },
+      {
+        "x": 9.8,
+        "y": 48.0,
+        "label": 0
+      },
+      {
+        "x": 9.8,
+        "y": 21.4,
+        "label": 0
+      },
+      {
+        "x": 9.8,
+        "y": 37.7,
+        "label": 0
+      },
+      {
+        "x": 9.9,
+        "y": 37.3,
+        "label": 0
+      },
+      {
+        "x": 9.9,
+        "y": 42.4,
+        "label": 0
+      },
+      {
+        "x": 9.9,
+        "y": 36.2,
+        "label": 0
+      },
+      {
+        "x": 9.9,
+        "y": 22.9,
+        "label": 0
+      },
+      {
+        "x": 9.9,
+        "y": 29.6,
+        "label": 0
+      },
+      {
+        "x": 10.0,
+        "y": 12.2,
+        "label": 1
+      },
+      {
+        "x": 10.0,
+        "y": 43.8,
+        "label": 0
+      },
+      {
+        "x": 10.1,
+        "y": 46.2,
+        "label": 0
+      },
+      {
+        "x": 10.1,
+        "y": 37.9,
+        "label": 0
+      },
+      {
+        "x": 10.1,
+        "y": 65.7,
+        "label": 1
+      },
+      {
+        "x": 10.1,
+        "y": 58.2,
+        "label": 0
+      },
+      {
+        "x": 10.1,
+        "y": 51.6,
+        "label": 0
+      },
+      {
+        "x": 10.2,
+        "y": 53.3,
+        "label": 0
+      },
+      {
+        "x": 10.2,
+        "y": 43.8,
+        "label": 0
+      },
+      {
+        "x": 10.2,
+        "y": 56.3,
+        "label": 0
+      },
+      {
+        "x": 10.3,
+        "y": 38.3,
+        "label": 0
+      },
+      {
+        "x": 10.5,
+        "y": 14.6,
+        "label": 1
+      },
+      {
+        "x": 10.5,
+        "y": 55.6,
+        "label": 1
+      },
+      {
+        "x": 10.5,
+        "y": 45.6,
+        "label": 0
+      },
+      {
+        "x": 10.6,
+        "y": 67.2,
+        "label": 1
+      },
+      {
+        "x": 10.6,
+        "y": 46.1,
+        "label": 0
+      },
+      {
+        "x": 10.6,
+        "y": 61.3,
+        "label": 1
+      },
+      {
+        "x": 10.6,
+        "y": 9.3,
+        "label": 1
+      },
+      {
+        "x": 10.6,
+        "y": 23.5,
+        "label": 0
+      },
+      {
+        "x": 10.7,
+        "y": 58.5,
+        "label": 1
+      },
+      {
+        "x": 10.7,
+        "y": 44.8,
+        "label": 0
+      },
+      {
+        "x": 10.7,
+        "y": 44.2,
+        "label": 0
+      },
+      {
+        "x": 10.7,
+        "y": 45.4,
+        "label": 0
+      },
+      {
+        "x": 10.7,
+        "y": 58.8,
+        "label": 0
+      },
+      {
+        "x": 10.7,
+        "y": 46.1,
+        "label": 0
+      },
+      {
+        "x": 10.8,
+        "y": 34.2,
+        "label": 0
+      },
+      {
+        "x": 10.8,
+        "y": 56.7,
+        "label": 1
+      },
+      {
+        "x": 10.8,
+        "y": 27.7,
+        "label": 0
+      },
+      {
+        "x": 10.9,
+        "y": 56.3,
+        "label": 1
+      },
+      {
+        "x": 10.9,
+        "y": 55.7,
+        "label": 1
+      },
+      {
+        "x": 10.9,
+        "y": 52.1,
+        "label": 0
+      },
+      {
+        "x": 10.9,
+        "y": 32.7,
+        "label": 0
+      },
+      {
+        "x": 10.9,
+        "y": 23.9,
+        "label": 0
+      },
+      {
+        "x": 10.9,
+        "y": 35.3,
+        "label": 0
+      },
+      {
+        "x": 10.9,
+        "y": 61.3,
+        "label": 1
+      },
+      {
+        "x": 10.9,
+        "y": 61.9,
+        "label": 1
+      },
+      {
+        "x": 10.9,
+        "y": 57.9,
+        "label": 0
+      },
+      {
+        "x": 11.0,
+        "y": 66.7,
+        "label": 1
+      },
+      {
+        "x": 11.0,
+        "y": 35.0,
+        "label": 0
+      },
+      {
+        "x": 11.0,
+        "y": 51.0,
+        "label": 0
+      },
+      {
+        "x": 11.0,
+        "y": 34.2,
+        "label": 0
+      },
+      {
+        "x": 11.0,
+        "y": 30.9,
+        "label": 0
+      },
+      {
+        "x": 11.1,
+        "y": 46.2,
+        "label": 0
+      },
+      {
+        "x": 11.1,
+        "y": 27.7,
+        "label": 0
+      },
+      {
+        "x": 11.1,
+        "y": 29.6,
+        "label": 0
+      },
+      {
+        "x": 11.1,
+        "y": 64.1,
+        "label": 0
+      },
+      {
+        "x": 11.1,
+        "y": 48.9,
+        "label": 1
+      },
+      {
+        "x": 11.1,
+        "y": 15.3,
+        "label": 1
+      },
+      {
+        "x": 11.1,
+        "y": 52.5,
+        "label": 1
+      },
+      {
+        "x": 11.1,
+        "y": 40.1,
+        "label": 0
+      },
+      {
+        "x": 11.1,
+        "y": 38.6,
+        "label": 0
+      },
+      {
+        "x": 11.1,
+        "y": 38.9,
+        "label": 0
+      },
+      {
+        "x": 11.2,
+        "y": 64.2,
+        "label": 1
+      },
+      {
+        "x": 11.2,
+        "y": 9.7,
+        "label": 1
+      },
+      {
+        "x": 11.2,
+        "y": 16.2,
+        "label": 1
+      },
+      {
+        "x": 11.2,
+        "y": 12.5,
+        "label": 1
+      },
+      {
+        "x": 11.2,
+        "y": 35.3,
+        "label": 0
+      },
+      {
+        "x": 11.2,
+        "y": 28.2,
+        "label": 0
+      },
+      {
+        "x": 11.2,
+        "y": 46.5,
+        "label": 0
+      },
+      {
+        "x": 11.2,
+        "y": 52.9,
+        "label": 0
+      },
+      {
+        "x": 11.2,
+        "y": 64.7,
+        "label": 0
+      },
+      {
+        "x": 11.2,
+        "y": 76.6,
+        "label": 1
+      },
+      {
+        "x": 11.2,
+        "y": 33.7,
+        "label": 0
+      },
+      {
+        "x": 11.2,
+        "y": 51.9,
+        "label": 0
+      },
+      {
+        "x": 11.3,
+        "y": 60.1,
+        "label": 1
+      },
+      {
+        "x": 11.3,
+        "y": 65.2,
+        "label": 1
+      },
+      {
+        "x": 11.3,
+        "y": 38.8,
+        "label": 0
+      },
+      {
+        "x": 11.3,
+        "y": 23.5,
+        "label": 0
+      },
+      {
+        "x": 11.3,
+        "y": 46.1,
+        "label": 0
+      },
+      {
+        "x": 11.3,
+        "y": 47.3,
+        "label": 0
+      },
+      {
+        "x": 11.3,
+        "y": 36.8,
+        "label": 0
+      },
+      {
+        "x": 11.4,
+        "y": 49.1,
+        "label": 1
+      },
+      {
+        "x": 11.4,
+        "y": 26.3,
+        "label": 0
+      },
+      {
+        "x": 11.4,
+        "y": 36.8,
+        "label": 0
+      },
+      {
+        "x": 11.4,
+        "y": 41.2,
+        "label": 0
+      },
+      {
+        "x": 11.4,
+        "y": 28.8,
+        "label": 0
+      },
+      {
+        "x": 11.4,
+        "y": 33.5,
+        "label": 0
+      },
+      {
+        "x": 11.5,
+        "y": 58.6,
+        "label": 0
+      },
+      {
+        "x": 11.5,
+        "y": 38.1,
+        "label": 0
+      },
+      {
+        "x": 11.9,
+        "y": 20.6,
+        "label": 0
+      },
+      {
+        "x": 12.0,
+        "y": 49.8,
+        "label": 1
+      }
+    ]
+  },
+  "kmeans": {
+    "k": 4,
+    "xLabel": "Velocidad rotacional [rpm]",
+    "yLabel": "Torque [Nm]",
+    "points": [
+      {
+        "x": 1665.0,
+        "y": 32.5,
+        "cluster": 0
+      },
+      {
+        "x": 1559.0,
+        "y": 34.7,
+        "cluster": 0
+      },
+      {
+        "x": 1581.0,
+        "y": 36.7,
+        "cluster": 0
+      },
+      {
+        "x": 1565.0,
+        "y": 35.1,
+        "cluster": 0
+      },
+      {
+        "x": 1691.0,
+        "y": 30.1,
+        "cluster": 0
+      },
+      {
+        "x": 1512.0,
+        "y": 40.7,
+        "cluster": 0
+      },
+      {
+        "x": 1477.0,
+        "y": 42.4,
+        "cluster": 0
+      },
+      {
+        "x": 1513.0,
+        "y": 40.3,
+        "cluster": 0
+      },
+      {
+        "x": 1661.0,
+        "y": 29.5,
+        "cluster": 0
+      },
+      {
+        "x": 1592.0,
+        "y": 38.2,
+        "cluster": 0
+      },
+      {
+        "x": 1523.0,
+        "y": 38.6,
+        "cluster": 0
+      },
+      {
+        "x": 1679.0,
+        "y": 28.7,
+        "cluster": 0
+      },
+      {
+        "x": 1527.0,
+        "y": 32.4,
+        "cluster": 0
+      },
+      {
+        "x": 1592.0,
+        "y": 35.0,
+        "cluster": 0
+      },
+      {
+        "x": 1601.0,
+        "y": 32.3,
+        "cluster": 0
+      },
+      {
+        "x": 1455.0,
+        "y": 41.3,
+        "cluster": 0
+      },
+      {
+        "x": 1564.0,
+        "y": 34.1,
+        "cluster": 0
+      },
+      {
+        "x": 1599.0,
+        "y": 33.0,
+        "cluster": 0
+      },
+      {
+        "x": 1558.0,
+        "y": 41.2,
+        "cluster": 0
+      },
+      {
+        "x": 1546.0,
+        "y": 43.4,
+        "cluster": 0
+      },
+      {
+        "x": 1560.0,
+        "y": 32.2,
+        "cluster": 0
+      },
+      {
+        "x": 1587.0,
+        "y": 38.6,
+        "cluster": 0
+      },
+      {
+        "x": 1559.0,
+        "y": 34.3,
+        "cluster": 0
+      },
+      {
+        "x": 1473.0,
+        "y": 41.1,
+        "cluster": 0
+      },
+      {
+        "x": 1711.0,
+        "y": 28.5,
+        "cluster": 0
+      },
+      {
+        "x": 1511.0,
+        "y": 36.1,
+        "cluster": 0
+      },
+      {
+        "x": 1544.0,
+        "y": 35.2,
+        "cluster": 0
+      },
+      {
+        "x": 1513.0,
+        "y": 33.6,
+        "cluster": 0
+      },
+      {
+        "x": 1612.0,
+        "y": 36.1,
+        "cluster": 0
+      },
+      {
+        "x": 1515.0,
+        "y": 40.1,
+        "cluster": 0
+      },
+      {
+        "x": 1473.0,
+        "y": 39.9,
+        "cluster": 0
+      },
+      {
+        "x": 1463.0,
+        "y": 37.6,
+        "cluster": 0
+      },
+      {
+        "x": 1584.0,
+        "y": 41.0,
+        "cluster": 0
+      },
+      {
+        "x": 1528.0,
+        "y": 36.2,
+        "cluster": 0
+      },
+      {
+        "x": 1478.0,
+        "y": 43.5,
+        "cluster": 0
+      },
+      {
+        "x": 1499.0,
+        "y": 40.0,
+        "cluster": 0
+      },
+      {
+        "x": 1588.0,
+        "y": 35.0,
+        "cluster": 0
+      },
+      {
+        "x": 1609.0,
+        "y": 35.0,
+        "cluster": 0
+      },
+      {
+        "x": 1575.0,
+        "y": 41.2,
+        "cluster": 0
+      },
+      {
+        "x": 1636.0,
+        "y": 35.7,
+        "cluster": 0
+      },
+      {
+        "x": 1490.0,
+        "y": 37.9,
+        "cluster": 0
+      },
+      {
+        "x": 1609.0,
+        "y": 35.3,
+        "cluster": 0
+      },
+      {
+        "x": 1591.0,
+        "y": 36.7,
+        "cluster": 0
+      },
+      {
+        "x": 1523.0,
+        "y": 36.1,
+        "cluster": 0
+      },
+      {
+        "x": 1575.0,
+        "y": 33.9,
+        "cluster": 0
+      },
+      {
+        "x": 1589.0,
+        "y": 37.1,
+        "cluster": 0
+      },
+      {
+        "x": 1548.0,
+        "y": 40.3,
+        "cluster": 0
+      },
+      {
+        "x": 1499.0,
+        "y": 38.3,
+        "cluster": 0
+      },
+      {
+        "x": 1664.0,
+        "y": 31.6,
+        "cluster": 0
+      },
+      {
+        "x": 1447.0,
+        "y": 38.1,
+        "cluster": 0
+      },
+      {
+        "x": 1569.0,
+        "y": 34.4,
+        "cluster": 0
+      },
+      {
+        "x": 1584.0,
+        "y": 29.3,
+        "cluster": 0
+      },
+      {
+        "x": 1539.0,
+        "y": 36.1,
+        "cluster": 0
+      },
+      {
+        "x": 1629.0,
+        "y": 37.1,
+        "cluster": 0
+      },
+      {
+        "x": 1538.0,
+        "y": 32.2,
+        "cluster": 0
+      },
+      {
+        "x": 1570.0,
+        "y": 34.8,
+        "cluster": 0
+      },
+      {
+        "x": 1512.0,
+        "y": 34.9,
+        "cluster": 0
+      },
+      {
+        "x": 1478.0,
+        "y": 42.9,
+        "cluster": 0
+      },
+      {
+        "x": 1680.0,
+        "y": 33.7,
+        "cluster": 0
+      },
+      {
+        "x": 1495.0,
+        "y": 38.7,
+        "cluster": 0
+      },
+      {
+        "x": 1552.0,
+        "y": 36.6,
+        "cluster": 0
+      },
+      {
+        "x": 1611.0,
+        "y": 30.6,
+        "cluster": 0
+      },
+      {
+        "x": 1777.0,
+        "y": 24.3,
+        "cluster": 0
+      },
+      {
+        "x": 1627.0,
+        "y": 31.4,
+        "cluster": 0
+      },
+      {
+        "x": 1585.0,
+        "y": 33.5,
+        "cluster": 0
+      },
+      {
+        "x": 1589.0,
+        "y": 33.2,
+        "cluster": 0
+      },
+      {
+        "x": 1716.0,
+        "y": 30.7,
+        "cluster": 0
+      },
+      {
+        "x": 1567.0,
+        "y": 35.6,
+        "cluster": 0
+      },
+      {
+        "x": 1622.0,
+        "y": 38.3,
+        "cluster": 0
+      },
+      {
+        "x": 1512.0,
+        "y": 35.1,
+        "cluster": 0
+      },
+      {
+        "x": 1579.0,
+        "y": 36.6,
+        "cluster": 0
+      },
+      {
+        "x": 1449.0,
+        "y": 40.8,
+        "cluster": 0
+      },
+      {
+        "x": 1526.0,
+        "y": 41.8,
+        "cluster": 0
+      },
+      {
+        "x": 1468.0,
+        "y": 36.0,
+        "cluster": 0
+      },
+      {
+        "x": 1646.0,
+        "y": 40.6,
+        "cluster": 0
+      },
+      {
+        "x": 1714.0,
+        "y": 33.2,
+        "cluster": 0
+      },
+      {
+        "x": 1685.0,
+        "y": 28.4,
+        "cluster": 0
+      },
+      {
+        "x": 1512.0,
+        "y": 39.9,
+        "cluster": 0
+      },
+      {
+        "x": 1612.0,
+        "y": 32.1,
+        "cluster": 0
+      },
+      {
+        "x": 1550.0,
+        "y": 38.2,
+        "cluster": 0
+      },
+      {
+        "x": 1518.0,
+        "y": 32.5,
+        "cluster": 0
+      },
+      {
+        "x": 1448.0,
+        "y": 40.0,
+        "cluster": 0
+      },
+      {
+        "x": 1561.0,
+        "y": 46.3,
+        "cluster": 0
+      },
+      {
+        "x": 1488.0,
+        "y": 41.9,
+        "cluster": 0
+      },
+      {
+        "x": 1699.0,
+        "y": 27.8,
+        "cluster": 0
+      },
+      {
+        "x": 1501.0,
+        "y": 41.4,
+        "cluster": 0
+      },
+      {
+        "x": 1703.0,
+        "y": 31.4,
+        "cluster": 0
+      },
+      {
+        "x": 1720.0,
+        "y": 29.9,
+        "cluster": 0
+      },
+      {
+        "x": 1398.0,
+        "y": 41.9,
+        "cluster": 0
+      },
+      {
+        "x": 1640.0,
+        "y": 30.9,
+        "cluster": 0
+      },
+      {
+        "x": 1587.0,
+        "y": 36.1,
+        "cluster": 0
+      },
+      {
+        "x": 1622.0,
+        "y": 37.2,
+        "cluster": 0
+      },
+      {
+        "x": 1604.0,
+        "y": 38.1,
+        "cluster": 0
+      },
+      {
+        "x": 1533.0,
+        "y": 37.4,
+        "cluster": 0
+      },
+      {
+        "x": 1546.0,
+        "y": 40.4,
+        "cluster": 0
+      },
+      {
+        "x": 1491.0,
+        "y": 38.1,
+        "cluster": 0
+      },
+      {
+        "x": 1490.0,
+        "y": 43.4,
+        "cluster": 0
+      },
+      {
+        "x": 1528.0,
+        "y": 39.9,
+        "cluster": 0
+      },
+      {
+        "x": 1571.0,
+        "y": 37.7,
+        "cluster": 0
+      },
+      {
+        "x": 1490.0,
+        "y": 42.6,
+        "cluster": 0
+      },
+      {
+        "x": 1306.0,
+        "y": 54.5,
+        "cluster": 1
+      },
+      {
+        "x": 1339.0,
+        "y": 48.2,
+        "cluster": 1
+      },
+      {
+        "x": 1419.0,
+        "y": 48.3,
+        "cluster": 1
+      },
+      {
+        "x": 1452.0,
+        "y": 48.6,
+        "cluster": 1
+      },
+      {
+        "x": 1379.0,
+        "y": 50.7,
+        "cluster": 1
+      },
+      {
+        "x": 1350.0,
+        "y": 52.5,
+        "cluster": 1
+      },
+      {
+        "x": 1362.0,
+        "y": 45.4,
+        "cluster": 1
+      },
+      {
+        "x": 1368.0,
+        "y": 50.8,
+        "cluster": 1
+      },
+      {
+        "x": 1368.0,
+        "y": 49.1,
+        "cluster": 1
+      },
+      {
+        "x": 1372.0,
+        "y": 48.5,
+        "cluster": 1
+      },
+      {
+        "x": 1472.0,
+        "y": 47.5,
+        "cluster": 1
+      },
+      {
+        "x": 1489.0,
+        "y": 49.1,
+        "cluster": 1
+      },
+      {
+        "x": 1418.0,
+        "y": 46.3,
+        "cluster": 1
+      },
+      {
+        "x": 1425.0,
+        "y": 53.9,
+        "cluster": 1
+      },
+      {
+        "x": 1412.0,
+        "y": 44.1,
+        "cluster": 1
+      },
+      {
+        "x": 1383.0,
+        "y": 54.9,
+        "cluster": 1
+      },
+      {
+        "x": 1497.0,
+        "y": 43.8,
+        "cluster": 1
+      },
+      {
+        "x": 1378.0,
+        "y": 54.4,
+        "cluster": 1
+      },
+      {
+        "x": 1393.0,
+        "y": 52.6,
+        "cluster": 1
+      },
+      {
+        "x": 1394.0,
+        "y": 45.1,
+        "cluster": 1
+      },
+      {
+        "x": 1466.0,
+        "y": 44.1,
+        "cluster": 1
+      },
+      {
+        "x": 1410.0,
+        "y": 65.7,
+        "cluster": 1
+      },
+      {
+        "x": 1452.0,
+        "y": 45.5,
+        "cluster": 1
+      },
+      {
+        "x": 1369.0,
+        "y": 44.4,
+        "cluster": 1
+      },
+      {
+        "x": 1379.0,
+        "y": 46.7,
+        "cluster": 1
+      },
+      {
+        "x": 1461.0,
+        "y": 47.9,
+        "cluster": 1
+      },
+      {
+        "x": 1431.0,
+        "y": 45.7,
+        "cluster": 1
+      },
+      {
+        "x": 1433.0,
+        "y": 44.7,
+        "cluster": 1
+      },
+      {
+        "x": 1310.0,
+        "y": 50.7,
+        "cluster": 1
+      },
+      {
+        "x": 1329.0,
+        "y": 60.5,
+        "cluster": 1
+      },
+      {
+        "x": 1413.0,
+        "y": 46.5,
+        "cluster": 1
+      },
+      {
+        "x": 1441.0,
+        "y": 43.2,
+        "cluster": 1
+      },
+      {
+        "x": 1430.0,
+        "y": 49.6,
+        "cluster": 1
+      },
+      {
+        "x": 1369.0,
+        "y": 53.0,
+        "cluster": 1
+      },
+      {
+        "x": 1420.0,
+        "y": 45.7,
+        "cluster": 1
+      },
+      {
+        "x": 1297.0,
+        "y": 55.3,
+        "cluster": 1
+      },
+      {
+        "x": 1449.0,
+        "y": 49.4,
+        "cluster": 1
+      },
+      {
+        "x": 1268.0,
+        "y": 55.8,
+        "cluster": 1
+      },
+      {
+        "x": 1407.0,
+        "y": 50.5,
+        "cluster": 1
+      },
+      {
+        "x": 1391.0,
+        "y": 42.4,
+        "cluster": 1
+      },
+      {
+        "x": 1379.0,
+        "y": 48.0,
+        "cluster": 1
+      },
+      {
+        "x": 1422.0,
+        "y": 42.7,
+        "cluster": 1
+      },
+      {
+        "x": 1495.0,
+        "y": 46.0,
+        "cluster": 1
+      },
+      {
+        "x": 1471.0,
+        "y": 47.0,
+        "cluster": 1
+      },
+      {
+        "x": 1282.0,
+        "y": 60.7,
+        "cluster": 1
+      },
+      {
+        "x": 1412.0,
+        "y": 52.3,
+        "cluster": 1
+      },
+      {
+        "x": 1306.0,
+        "y": 58.3,
+        "cluster": 1
+      },
+      {
+        "x": 1301.0,
+        "y": 56.0,
+        "cluster": 1
+      },
+      {
+        "x": 1398.0,
+        "y": 51.8,
+        "cluster": 1
+      },
+      {
+        "x": 1432.0,
+        "y": 49.5,
+        "cluster": 1
+      },
+      {
+        "x": 1433.0,
+        "y": 47.1,
+        "cluster": 1
+      },
+      {
+        "x": 1344.0,
+        "y": 53.0,
+        "cluster": 1
+      },
+      {
+        "x": 1421.0,
+        "y": 60.7,
+        "cluster": 1
+      },
+      {
+        "x": 1477.0,
+        "y": 44.0,
+        "cluster": 1
+      },
+      {
+        "x": 1344.0,
+        "y": 52.9,
+        "cluster": 1
+      },
+      {
+        "x": 1386.0,
+        "y": 44.9,
+        "cluster": 1
+      },
+      {
+        "x": 1434.0,
+        "y": 46.2,
+        "cluster": 1
+      },
+      {
+        "x": 1416.0,
+        "y": 52.7,
+        "cluster": 1
+      },
+      {
+        "x": 1304.0,
+        "y": 45.0,
+        "cluster": 1
+      },
+      {
+        "x": 1362.0,
+        "y": 53.8,
+        "cluster": 1
+      },
+      {
+        "x": 1329.0,
+        "y": 49.2,
+        "cluster": 1
+      },
+      {
+        "x": 1408.0,
+        "y": 43.1,
+        "cluster": 1
+      },
+      {
+        "x": 1424.0,
+        "y": 47.6,
+        "cluster": 1
+      },
+      {
+        "x": 1393.0,
+        "y": 50.3,
+        "cluster": 1
+      },
+      {
+        "x": 1339.0,
+        "y": 51.6,
+        "cluster": 1
+      },
+      {
+        "x": 1348.0,
+        "y": 58.8,
+        "cluster": 1
+      },
+      {
+        "x": 1442.0,
+        "y": 44.1,
+        "cluster": 1
+      },
+      {
+        "x": 1395.0,
+        "y": 49.1,
+        "cluster": 1
+      },
+      {
+        "x": 1469.0,
+        "y": 45.5,
+        "cluster": 1
+      },
+      {
+        "x": 1362.0,
+        "y": 56.8,
+        "cluster": 1
+      },
+      {
+        "x": 1405.0,
+        "y": 56.2,
+        "cluster": 1
+      },
+      {
+        "x": 1331.0,
+        "y": 63.0,
+        "cluster": 1
+      },
+      {
+        "x": 1401.0,
+        "y": 54.7,
+        "cluster": 1
+      },
+      {
+        "x": 1390.0,
+        "y": 49.8,
+        "cluster": 1
+      },
+      {
+        "x": 1436.0,
+        "y": 46.7,
+        "cluster": 1
+      },
+      {
+        "x": 1438.0,
+        "y": 45.6,
+        "cluster": 1
+      },
+      {
+        "x": 1335.0,
+        "y": 40.2,
+        "cluster": 1
+      },
+      {
+        "x": 1392.0,
+        "y": 44.8,
+        "cluster": 1
+      },
+      {
+        "x": 1372.0,
+        "y": 51.1,
+        "cluster": 1
+      },
+      {
+        "x": 1395.0,
+        "y": 46.2,
+        "cluster": 1
+      },
+      {
+        "x": 1479.0,
+        "y": 43.5,
+        "cluster": 1
+      },
+      {
+        "x": 1374.0,
+        "y": 47.1,
+        "cluster": 1
+      },
+      {
+        "x": 1305.0,
+        "y": 47.2,
+        "cluster": 1
+      },
+      {
+        "x": 1453.0,
+        "y": 44.1,
+        "cluster": 1
+      },
+      {
+        "x": 1313.0,
+        "y": 50.8,
+        "cluster": 1
+      },
+      {
+        "x": 1300.0,
+        "y": 53.0,
+        "cluster": 1
+      },
+      {
+        "x": 1373.0,
+        "y": 56.7,
+        "cluster": 1
+      },
+      {
+        "x": 1391.0,
+        "y": 51.9,
+        "cluster": 1
+      },
+      {
+        "x": 1407.0,
+        "y": 55.2,
+        "cluster": 1
+      },
+      {
+        "x": 1353.0,
+        "y": 57.5,
+        "cluster": 1
+      },
+      {
+        "x": 1405.0,
+        "y": 51.7,
+        "cluster": 1
+      },
+      {
+        "x": 1412.0,
+        "y": 42.0,
+        "cluster": 1
+      },
+      {
+        "x": 1431.0,
+        "y": 43.0,
+        "cluster": 1
+      },
+      {
+        "x": 1401.0,
+        "y": 51.9,
+        "cluster": 1
+      },
+      {
+        "x": 1424.0,
+        "y": 53.9,
+        "cluster": 1
+      },
+      {
+        "x": 1335.0,
+        "y": 48.0,
+        "cluster": 1
+      },
+      {
+        "x": 1414.0,
+        "y": 45.4,
+        "cluster": 1
+      },
+      {
+        "x": 1319.0,
+        "y": 50.9,
+        "cluster": 1
+      },
+      {
+        "x": 1249.0,
+        "y": 60.4,
+        "cluster": 1
+      },
+      {
+        "x": 1455.0,
+        "y": 48.2,
+        "cluster": 1
+      },
+      {
+        "x": 1551.0,
+        "y": 42.8,
+        "cluster": 2
+      },
+      {
+        "x": 1408.0,
+        "y": 46.3,
+        "cluster": 2
+      },
+      {
+        "x": 1498.0,
+        "y": 49.4,
+        "cluster": 2
+      },
+      {
+        "x": 1433.0,
+        "y": 39.5,
+        "cluster": 2
+      },
+      {
+        "x": 1408.0,
+        "y": 40.0,
+        "cluster": 2
+      },
+      {
+        "x": 1425.0,
+        "y": 41.9,
+        "cluster": 2
+      },
+      {
+        "x": 1558.0,
+        "y": 42.4,
+        "cluster": 2
+      },
+      {
+        "x": 1527.0,
+        "y": 40.2,
+        "cluster": 2
+      },
+      {
+        "x": 1667.0,
+        "y": 28.6,
+        "cluster": 2
+      },
+      {
+        "x": 1423.0,
+        "y": 44.3,
+        "cluster": 2
+      },
+      {
+        "x": 1339.0,
+        "y": 51.1,
+        "cluster": 2
+      },
+      {
+        "x": 1542.0,
+        "y": 48.4,
+        "cluster": 2
+      },
+      {
+        "x": 1311.0,
+        "y": 46.6,
+        "cluster": 2
+      },
+      {
+        "x": 1410.0,
+        "y": 45.6,
+        "cluster": 2
+      },
+      {
+        "x": 1632.0,
+        "y": 32.5,
+        "cluster": 2
+      },
+      {
+        "x": 1375.0,
+        "y": 42.7,
+        "cluster": 2
+      },
+      {
+        "x": 1450.0,
+        "y": 44.8,
+        "cluster": 2
+      },
+      {
+        "x": 1581.0,
+        "y": 30.7,
+        "cluster": 2
+      },
+      {
+        "x": 1561.0,
+        "y": 37.3,
+        "cluster": 2
+      },
+      {
+        "x": 1512.0,
+        "y": 39.0,
+        "cluster": 2
+      },
+      {
+        "x": 1439.0,
+        "y": 44.2,
+        "cluster": 2
+      },
+      {
+        "x": 1439.0,
+        "y": 39.2,
+        "cluster": 2
+      },
+      {
+        "x": 1398.0,
+        "y": 51.5,
+        "cluster": 2
+      },
+      {
+        "x": 1402.0,
+        "y": 37.9,
+        "cluster": 2
+      },
+      {
+        "x": 1445.0,
+        "y": 49.9,
+        "cluster": 2
+      },
+      {
+        "x": 1450.0,
+        "y": 47.5,
+        "cluster": 2
+      },
+      {
+        "x": 1453.0,
+        "y": 40.8,
+        "cluster": 2
+      },
+      {
+        "x": 1469.0,
+        "y": 40.1,
+        "cluster": 2
+      },
+      {
+        "x": 1422.0,
+        "y": 47.6,
+        "cluster": 2
+      },
+      {
+        "x": 1436.0,
+        "y": 43.9,
+        "cluster": 2
+      },
+      {
+        "x": 1544.0,
+        "y": 31.8,
+        "cluster": 2
+      },
+      {
+        "x": 1419.0,
+        "y": 45.2,
+        "cluster": 2
+      },
+      {
+        "x": 1487.0,
+        "y": 39.5,
+        "cluster": 2
+      },
+      {
+        "x": 1450.0,
+        "y": 43.0,
+        "cluster": 2
+      },
+      {
+        "x": 1622.0,
+        "y": 31.9,
+        "cluster": 2
+      },
+      {
+        "x": 1351.0,
+        "y": 52.2,
+        "cluster": 2
+      },
+      {
+        "x": 1575.0,
+        "y": 35.3,
+        "cluster": 2
+      },
+      {
+        "x": 1529.0,
+        "y": 32.7,
+        "cluster": 2
+      },
+      {
+        "x": 1523.0,
+        "y": 44.4,
+        "cluster": 2
+      },
+      {
+        "x": 1555.0,
+        "y": 40.6,
+        "cluster": 2
+      },
+      {
+        "x": 1441.0,
+        "y": 40.5,
+        "cluster": 2
+      },
+      {
+        "x": 1450.0,
+        "y": 43.4,
+        "cluster": 2
+      },
+      {
+        "x": 1591.0,
+        "y": 31.1,
+        "cluster": 2
+      },
+      {
+        "x": 1445.0,
+        "y": 48.5,
+        "cluster": 2
+      },
+      {
+        "x": 1497.0,
+        "y": 46.8,
+        "cluster": 2
+      },
+      {
+        "x": 1621.0,
+        "y": 32.7,
+        "cluster": 2
+      },
+      {
+        "x": 1572.0,
+        "y": 34.1,
+        "cluster": 2
+      },
+      {
+        "x": 1499.0,
+        "y": 43.5,
+        "cluster": 2
+      },
+      {
+        "x": 1498.0,
+        "y": 39.5,
+        "cluster": 2
+      },
+      {
+        "x": 1486.0,
+        "y": 41.9,
+        "cluster": 2
+      },
+      {
+        "x": 1467.0,
+        "y": 40.7,
+        "cluster": 2
+      },
+      {
+        "x": 1586.0,
+        "y": 35.5,
+        "cluster": 2
+      },
+      {
+        "x": 1468.0,
+        "y": 43.8,
+        "cluster": 2
+      },
+      {
+        "x": 1440.0,
+        "y": 43.6,
+        "cluster": 2
+      },
+      {
+        "x": 1612.0,
+        "y": 32.6,
+        "cluster": 2
+      },
+      {
+        "x": 1458.0,
+        "y": 42.9,
+        "cluster": 2
+      },
+      {
+        "x": 1433.0,
+        "y": 62.3,
+        "cluster": 2
+      },
+      {
+        "x": 1318.0,
+        "y": 59.1,
+        "cluster": 2
+      },
+      {
+        "x": 1610.0,
+        "y": 35.0,
+        "cluster": 2
+      },
+      {
+        "x": 1462.0,
+        "y": 50.8,
+        "cluster": 2
+      },
+      {
+        "x": 1591.0,
+        "y": 33.7,
+        "cluster": 2
+      },
+      {
+        "x": 1382.0,
+        "y": 43.5,
+        "cluster": 2
+      },
+      {
+        "x": 1618.0,
+        "y": 34.7,
+        "cluster": 2
+      },
+      {
+        "x": 1436.0,
+        "y": 50.2,
+        "cluster": 2
+      },
+      {
+        "x": 1304.0,
+        "y": 49.8,
+        "cluster": 2
+      },
+      {
+        "x": 1475.0,
+        "y": 49.9,
+        "cluster": 2
+      },
+      {
+        "x": 1342.0,
+        "y": 48.1,
+        "cluster": 2
+      },
+      {
+        "x": 1485.0,
+        "y": 40.7,
+        "cluster": 2
+      },
+      {
+        "x": 1667.0,
+        "y": 30.6,
+        "cluster": 2
+      },
+      {
+        "x": 1446.0,
+        "y": 38.2,
+        "cluster": 2
+      },
+      {
+        "x": 1379.0,
+        "y": 43.1,
+        "cluster": 2
+      },
+      {
+        "x": 1606.0,
+        "y": 33.6,
+        "cluster": 2
+      },
+      {
+        "x": 1539.0,
+        "y": 43.4,
+        "cluster": 2
+      },
+      {
+        "x": 1477.0,
+        "y": 49.9,
+        "cluster": 2
+      },
+      {
+        "x": 1666.0,
+        "y": 34.6,
+        "cluster": 2
+      },
+      {
+        "x": 1678.0,
+        "y": 34.6,
+        "cluster": 2
+      },
+      {
+        "x": 1453.0,
+        "y": 42.9,
+        "cluster": 2
+      },
+      {
+        "x": 1527.0,
+        "y": 40.9,
+        "cluster": 2
+      },
+      {
+        "x": 1662.0,
+        "y": 32.7,
+        "cluster": 2
+      },
+      {
+        "x": 1466.0,
+        "y": 42.6,
+        "cluster": 2
+      },
+      {
+        "x": 1620.0,
+        "y": 35.8,
+        "cluster": 2
+      },
+      {
+        "x": 1357.0,
+        "y": 48.2,
+        "cluster": 2
+      },
+      {
+        "x": 1514.0,
+        "y": 37.9,
+        "cluster": 2
+      },
+      {
+        "x": 1489.0,
+        "y": 40.4,
+        "cluster": 2
+      },
+      {
+        "x": 1615.0,
+        "y": 29.5,
+        "cluster": 2
+      },
+      {
+        "x": 1482.0,
+        "y": 37.9,
+        "cluster": 2
+      },
+      {
+        "x": 1420.0,
+        "y": 63.9,
+        "cluster": 2
+      },
+      {
+        "x": 1522.0,
+        "y": 49.1,
+        "cluster": 2
+      },
+      {
+        "x": 1654.0,
+        "y": 32.1,
+        "cluster": 2
+      },
+      {
+        "x": 1587.0,
+        "y": 32.3,
+        "cluster": 2
+      },
+      {
+        "x": 1390.0,
+        "y": 47.5,
+        "cluster": 2
+      },
+      {
+        "x": 1454.0,
+        "y": 37.1,
+        "cluster": 2
+      },
+      {
+        "x": 1440.0,
+        "y": 43.7,
+        "cluster": 2
+      },
+      {
+        "x": 1524.0,
+        "y": 37.0,
+        "cluster": 2
+      },
+      {
+        "x": 1520.0,
+        "y": 39.6,
+        "cluster": 2
+      },
+      {
+        "x": 1452.0,
+        "y": 40.8,
+        "cluster": 2
+      },
+      {
+        "x": 1484.0,
+        "y": 40.4,
+        "cluster": 2
+      },
+      {
+        "x": 1426.0,
+        "y": 46.0,
+        "cluster": 2
+      },
+      {
+        "x": 1479.0,
+        "y": 50.7,
+        "cluster": 2
+      },
+      {
+        "x": 1620.0,
+        "y": 29.4,
+        "cluster": 2
+      },
+      {
+        "x": 1741.0,
+        "y": 28.0,
+        "cluster": 3
+      },
+      {
+        "x": 1782.0,
+        "y": 23.9,
+        "cluster": 3
+      },
+      {
+        "x": 1742.0,
+        "y": 30.0,
+        "cluster": 3
+      },
+      {
+        "x": 2035.0,
+        "y": 19.6,
+        "cluster": 3
+      },
+      {
+        "x": 1758.0,
+        "y": 25.7,
+        "cluster": 3
+      },
+      {
+        "x": 1861.0,
+        "y": 23.3,
+        "cluster": 3
+      },
+      {
+        "x": 1811.0,
+        "y": 24.6,
+        "cluster": 3
+      },
+      {
+        "x": 1693.0,
+        "y": 30.1,
+        "cluster": 3
+      },
+      {
+        "x": 1798.0,
+        "y": 25.5,
+        "cluster": 3
+      },
+      {
+        "x": 1843.0,
+        "y": 25.8,
+        "cluster": 3
+      },
+      {
+        "x": 2861.0,
+        "y": 4.6,
+        "cluster": 3
+      },
+      {
+        "x": 1829.0,
+        "y": 22.9,
+        "cluster": 3
+      },
+      {
+        "x": 1812.0,
+        "y": 25.9,
+        "cluster": 3
+      },
+      {
+        "x": 1924.0,
+        "y": 22.6,
+        "cluster": 3
+      },
+      {
+        "x": 1804.0,
+        "y": 26.8,
+        "cluster": 3
+      },
+      {
+        "x": 1753.0,
+        "y": 25.8,
+        "cluster": 3
+      },
+      {
+        "x": 1830.0,
+        "y": 24.9,
+        "cluster": 3
+      },
+      {
+        "x": 1727.0,
+        "y": 27.1,
+        "cluster": 3
+      },
+      {
+        "x": 1750.0,
+        "y": 29.9,
+        "cluster": 3
+      },
+      {
+        "x": 1852.0,
+        "y": 25.0,
+        "cluster": 3
+      },
+      {
+        "x": 1991.0,
+        "y": 20.7,
+        "cluster": 3
+      },
+      {
+        "x": 1872.0,
+        "y": 22.5,
+        "cluster": 3
+      },
+      {
+        "x": 1680.0,
+        "y": 29.4,
+        "cluster": 3
+      },
+      {
+        "x": 1707.0,
+        "y": 28.1,
+        "cluster": 3
+      },
+      {
+        "x": 1727.0,
+        "y": 29.4,
+        "cluster": 3
+      },
+      {
+        "x": 1737.0,
+        "y": 27.7,
+        "cluster": 3
+      },
+      {
+        "x": 1778.0,
+        "y": 28.2,
+        "cluster": 3
+      },
+      {
+        "x": 1850.0,
+        "y": 27.0,
+        "cluster": 3
+      },
+      {
+        "x": 1987.0,
+        "y": 19.8,
+        "cluster": 3
+      },
+      {
+        "x": 1733.0,
+        "y": 26.0,
+        "cluster": 3
+      },
+      {
+        "x": 1924.0,
+        "y": 20.8,
+        "cluster": 3
+      },
+      {
+        "x": 1988.0,
+        "y": 21.4,
+        "cluster": 3
+      },
+      {
+        "x": 1824.0,
+        "y": 24.2,
+        "cluster": 3
+      },
+      {
+        "x": 2678.0,
+        "y": 10.7,
+        "cluster": 3
+      },
+      {
+        "x": 1741.0,
+        "y": 32.8,
+        "cluster": 3
+      },
+      {
+        "x": 1827.0,
+        "y": 24.3,
+        "cluster": 3
+      },
+      {
+        "x": 1736.0,
+        "y": 26.8,
+        "cluster": 3
+      },
+      {
+        "x": 1954.0,
+        "y": 21.1,
+        "cluster": 3
+      },
+      {
+        "x": 1800.0,
+        "y": 24.8,
+        "cluster": 3
+      },
+      {
+        "x": 1652.0,
+        "y": 28.5,
+        "cluster": 3
+      },
+      {
+        "x": 1750.0,
+        "y": 26.6,
+        "cluster": 3
+      },
+      {
+        "x": 1819.0,
+        "y": 23.4,
+        "cluster": 3
+      },
+      {
+        "x": 2051.0,
+        "y": 19.2,
+        "cluster": 3
+      },
+      {
+        "x": 1805.0,
+        "y": 31.6,
+        "cluster": 3
+      },
+      {
+        "x": 1713.0,
+        "y": 25.3,
+        "cluster": 3
+      },
+      {
+        "x": 2129.0,
+        "y": 18.7,
+        "cluster": 3
+      },
+      {
+        "x": 1740.0,
+        "y": 27.1,
+        "cluster": 3
+      },
+      {
+        "x": 1737.0,
+        "y": 27.5,
+        "cluster": 3
+      },
+      {
+        "x": 2129.0,
+        "y": 19.2,
+        "cluster": 3
+      },
+      {
+        "x": 1749.0,
+        "y": 25.9,
+        "cluster": 3
+      },
+      {
+        "x": 1995.0,
+        "y": 20.5,
+        "cluster": 3
+      },
+      {
+        "x": 1742.0,
+        "y": 27.7,
+        "cluster": 3
+      },
+      {
+        "x": 2448.0,
+        "y": 13.8,
+        "cluster": 3
+      },
+      {
+        "x": 1674.0,
+        "y": 30.0,
+        "cluster": 3
+      },
+      {
+        "x": 1754.0,
+        "y": 29.4,
+        "cluster": 3
+      },
+      {
+        "x": 1754.0,
+        "y": 26.8,
+        "cluster": 3
+      },
+      {
+        "x": 2564.0,
+        "y": 12.8,
+        "cluster": 3
+      },
+      {
+        "x": 1842.0,
+        "y": 27.0,
+        "cluster": 3
+      },
+      {
+        "x": 1712.0,
+        "y": 26.8,
+        "cluster": 3
+      },
+      {
+        "x": 2100.0,
+        "y": 16.9,
+        "cluster": 3
+      },
+      {
+        "x": 2151.0,
+        "y": 17.7,
+        "cluster": 3
+      },
+      {
+        "x": 1848.0,
+        "y": 23.7,
+        "cluster": 3
+      },
+      {
+        "x": 1793.0,
+        "y": 26.7,
+        "cluster": 3
+      },
+      {
+        "x": 2874.0,
+        "y": 4.2,
+        "cluster": 3
+      },
+      {
+        "x": 2182.0,
+        "y": 16.5,
+        "cluster": 3
+      },
+      {
+        "x": 1833.0,
+        "y": 22.6,
+        "cluster": 3
+      },
+      {
+        "x": 1893.0,
+        "y": 24.6,
+        "cluster": 3
+      },
+      {
+        "x": 1715.0,
+        "y": 28.0,
+        "cluster": 3
+      },
+      {
+        "x": 1732.0,
+        "y": 29.9,
+        "cluster": 3
+      },
+      {
+        "x": 1924.0,
+        "y": 20.6,
+        "cluster": 3
+      },
+      {
+        "x": 2027.0,
+        "y": 19.8,
+        "cluster": 3
+      },
+      {
+        "x": 1709.0,
+        "y": 32.2,
+        "cluster": 3
+      },
+      {
+        "x": 1675.0,
+        "y": 29.8,
+        "cluster": 3
+      },
+      {
+        "x": 1759.0,
+        "y": 24.8,
+        "cluster": 3
+      },
+      {
+        "x": 1775.0,
+        "y": 25.8,
+        "cluster": 3
+      },
+      {
+        "x": 1803.0,
+        "y": 24.7,
+        "cluster": 3
+      },
+      {
+        "x": 1831.0,
+        "y": 26.6,
+        "cluster": 3
+      },
+      {
+        "x": 1958.0,
+        "y": 22.1,
+        "cluster": 3
+      },
+      {
+        "x": 1809.0,
+        "y": 24.3,
+        "cluster": 3
+      },
+      {
+        "x": 1935.0,
+        "y": 22.1,
+        "cluster": 3
+      },
+      {
+        "x": 2001.0,
+        "y": 20.5,
+        "cluster": 3
+      },
+      {
+        "x": 2194.0,
+        "y": 16.8,
+        "cluster": 3
+      },
+      {
+        "x": 2000.0,
+        "y": 21.3,
+        "cluster": 3
+      },
+      {
+        "x": 1693.0,
+        "y": 29.9,
+        "cluster": 3
+      },
+      {
+        "x": 1686.0,
+        "y": 29.1,
+        "cluster": 3
+      },
+      {
+        "x": 1725.0,
+        "y": 32.0,
+        "cluster": 3
+      },
+      {
+        "x": 1926.0,
+        "y": 23.7,
+        "cluster": 3
+      },
+      {
+        "x": 1858.0,
+        "y": 23.9,
+        "cluster": 3
+      },
+      {
+        "x": 2015.0,
+        "y": 20.1,
+        "cluster": 3
+      },
+      {
+        "x": 1822.0,
+        "y": 25.4,
+        "cluster": 3
+      },
+      {
+        "x": 1874.0,
+        "y": 24.4,
+        "cluster": 3
+      },
+      {
+        "x": 1735.0,
+        "y": 26.4,
+        "cluster": 3
+      },
+      {
+        "x": 1815.0,
+        "y": 25.3,
+        "cluster": 3
+      },
+      {
+        "x": 1683.0,
+        "y": 31.6,
+        "cluster": 3
+      },
+      {
+        "x": 1838.0,
+        "y": 27.3,
+        "cluster": 3
+      },
+      {
+        "x": 1697.0,
+        "y": 28.1,
+        "cluster": 3
+      },
+      {
+        "x": 1809.0,
+        "y": 23.8,
+        "cluster": 3
+      },
+      {
+        "x": 1924.0,
+        "y": 22.1,
+        "cluster": 3
+      },
+      {
+        "x": 1978.0,
+        "y": 22.3,
+        "cluster": 3
+      },
+      {
+        "x": 1843.0,
+        "y": 24.2,
+        "cluster": 3
+      }
+    ],
+    "centers": [
+      {
+        "x": 1575.0,
+        "y": 35.64,
+        "cluster": 0
+      },
+      {
+        "x": 1392.0,
+        "y": 50.71,
+        "cluster": 1
+      },
+      {
+        "x": 1493.0,
+        "y": 41.4,
+        "cluster": 2
+      },
+      {
+        "x": 1882.0,
+        "y": 23.95,
+        "cluster": 3
+      }
+    ],
+    "clusterStats": [
+      {
+        "cluster": 0,
+        "count": 2761,
+        "failures": 30,
+        "failureRate": 0.0109,
+        "meanRpm": 1575.0,
+        "meanTorque": 35.64,
+        "meanWear": 161.0
+      },
+      {
+        "cluster": 1,
+        "count": 2548,
+        "failures": 236,
+        "failureRate": 0.0926,
+        "meanRpm": 1392.0,
+        "meanTorque": 50.71,
+        "meanWear": 142.0
+      },
+      {
+        "cluster": 2,
+        "count": 3428,
+        "failures": 36,
+        "failureRate": 0.0105,
+        "meanRpm": 1493.0,
+        "meanTorque": 41.4,
+        "meanWear": 45.0
+      },
+      {
+        "cluster": 3,
+        "count": 1263,
+        "failures": 37,
+        "failureRate": 0.0293,
+        "meanRpm": 1882.0,
+        "meanTorque": 23.95,
+        "meanWear": 94.0
+      }
+    ]
+  },
+  "target": {
+    "classBalance": {
+      "healthy": 9661,
+      "failure": 339
+    },
+    "sensorMeans": {
+      "Air temperature [K]": {
+        "healthy": 299.974,
+        "failure": 300.8864
+      },
+      "Process temperature [K]": {
+        "healthy": 309.9956,
+        "failure": 310.2903
+      },
+      "Rotational speed [rpm]": {
+        "healthy": 1540.26,
+        "failure": 1496.4867
+      },
+      "Torque [Nm]": {
+        "healthy": 39.6297,
+        "failure": 50.1681
+      },
+      "Tool wear [min]": {
+        "healthy": 106.6937,
+        "failure": 143.7817
+      }
+    },
+    "toolWearBins": [
+      {
+        "label": "0-50 min",
+        "count": 2349,
+        "failures": 52,
+        "failureRate": 0.0221
+      },
+      {
+        "label": "50-100 min",
+        "count": 2271,
+        "failures": 51,
+        "failureRate": 0.0225
+      },
+      {
+        "label": "100-150 min",
+        "count": 2290,
+        "failures": 52,
+        "failureRate": 0.0227
+      },
+      {
+        "label": "150-200 min",
+        "count": 2289,
+        "failures": 61,
+        "failureRate": 0.0266
+      },
+      {
+        "label": "200-250 min",
+        "count": 799,
+        "failures": 121,
+        "failureRate": 0.1514
+      },
+      {
+        "label": "250+ min",
+        "count": 2,
+        "failures": 2,
+        "failureRate": 1.0
+      }
+    ]
+  }
+}
