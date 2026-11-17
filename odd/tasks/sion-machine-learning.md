@@ -39,6 +39,11 @@ Build a static, interactive 24-day Machine Learning site named **Sion Machine Le
 - [x] T10: Week 4 labs (days 19–24): pre-entrega checklist, sklearn pipeline, GridSearch heatmap, joblib persistence, model comparison, final project flow.
 - [x] T11: Visual QA (desktop + mobile, light/dark contrast), accessibility pass, README, final `npm run test` + `npm run build`.
 - [x] T12: Netlify/static deploy config and final verification; deployment itself only with explicit user authorization.
+- [x] T13: Read-only infrastructure audit (`infra/LOCAL_DEV.md`, `infra/PROD.md`, ingress) and multi-lens site audit (accessibility, mobile, performance, content, security, testing).
+- [x] T14: P0 fixes: axe accessibility blockers, mobile touch/chart/readability, content consistency, and deploy headers.
+- [x] T15: SION deploy artifacts for `chiqui.sion.net.ar`: nginx container, compose, runbook, tunnel/DNS/monitoring checklist. No production changes without explicit authorization.
+- [ ] T16: P1 improvements after P0: focus trap/skip link, code-splitting, self-hosted fonts, OG/SEO, import progress, continue CTA, error boundary, stale-data check, CI + axe.
+- [ ] T17: Deploy `chiqui.sion.net.ar` with explicit user authorization and post-deploy smoke.
 
 ## Log
 
@@ -64,6 +69,27 @@ Build a static, interactive 24-day Machine Learning site named **Sion Machine Le
 - T11: `npm run build` passes (435 KB JS / 126 KB gzip, 49.5 KB CSS); `npm run test` 30 passed; `npm run lint` has only two fast-refresh warnings; `npm run smoke` renders all 24 labs without console/page errors and verifies progress persistence, share text, JSON export, reset and no horizontal overflow on mobile for days 1, 13, 21 and 24. Desktop and mobile screenshots inspected; three visual defects found and fixed (KNN x-domain, off-chart regression line and generic branch icon replaced by the GitHub mark).
 - T12: root `netlify.toml` configures `web/` base, `npm run build`, `dist`, security headers and immutable asset caching. The build uses `base: './'`. No deploy was executed: publication still requires explicit user authorization and credentials.
 
+## Iteration 2 — audit and SION deploy (2026-11-16)
+
+Read-only infrastructure audit: production is `sion-oracle` (arm64), Docker behind the `apps-sion` Cloudflare Tunnel, networks `sion_frontend`/`sion_backend`, Uptime Kuma monitoring. `chiqui.sion.net.ar` does not exist in DNS or ingress yet, and the factory has no static web server (the marketing MinIO was retired). The chosen path is a small nginx container (`chiqui_web`) on `sion_frontend`, tunnel `chiqui.sion.net.ar` -> `chiqui_web:80`, public, with Uptime Kuma. `netlify.toml` remains an optional fallback; SION headers must live in nginx/Cloudflare.
+
+Multi-lens audit findings:
+
+- Accessibility (axe): `button-name` critical on the mobile header share button; `label-content-name-mismatch` serious on the logo link and 24 day cards; duplicate `banner`/`main` landmarks from the modal's `<header>`/`<main>`; `aria-required-children` critical on the heatmap `role="grid"`; `scrollable-region-focusable` serious on tables/code; no focus trap or skip link. No color-contrast violations.
+- Mobile: no horizontal overflow at 390 px, but chart labels render ~8 px, route-list buttons are 20 px tall and the modal day grid 24 px, the header loses navigation on mobile, and the KNN canvas uses `onPointerDown` so a scroll can move the query.
+- Performance: one 426 KB JS chunk (126 KB gzip) eager-loads all 24 labs; Google Fonts is external. Lazy-loading labs/modal and self-hosting Inter/Outfit are the main wins.
+- Content: root README says 136 tests while the suite is 138; day 1 simulates a semicolon/comma CSV while AI4I is comma/period; day 21 shows the wide encoded-grid 0.7108 next to the official 0.7096; day 18 and day 22 need explicit sample/simulation notes; `ai4i.json` has no stale check.
+- Testing/ops: `npm audit` clean and all notebook links 200; no `web` CI, axe run, visual regression, error boundary, import-progress, OG image/canonical/robots, or SION runbook.
+
+P0 fixes landed on 2026-11-17:
+
+- Accessibility: unnamed mobile share button fixed with `aria-label`; day-card and logo label mismatches removed; modal `<header>`/`<main>` replaced by neutral containers; heatmap `role="grid"` replaced by `role="group"`; tables/code/CSV/scroll regions are focusable with labels; a focus trap + background `inert` added to the day and share dialogs; skip link added; focus returns to the triggering card/share button after close; axe reports **0 violations** on home and days 1, 7, 13, 18, 21 and 24 at 1440 and 390 px.
+- Mobile: charts now measure their container (`ResizeObserver`) so tick labels render at ~13 px instead of ~8 px; native range inputs use a 24 px `.range-sion` track/thumb; route list and mobile header nav links are 32 px; modal day grid buttons are 32 px; the header gained a mobile anchor nav; KNN canvas uses click plus arrow-key control instead of pointerdown.
+- Content: root README test count fixed to 138; day 1 now states that the exercise simulates a semicolon/comma export while AI4I is comma/period; day 21 labels the wide-grid 0.7108 separately from the official 0.7096; day 18 explains the 400-point sample; day 22 labels its predictions as didactic.
+- Verification: `npm test` 30 passed, `npm run build` 440 KB JS / 128 KB gzip, `npm run smoke` passes with focus-restore assertions, `npm audit` 0 vulnerabilities, no horizontal overflow at 390 px.
+
+T15 deploy artifacts (prepared, not executed): `web/deploy/Dockerfile` (node:24-alpine build → nginx:1.29-alpine), `web/deploy/nginx.conf` (SPA fallback, `/healthz`, cache, CSP and security headers), `web/deploy/compose.prod.yaml` (`chiqui_web`, external `sion_frontend`, read-only/tmpfs, healthcheck, log limits), `web/deploy/README.md` (arm64 build, tunnel/DNS, Uptime Kuma, verification, rollback) and `web/.dockerignore`. Dockerfile lint check passes and both base tags resolve for arm64; a full local image build hit the environment's npm registry/timeout twice at `npm ci`, so the runtime image still needs a build on `sion-oracle` or a machine with a warm npm cache. No production changes were made.
+
 ## Next step
 
-Commit the work units, run the final verification set, and ask the user whether to publish the static site (Netlify or SION infrastructure). Native review does not apply to this static frontend slice unless the user requests it.
+T16 — P1 improvements (focus/animation polish, code-splitting, self-hosted fonts, OG/SEO, import progress, continue CTA, error boundary, stale-data check, CI + axe). Then T17: deploy `chiqui.sion.net.ar` with explicit authorization and post-deploy smoke.

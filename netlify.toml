@@ -1,3 +1,6 @@
+# Optional static fallback. The SION production path is web/deploy/README.md
+# (nginx on sion-oracle, chiqui.sion.net.ar). Netlify does not apply SION headers.
+
 [build]
   base = "web"
   command = "npm run build"

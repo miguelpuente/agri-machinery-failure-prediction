@@ -131,7 +131,7 @@ src/agrofail/tuning.py       GridSearchCV y estabilidad del F1 entre pliegues
 src/agrofail/report.py       Generación de ambas entregas
 notebooks/preentrega.ipynb   Preparación de datos y anexo
 notebooks/entrega-final.ipynb Modelado, ajuste, conclusiones y anexo
-tests/                       Pruebas del paquete (136)
+tests/                       Pruebas del paquete (138)
 data/raw/                    Datos originales, excluidos de Git
 data/processed/              Datos preparados, excluidos de Git
 ```

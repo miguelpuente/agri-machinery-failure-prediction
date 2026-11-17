@@ -80,12 +80,17 @@ web/
 
 ## Deploy
 
-El build es completamente estático y usa `base: './'`, así que puede servirse en Netlify,
-en un subdirectorio o detrás de SION sin cambiar código. El `netlify.toml` de la raíz del
-repositorio configura `web/` como base, `npm run build` como comando y `dist` como publish.
+El build es completamente estático y usa `base: './'`, así que puede servirse en un
+subdirectorio o detrás de SION sin cambiar código.
 
-El deploy no está autorizado por este documento: publicar requiere una decisión explícita
-del usuario y la credencial correspondiente.
+El camino elegido es **SION**: un contenedor nginx `chiqui_web` en `sion-oracle`, dentro
+de la red existente `sion_frontend`, publicado como `chiqui.sion.net.ar` por el tunnel
+`apps-sion`. El runbook completo está en [`deploy/README.md`](deploy/README.md); incluye
+build arm64, compose, tunnel/DNS, headers, Uptime Kuma, verificación y rollback.
+
+El `netlify.toml` de la raíz queda como fallback opcional y **no** aplica a SION. El deploy
+no está autorizado por este documento: publicar requiere una decisión explícita del
+usuario y la credencial correspondiente.
 
 ## Límites
 
