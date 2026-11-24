@@ -5,6 +5,10 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
+ARG VITE_SENTRY_DSN=""
+ARG VITE_SENTRY_ENVIRONMENT="production"
+ENV VITE_SENTRY_DSN=$VITE_SENTRY_DSN \
+    VITE_SENTRY_ENVIRONMENT=$VITE_SENTRY_ENVIRONMENT
 RUN npm run build
 
 FROM nginx:1.29-alpine AS runtime

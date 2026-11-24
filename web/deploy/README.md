@@ -179,3 +179,20 @@ stop the container.
 
 The root `netlify.toml` remains as an optional static fallback. It is **not** the SION
 deployment path and does not apply headers on `sion-oracle`; nginx owns the SION headers.
+
+## Sentry/GlitchTip (2026-11-24)
+
+`chiqui_web` reports browser errors to GlitchTip project 12. The public DSN is
+`https://<public-key>@chiqui.sion.net.ar/12`; nginx proxies `/api/12/` to
+`http://glitchtip:8000` and the container is attached to `sion_backend` for
+that upstream only. The GlitchTip UI remains internal.
+
+Build with the public DSN (embedded in the bundle by Vite):
+
+```bash
+docker build -f web/deploy/Dockerfile -t "sion/chiqui-web:${TAG}" \
+  --build-arg VITE_SENTRY_DSN="https://<public-key>@chiqui.sion.net.ar/12" \
+  --build-arg VITE_SENTRY_ENVIRONMENT=production web
+```
+
+Without `VITE_SENTRY_DSN`, the SDK is a no-op and the site builds normally.

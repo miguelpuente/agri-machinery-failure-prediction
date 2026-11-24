@@ -14,6 +14,7 @@ services:
       - /opt/sion_factory/storage/chiqui/docs:/usr/share/nginx/html/docs:ro
     networks:
       - sion_frontend
+      - sion_backend
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/healthz >/dev/null || exit 1"]
       interval: 30s
@@ -28,4 +29,6 @@ services:
 
 networks:
   sion_frontend:
+    external: true
+  sion_backend:
     external: true
