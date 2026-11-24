@@ -15,6 +15,7 @@
     "verify": "npm run test && npm run build && npm run lint"
   },
   "dependencies": {
+    "@sentry/react": "^11.17.0",
     "@tailwindcss/vite": "^4.3.5",
     "canvas-confetti": "^1.9.4",
     "lucide-react": "^1.73.0",
